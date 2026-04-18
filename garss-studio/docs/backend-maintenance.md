@@ -39,6 +39,7 @@
 
 - `vite.config.ts` 的代理目标应该指向后端内部地址，默认是 `http://backend:3001`。
 - 不要再把 `http://127.0.0.1:3001` 当作默认浏览器访问模式写进配置或文档。
+- Swagger 文档也必须继续走同一条代理链路，维护入口固定为 `/api/docs`，原始规范地址固定为 `/api/openapi.json`。
 - 如果维护者在宿主机上直接跑 `npm run dev`，可以显式设置：
 
 ```bash
@@ -60,6 +61,7 @@ npm run build
 
 - 确认 `/api/reader/subscriptions/:id?refresh=true` 仍然会真实抓取并更新缓存。
 - 确认不带 `refresh=true` 的读取只返回缓存。
+- 确认 `25173` 可以正常透传 `/api/docs` 和 `/api/openapi.json`。
 - 确认开发环境下 `25173` 可以正常透传 `/api` 和 `/socket.io`。
 - 如果开启了自动调度，确认调度跑完整轮后，进程内存不会因为批量结果累积而持续上涨。
 - 如果开发 compose 保持默认配置，确认后端启动时不会立即挂起自动调度任务。

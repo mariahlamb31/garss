@@ -93,6 +93,15 @@ docker compose up --build -d
 
 生产环境下，前端 Nginx 反向代理 `/api` 到后端；整个项目同样只占用一个宿主机端口。
 
+## API 文档
+
+后端维护用 Swagger 文档通过现有单端口入口暴露，不需要直接访问后端 `3001`：
+
+- 开发和生产统一使用 `http://127.0.0.1:25173/api/docs`
+- 原始 OpenAPI JSON：`http://127.0.0.1:25173/api/openapi.json`
+
+文档里对受保护接口统一标注了 Bearer Token。可以先调用 `/api/auth/login`，再把返回的 `token` 填进 Swagger UI 的 `Authorize`。
+
 ## 订阅源格式
 
 订阅源同时支持两种格式：

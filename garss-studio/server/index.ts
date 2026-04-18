@@ -8,6 +8,8 @@ import { fileURLToPath } from "node:url";
 import express, { type NextFunction, type Request, type Response } from "express";
 import Parser from "rss-parser";
 import { Server as SocketIOServer, type Socket } from "socket.io";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 
 interface AccessTokenPayload {
   type: "access";
@@ -104,6 +106,10 @@ const DEFAULT_AUTO_REFRESH_INTERVAL_MINUTES = 30;
 const DEFAULT_PARALLEL_FETCH_COUNT = 2;
 const FEED_FETCH_TIMEOUT_MS = 15_000;
 const MAX_FEED_BYTES = 5 * 1024 * 1024;
+const openApiScanPaths = [
+  path.join(rootDir, "server/**/*.ts"),
+  path.join(rootDir, "dist-server/server/**/*.js"),
+].map((value) => value.split(path.sep).join("/"));
 
 function getAccessCode(): string {
   return (process.env.ACCESS_CODE || "banana").trim() || "banana";
@@ -1067,6 +1073,252 @@ const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   path: "/socket.io",
 });
+const openApiSpec = swaggerJsdoc({
+  definition: {
+    openapi: "3.0.3",
+    info: {
+      title: "GARSS Studio Backend API",
+      version: "0.1.0",
+      description:
+        "GARSS Studio backend API. In development and production, browser access should still go through the single gateway entry and use /api/* paths.",
+    },
+    servers: [
+      {
+        url: "/",
+        description: "Single-port gateway entry",
+      },
+    ],
+    tags: [
+      { name: "System", description: "Health and maintenance endpoints" },
+      { name: "Auth", description: "Access code login and session validation" },
+      { name: "Subscriptions", description: "Subscription and category management" },
+      { name: "Settings", description: "Per-user fetch settings" },
+      { name: "Reader", description: "Cached RSS reads and forced refreshes" },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "Bearer token from /api/auth/login",
+        },
+      },
+      schemas: {
+        ErrorResponse: {
+          type: "object",
+          properties: {
+            error: { type: "string" },
+          },
+          required: ["error"],
+        },
+        LoginRequest: {
+          type: "object",
+          properties: {
+            accessCode: { type: "string", example: "banana" },
+          },
+          required: ["accessCode"],
+        },
+        LoginResponse: {
+          type: "object",
+          properties: {
+            token: { type: "string" },
+            expiresAt: { type: "number", format: "double" },
+          },
+          required: ["token", "expiresAt"],
+        },
+        SessionResponse: {
+          type: "object",
+          properties: {
+            authenticated: { type: "boolean", example: true },
+            expiresAt: { type: "number", format: "double" },
+            settingsUserId: { type: "string", example: "banana" },
+          },
+          required: ["authenticated", "expiresAt", "settingsUserId"],
+        },
+        Subscription: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" },
+            category: { type: "string" },
+            name: { type: "string" },
+            routePath: { type: "string", example: "/36kr/newsflashes" },
+            description: { type: "string" },
+            enabled: { type: "boolean" },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+          },
+          required: [
+            "id",
+            "category",
+            "name",
+            "routePath",
+            "description",
+            "enabled",
+            "createdAt",
+            "updatedAt",
+          ],
+        },
+        SubscriptionInput: {
+          type: "object",
+          properties: {
+            category: { type: "string", example: "软件工具" },
+            name: { type: "string", example: "36氪快讯" },
+            routePath: { type: "string", example: "/36kr/newsflashes" },
+            description: { type: "string", example: "36Kr 快讯" },
+            enabled: { type: "boolean", example: true },
+          },
+          required: ["category", "name", "routePath"],
+        },
+        SubscriptionsResponse: {
+          type: "object",
+          properties: {
+            subscriptions: {
+              type: "array",
+              items: { $ref: "#/components/schemas/Subscription" },
+            },
+            categories: {
+              type: "array",
+              items: { type: "string" },
+            },
+          },
+          required: ["subscriptions", "categories"],
+        },
+        SettingsResponse: {
+          type: "object",
+          properties: {
+            autoRefreshIntervalMinutes: { type: "integer", example: 30 },
+            parallelFetchCount: { type: "integer", example: 2 },
+            nextScheduledAt: { type: "string", format: "date-time" },
+            settingsUserId: { type: "string", example: "banana" },
+          },
+          required: [
+            "autoRefreshIntervalMinutes",
+            "parallelFetchCount",
+            "nextScheduledAt",
+            "settingsUserId",
+          ],
+        },
+        SettingsUpdateRequest: {
+          type: "object",
+          properties: {
+            autoRefreshIntervalMinutes: { type: "integer", example: 30 },
+            parallelFetchCount: { type: "integer", example: 2 },
+          },
+        },
+        CategoryCreateRequest: {
+          type: "object",
+          properties: {
+            name: { type: "string", example: "软件工具" },
+          },
+          required: ["name"],
+        },
+        CategoryCreateResponse: {
+          type: "object",
+          properties: {
+            category: { type: "string" },
+            categories: {
+              type: "array",
+              items: { type: "string" },
+            },
+          },
+          required: ["category", "categories"],
+        },
+        SubscriptionResponse: {
+          type: "object",
+          properties: {
+            subscription: { $ref: "#/components/schemas/Subscription" },
+          },
+          required: ["subscription"],
+        },
+        DeleteResponse: {
+          type: "object",
+          properties: {
+            deleted: { type: "boolean", example: true },
+          },
+          required: ["deleted"],
+        },
+        ReaderItem: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            subscriptionId: { type: "string", format: "uuid" },
+            subscriptionName: { type: "string" },
+            routePath: { type: "string" },
+            title: { type: "string" },
+            link: { type: "string" },
+            author: { type: "string" },
+            publishedAt: { type: "string", format: "date-time" },
+            excerpt: { type: "string" },
+            contentHtml: { type: "string" },
+            contentText: { type: "string" },
+          },
+          required: [
+            "id",
+            "subscriptionId",
+            "subscriptionName",
+            "routePath",
+            "title",
+            "link",
+            "author",
+            "publishedAt",
+            "excerpt",
+            "contentHtml",
+            "contentText",
+          ],
+        },
+        ReaderItemsError: {
+          type: "object",
+          properties: {
+            subscriptionId: { type: "string", format: "uuid" },
+            subscriptionName: { type: "string" },
+            message: { type: "string" },
+          },
+          required: ["subscriptionId", "subscriptionName", "message"],
+        },
+        ReaderItemsResponse: {
+          type: "object",
+          properties: {
+            generatedAt: { type: "string", format: "date-time" },
+            items: {
+              type: "array",
+              items: { $ref: "#/components/schemas/ReaderItem" },
+            },
+            errors: {
+              type: "array",
+              items: { $ref: "#/components/schemas/ReaderItemsError" },
+            },
+          },
+          required: ["generatedAt", "items", "errors"],
+        },
+        ReaderSubscriptionResponse: {
+          type: "object",
+          properties: {
+            generatedAt: { type: "string", format: "date-time" },
+            subscriptionId: { type: "string", format: "uuid" },
+            subscriptionName: { type: "string" },
+            routePath: { type: "string" },
+            items: {
+              type: "array",
+              items: { $ref: "#/components/schemas/ReaderItem" },
+            },
+          },
+          required: ["generatedAt", "subscriptionId", "subscriptionName", "routePath", "items"],
+        },
+        ReaderFetchErrorResponse: {
+          type: "object",
+          properties: {
+            error: { type: "string" },
+            subscriptionId: { type: "string", format: "uuid" },
+            subscriptionName: { type: "string" },
+            routePath: { type: "string" },
+          },
+          required: ["error", "subscriptionId", "subscriptionName", "routePath"],
+        },
+      },
+    },
+  },
+  apis: openApiScanPaths,
+});
 
 function broadcastTaskSnapshot(): void {
   io.emit("reader:tasks", buildSocketTaskSnapshot());
@@ -1245,7 +1497,53 @@ async function scheduleAllUserRefreshJobs(): Promise<void> {
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
+app.get(/^\/api\/docs$/, (_request, response) => {
+  response.redirect("/api/docs/");
+});
+app.get("/api/openapi.json", (_request, response) => {
+  response.json(openApiSpec);
+});
+app.use(
+  "/api/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(openApiSpec, {
+    explorer: true,
+    swaggerOptions: {
+      url: "/api/openapi.json",
+    },
+  }),
+);
 
+/**
+ * @openapi
+ * /api/health:
+ *   get:
+ *     tags:
+ *       - System
+ *     summary: Health check for the backend service
+ *     responses:
+ *       200:
+ *         description: Service status and current subscription count
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 rsshubBaseUrl:
+ *                   type: string
+ *                 subscriptions:
+ *                   type: integer
+ *                 now:
+ *                   type: string
+ *                   format: date-time
+ *               required:
+ *                 - ok
+ *                 - rsshubBaseUrl
+ *                 - subscriptions
+ *                 - now
+ */
 app.get("/api/health", async (_request, response) => {
   const subscriptions = await readSubscriptions();
   response.json({
@@ -1274,6 +1572,39 @@ io.on("connection", (socket) => {
   socket.emit("reader:tasks", buildSocketTaskSnapshot());
 });
 
+/**
+ * @openapi
+ * /api/auth/login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Exchange access code for a bearer token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Bearer token issued
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       400:
+ *         description: Missing access code
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Invalid access code
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.post("/api/auth/login", (request, response) => {
   const accessCode = normalizeText(request.body?.accessCode);
 
@@ -1297,6 +1628,29 @@ app.post("/api/auth/login", (request, response) => {
   response.json(createToken(payload));
 });
 
+/**
+ * @openapi
+ * /api/auth/session:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Validate current bearer token
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Session is valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SessionResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.get("/api/auth/session", ensureAuthenticated, (_request, response) => {
   const auth = response.locals.auth as AccessTokenPayload;
   response.json({
@@ -1306,12 +1660,120 @@ app.get("/api/auth/session", ensureAuthenticated, (_request, response) => {
   });
 });
 
+/**
+ * @openapi
+ * /api/subscriptions:
+ *   get:
+ *     tags:
+ *       - Subscriptions
+ *     summary: List subscriptions and merged category list
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current subscriptions and categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SubscriptionsResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *   post:
+ *     tags:
+ *       - Subscriptions
+ *     summary: Create a subscription
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SubscriptionInput'
+ *     responses:
+ *       201:
+ *         description: Subscription created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SubscriptionResponse'
+ *       400:
+ *         description: Missing name or routePath
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Duplicate routePath
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.get("/api/subscriptions", ensureAuthenticated, async (_request, response) => {
   const subscriptions = await readSubscriptions();
   const categories = buildCategoryList(subscriptions, await readCategories());
   response.json({ subscriptions, categories });
 });
 
+/**
+ * @openapi
+ * /api/settings:
+ *   get:
+ *     tags:
+ *       - Settings
+ *     summary: Read fetch settings for the authenticated user bucket
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Effective settings with next scheduled run
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SettingsResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *   put:
+ *     tags:
+ *       - Settings
+ *     summary: Update fetch settings for the authenticated user bucket
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SettingsUpdateRequest'
+ *     responses:
+ *       200:
+ *         description: Updated settings with next scheduled run
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SettingsResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.get("/api/settings", ensureAuthenticated, async (_request, response) => {
   const auth = response.locals.auth as AccessTokenPayload;
   const userId = resolveSettingsUserId(auth.settingsUserId);
@@ -1337,6 +1799,47 @@ app.put("/api/settings", ensureAuthenticated, async (request, response) => {
   response.json(buildSettingsResponse(settingsUserId, nextSettings));
 });
 
+/**
+ * @openapi
+ * /api/categories:
+ *   post:
+ *     tags:
+ *       - Subscriptions
+ *     summary: Create an explicit category
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CategoryCreateRequest'
+ *     responses:
+ *       201:
+ *         description: Category created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CategoryCreateResponse'
+ *       400:
+ *         description: Missing category name
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Category already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.post("/api/categories", ensureAuthenticated, async (request, response) => {
   const rawName = normalizeText(request.body?.name);
 
@@ -1400,6 +1903,92 @@ app.post("/api/subscriptions", ensureAuthenticated, async (request, response) =>
   response.status(201).json({ subscription });
 });
 
+/**
+ * @openapi
+ * /api/subscriptions/{id}:
+ *   put:
+ *     tags:
+ *       - Subscriptions
+ *     summary: Update a subscription
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Subscription id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SubscriptionInput'
+ *     responses:
+ *       200:
+ *         description: Subscription updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SubscriptionResponse'
+ *       400:
+ *         description: Missing name or routePath
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Subscription not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Duplicate routePath
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *   delete:
+ *     tags:
+ *       - Subscriptions
+ *     summary: Delete a subscription and its cached reader data
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Subscription id
+ *     responses:
+ *       200:
+ *         description: Subscription deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DeleteResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Subscription not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.put("/api/subscriptions/:id", ensureAuthenticated, async (request, response) => {
   const id = normalizeText(request.params.id);
   const category = normalizeCategory(request.body?.category);
@@ -1474,6 +2063,35 @@ app.delete("/api/subscriptions/:id", ensureAuthenticated, async (request, respon
   response.json({ deleted: true });
 });
 
+/**
+ * @openapi
+ * /api/reader/items:
+ *   get:
+ *     tags:
+ *       - Reader
+ *     summary: Read aggregated reader items across enabled subscriptions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: refresh
+ *         schema:
+ *           type: boolean
+ *         description: When true, bypass cache and fetch all enabled subscriptions immediately
+ *     responses:
+ *       200:
+ *         description: Aggregated reader items plus per-subscription fetch errors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ReaderItemsResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 app.get("/api/reader/items", ensureAuthenticated, async (request, response) => {
   const subscriptions = await readSubscriptions();
   const forceRefresh = shouldForceRefresh(request.query.refresh);
@@ -1513,6 +2131,59 @@ app.get("/api/reader/items", ensureAuthenticated, async (request, response) => {
   });
 });
 
+/**
+ * @openapi
+ * /api/reader/subscriptions/{id}:
+ *   get:
+ *     tags:
+ *       - Reader
+ *     summary: Read cached items for one subscription or force-refresh that source
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Subscription id
+ *       - in: query
+ *         name: refresh
+ *         schema:
+ *           type: boolean
+ *         description: When true, fetch the real RSS source and update cache
+ *     responses:
+ *       200:
+ *         description: Reader items for the selected subscription
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ReaderSubscriptionResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Subscription not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Subscription is disabled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       502:
+ *         description: Upstream RSS fetch failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ReaderFetchErrorResponse'
+ */
 app.get("/api/reader/subscriptions/:id", ensureAuthenticated, async (request, response) => {
   const subscriptions = await readSubscriptions();
   const subscriptionId = normalizeText(request.params.id);
