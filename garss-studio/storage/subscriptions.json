@@ -1,0 +1,2472 @@
+[
+  {
+    "id": "editreadme-s001",
+    "category": "软件工具",
+    "name": "不死鸟",
+    "routePath": "https://iao.su/feed",
+    "description": "不死鸟:专注分享优质资源",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-s002",
+    "category": "软件工具",
+    "name": "精品MAC应用分享",
+    "routePath": "https://xclient.info/feed",
+    "description": "精品MAC应用分享，每天分享大量mac软件，为您提供优质的mac软件,免费软件下载服务",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-s003",
+    "category": "软件工具",
+    "name": "老殁",
+    "routePath": "https://www.mpyit.com/feed",
+    "description": "免费推荐优秀软件",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-s004",
+    "category": "软件工具",
+    "name": "鹏少资源网",
+    "routePath": "https://www.jokerps.com/feed",
+    "description": "专注于精品软件收录分享",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-s005",
+    "category": "软件工具",
+    "name": "小众软件",
+    "routePath": "https://www.appinn.com/feed/",
+    "description": "分享免费、小巧、实用、有趣、绿色的软件",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-s006",
+    "category": "软件工具",
+    "name": "懒得勤快的博客",
+    "routePath": "https://masuit.com/rss",
+    "description": "懒得勤快，互联网分享精神，勤于发现，乐于分享",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-s007",
+    "category": "软件工具",
+    "name": "反斗限免",
+    "routePath": "https://free.apprcn.com/feed/",
+    "description": "反斗软件旗下软件限免资讯网站",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-s008",
+    "category": "软件工具",
+    "name": "异次元软件世界",
+    "routePath": "https://rsshub.v2fy.com/iplay/home",
+    "description": "极具人气和特色的软件网站！专注于推荐优秀软件、APP应用和互联网资源，每篇图文评测都极其用心，并提供大量软件资源下载。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b001",
+    "category": "活着的个人独立博客",
+    "name": "阮一峰的网络日志",
+    "routePath": "http://www.ruanyifeng.com/blog/atom.xml",
+    "description": "一个科技博客，讲解的知识通俗易懂",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b002",
+    "category": "活着的个人独立博客",
+    "name": "当我在扯淡",
+    "routePath": "https://yinwang1.wordpress.com/feed/",
+    "description": "王垠的博客，观点奇妙有趣",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b003",
+    "category": "活着的个人独立博客",
+    "name": "黑果小兵的部落阁",
+    "routePath": "https://blog.daliansky.net/atom.xml",
+    "description": "Hackintosh安装镜像、教程及经验分享",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b004",
+    "category": "活着的个人独立博客",
+    "name": "张鑫旭的博客",
+    "routePath": "https://www.zhangxinxu.com/wordpress/feed/",
+    "description": "张鑫旭-鑫空间-鑫生活",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b005",
+    "category": "活着的个人独立博客",
+    "name": "方圆小站",
+    "routePath": "https://fangyuanxiaozhan.com/feed/",
+    "description": "zhaoolee的杂谈博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b006",
+    "category": "活着的个人独立博客",
+    "name": "V2方圆",
+    "routePath": "https://v2fy.com/feed/",
+    "description": "防加班办公工具技能宝典",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b007",
+    "category": "活着的个人独立博客",
+    "name": "老左笔记",
+    "routePath": "https://www.laozuo.org/feed",
+    "description": "记录云主机商活动和建站运维教程",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b008",
+    "category": "活着的个人独立博客",
+    "name": "FLiNG Trainer",
+    "routePath": "https://flingtrainer.com/feed/",
+    "description": "修改器大神风灵月影",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b009",
+    "category": "活着的个人独立博客",
+    "name": "奔跑中的奶酪",
+    "routePath": "https://www.runningcheese.com/feed",
+    "description": "有智，有趣，有爱",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b010",
+    "category": "活着的个人独立博客",
+    "name": "唐巧的博客",
+    "routePath": "https://blog.devtang.com/atom.xml",
+    "description": "记录下自己学习的点滴",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b011",
+    "category": "活着的个人独立博客",
+    "name": "I'M TUALATRIX",
+    "routePath": "https://imtx.me/feed/latest/",
+    "description": "Hello! This is TualatriX's blog",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b012",
+    "category": "活着的个人独立博客",
+    "name": "云风的 BLOG",
+    "routePath": "https://blog.codingnow.com/atom.xml",
+    "description": "思绪来得快去得也快，偶尔会在这里停留",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b013",
+    "category": "活着的个人独立博客",
+    "name": "透明创业实验",
+    "routePath": "https://blog.t9t.io/atom.xml",
+    "description": "timqian的博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b014",
+    "category": "活着的个人独立博客",
+    "name": "扯氮集",
+    "routePath": "http://weiwuhui.com/feed",
+    "description": "多歧为贵 不取苟同",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b015",
+    "category": "活着的个人独立博客",
+    "name": "wenzi",
+    "routePath": "https://www.xiabingbao.com/atom.xml",
+    "description": "蚊子在前端开发工作中的总结",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b016",
+    "category": "活着的个人独立博客",
+    "name": "DIYgod",
+    "routePath": "https://diygod.me/atom.xml",
+    "description": "人气网红,前端萌新,有猫,开源",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b017",
+    "category": "活着的个人独立博客",
+    "name": "MacTalk-池建强的随想录",
+    "routePath": "http://macshuo.com/?feed=rss2",
+    "description": "关注技术和人文",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b018",
+    "category": "活着的个人独立博客",
+    "name": "ShrekShao",
+    "routePath": "http://shrekshao.github.io/feed.xml",
+    "description": "ShrekShao's Blog",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b019",
+    "category": "活着的个人独立博客",
+    "name": "Phodal",
+    "routePath": "https://www.phodal.com/blog/feeds/rss/",
+    "description": "Phodal - A Growth Engineer",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b020",
+    "category": "活着的个人独立博客",
+    "name": "追梦人物",
+    "routePath": "https://www.zmrenwu.com/all/rss/",
+    "description": "追梦人物的博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b021",
+    "category": "活着的个人独立博客",
+    "name": "小明明s à domicile",
+    "routePath": "https://www.dongwm.com/atom.xml",
+    "description": "小明明s à domicile",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b022",
+    "category": "活着的个人独立博客",
+    "name": "但行好事，莫问前程",
+    "routePath": "https://windard.com/feed.xml",
+    "description": "Windard's simple blog web",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b023",
+    "category": "活着的个人独立博客",
+    "name": "罗磊的独立博客",
+    "routePath": "https://luolei.org/feed/",
+    "description": "前端工程师，ZUOLUOTV制作人",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b024",
+    "category": "活着的个人独立博客",
+    "name": "阁子",
+    "routePath": "https://newdee.cf/atom.xml",
+    "description": "Newdee's Blog",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b025",
+    "category": "活着的个人独立博客",
+    "name": "RidiQulous",
+    "routePath": "https://ridiqulous.com/feed/",
+    "description": "RidiQulous's Blog",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b026",
+    "category": "活着的个人独立博客",
+    "name": "代码家",
+    "routePath": "https://daimajia.com/feed",
+    "description": "善存于心，世界和平",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b027",
+    "category": "活着的个人独立博客",
+    "name": "开源实验室",
+    "routePath": "https://www.kymjs.com/feed.xml",
+    "description": "张涛的开源实验室",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b028",
+    "category": "活着的个人独立博客",
+    "name": "技术小黑屋",
+    "routePath": "https://droidyue.com/atom.xml",
+    "description": "一个Android 工程师",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b029",
+    "category": "活着的个人独立博客",
+    "name": "依云",
+    "routePath": "https://blog.lilydjwg.me/posts.rss",
+    "description": "依云's Blog",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b030",
+    "category": "活着的个人独立博客",
+    "name": "INTJer",
+    "routePath": "https://arminli.com/feed/",
+    "description": "Armin Li（李钊）",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b031",
+    "category": "活着的个人独立博客",
+    "name": "思圆笔记",
+    "routePath": "https://hintsnet.com/pimgeek/feed/",
+    "description": "促成良性循环",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b032",
+    "category": "活着的个人独立博客",
+    "name": "老周快救我",
+    "routePath": "https://zxx.im/feed",
+    "description": "Life Is Fantastic",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b033",
+    "category": "活着的个人独立博客",
+    "name": "MouT.me",
+    "routePath": "https://ghost.mout.me/rss/",
+    "description": "给生活打个草稿",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b034",
+    "category": "活着的个人独立博客",
+    "name": "diss带码",
+    "routePath": "https://dumplingbao.github.io/atom.xml",
+    "description": "码动人生",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b035",
+    "category": "活着的个人独立博客",
+    "name": "王登科-DK博客",
+    "routePath": "https://greatdk.com/feed",
+    "description": "布洛芬爱好者",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b036",
+    "category": "活着的个人独立博客",
+    "name": "笨方法学写作",
+    "routePath": "https://www.cnfeat.com/feed.xml",
+    "description": "笨方法学写作,这一次彻底学会写作",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b037",
+    "category": "活着的个人独立博客",
+    "name": "风雪之隅",
+    "routePath": "https://www.laruence.com/feed",
+    "description": "左手代码右手诗",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b038",
+    "category": "活着的个人独立博客",
+    "name": "Hawstein's Blog",
+    "routePath": "https://hawstein.com/feed.xml",
+    "description": "这里是 Hawstein 的个人博客，记录生活点滴。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b039",
+    "category": "活着的个人独立博客",
+    "name": "DeveWork",
+    "routePath": "https://devework.com/feed",
+    "description": "WordPress极客一枚",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b040",
+    "category": "活着的个人独立博客",
+    "name": "海交史",
+    "routePath": "https://www.haijiaoshi.com/feed",
+    "description": "东亚文史研究动态网",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b041",
+    "category": "活着的个人独立博客",
+    "name": "四季书评",
+    "routePath": "http://www.4sbooks.com/feed",
+    "description": "四季书评",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b042",
+    "category": "活着的个人独立博客",
+    "name": "文三娃",
+    "routePath": "https://wentommy.wordpress.com/feed/",
+    "description": "网络上甘岭战区候任参谋长",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b043",
+    "category": "活着的个人独立博客",
+    "name": "我的小角落",
+    "routePath": "http://micheer.net/?feed=rss2",
+    "description": "点击文章标题可评论哦",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b044",
+    "category": "活着的个人独立博客",
+    "name": "木遥",
+    "routePath": "http://blog.farmostwood.net/feed",
+    "description": "木遥的窗子",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b045",
+    "category": "活着的个人独立博客",
+    "name": "Limboy's HQ",
+    "routePath": "https://limboy.me/index.xml",
+    "description": "Limboy's HQ",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b046",
+    "category": "活着的个人独立博客",
+    "name": "人人都是产品经理——iamsujie",
+    "routePath": "http://iamsujie.com/feed/",
+    "description": "成长中的产品经理，期待和同学们一起，用好产品改变世界~",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b047",
+    "category": "活着的个人独立博客",
+    "name": "土木坛子",
+    "routePath": "https://tumutanzi.com/feed",
+    "description": "和光同尘，与时舒卷",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b048",
+    "category": "活着的个人独立博客",
+    "name": "火丁笔记",
+    "routePath": "https://blog.huoding.com/feed",
+    "description": "多研究些问题，少谈些主义。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b049",
+    "category": "活着的个人独立博客",
+    "name": "產品經理 x 成長駭客 - Mr. PM下午先生",
+    "routePath": "http://mrpm.cc/?feed=rss2",
+    "description": "PM可以是產品經理、下午、Pig Man，但絕對不是Poor Man",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b050",
+    "category": "活着的个人独立博客",
+    "name": "Matrix67",
+    "routePath": "http://www.matrix67.com/blog/feed",
+    "description": "Matrix67: The Aha Moments",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b051",
+    "category": "活着的个人独立博客",
+    "name": "我爱自然语言处理",
+    "routePath": "https://www.52nlp.cn/feed",
+    "description": "I Love Natural Language Processing",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b052",
+    "category": "活着的个人独立博客",
+    "name": "sunnyxx",
+    "routePath": "http://blog.sunnyxx.com/atom.xml",
+    "description": "sunnyxx的技术博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b053",
+    "category": "活着的个人独立博客",
+    "name": "搞笑談軟工",
+    "routePath": "http://teddy-chen-tw.blogspot.com/feeds/posts/default",
+    "description": "敏捷開發，設計模式，精實開發，Scrum，軟體設計，軟體架構",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b054",
+    "category": "活着的个人独立博客",
+    "name": "Beyond the Void",
+    "routePath": "https://byvoid.com/zht/feed.xml",
+    "description": "遊記、語言學、經濟學、信息學競賽/ACM經驗、算法講解、技術知識",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b055",
+    "category": "活着的个人独立博客",
+    "name": "Est's Blog",
+    "routePath": "https://blog.est.im/rss",
+    "description": "This blog is rated R, viewer discretion is advised",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b056",
+    "category": "活着的个人独立博客",
+    "name": "卢昌海个人主页",
+    "routePath": "https://www.changhai.org//feed.xml",
+    "description": "Changhai Lu's Homepage",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b057",
+    "category": "活着的个人独立博客",
+    "name": "程序师",
+    "routePath": "https://www.techug.com/feed",
+    "description": "程序员、编程语言、软件开发、编程技术",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b058",
+    "category": "活着的个人独立博客",
+    "name": "bang's blog",
+    "routePath": "http://blog.cnbang.net/feed/",
+    "description": "我的世界",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b059",
+    "category": "活着的个人独立博客",
+    "name": "白宦成",
+    "routePath": "https://www.ixiqin.com/feed/",
+    "description": "思无邪",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b060",
+    "category": "活着的个人独立博客",
+    "name": "Jason 独立开发，自由职业",
+    "routePath": "https://atjason.com/atom.xml/",
+    "description": "记录一位独立开发者的精进之路，分享自由职业者的生存方式。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b061",
+    "category": "活着的个人独立博客",
+    "name": "Randy's Blog",
+    "routePath": "https://lutaonan.com/rss.xml",
+    "description": "Randy is blogging about life, tech and music.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b062",
+    "category": "活着的个人独立博客",
+    "name": "木木木木木",
+    "routePath": "https://immmmm.com/atom.xml",
+    "description": "林小沐的博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b063",
+    "category": "活着的个人独立博客",
+    "name": "Skywind Inside",
+    "routePath": "http://www.skywind.me/blog/feed",
+    "description": "写自己的代码，让别人猜去吧",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b064",
+    "category": "活着的个人独立博客",
+    "name": "轉個彎日誌",
+    "routePath": "https://blog.turn.tw/?feed=rss2",
+    "description": "by 阿川先生",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b065",
+    "category": "活着的个人独立博客",
+    "name": "余果的博客",
+    "routePath": "https://yuguo.us/feed.xml",
+    "description": "公众号：余果专栏",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b066",
+    "category": "活着的个人独立博客",
+    "name": "陈沙克日志",
+    "routePath": "http://www.chenshake.com/feed/",
+    "description": "把我的过程记录下来，以免以后忘了",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b067",
+    "category": "活着的个人独立博客",
+    "name": "透明思考 Transparent Thoughts",
+    "routePath": "http://gigix.thoughtworkers.org/atom.xml",
+    "description": "就，觉得自己还挺有洞察力的……",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b068",
+    "category": "活着的个人独立博客",
+    "name": "依云's Blog",
+    "routePath": "https://blog.lilydjwg.me/feed",
+    "description": "Happy coding, happy living!",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b069",
+    "category": "活着的个人独立博客",
+    "name": "王子亭的博客",
+    "routePath": "https://jysperm.me/atom.xml",
+    "description": "精子真名叫「王子亭」，生于 1995.11.25，英文ID是jysperm. 精子是一名独立博客作者",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b070",
+    "category": "活着的个人独立博客",
+    "name": "谢益辉",
+    "routePath": "https://yihui.org/cn/index.xml",
+    "description": "中文日志 - Yihui Xie",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b071",
+    "category": "活着的个人独立博客",
+    "name": "褪墨・时间管理，个人提升，生活健康与习惯",
+    "routePath": "https://www.mifengtd.cn/feed.xml",
+    "description": "褪墨・时间管理是一个关注时间管理、GTD、个人提升、生活健康与习惯、学习方法和演讲技巧的网站。我们的目标是：把事情做到更好！",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b072",
+    "category": "活着的个人独立博客",
+    "name": "数字移民",
+    "routePath": "https://blog.shuziyimin.org/feed",
+    "description": "数字移民是一种生活方式",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b073",
+    "category": "活着的个人独立博客",
+    "name": "Just lepture",
+    "routePath": "https://lepture.com/feed.xml",
+    "description": "Love its people, but never trust its government.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b074",
+    "category": "活着的个人独立博客",
+    "name": "1 Byte",
+    "routePath": "https://1byte.io/rss.xml",
+    "description": "Articles about life, technology, and startups.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b075",
+    "category": "活着的个人独立博客",
+    "name": "庭说",
+    "routePath": "https://tingtalk.me/atom.xml",
+    "description": "保持蓬勃的好奇心",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b076",
+    "category": "活着的个人独立博客",
+    "name": "KAIX.IN",
+    "routePath": "https://kaix.in/feed/",
+    "description": "杂文、随笔、感悟、记录",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b077",
+    "category": "活着的个人独立博客",
+    "name": "硕鼠的博客站",
+    "routePath": "http://lukefan.com/?feed=rss2",
+    "description": "范路的博客主站，时而会发些东西。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b078",
+    "category": "活着的个人独立博客",
+    "name": "构建我的被动收入",
+    "routePath": "https://www.bmpi.dev/index.xml",
+    "description": "Lifelong Learner",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b079",
+    "category": "活着的个人独立博客",
+    "name": "Livid",
+    "routePath": "https://livid.v2ex.com/feed.xml",
+    "description": "Beautifully Advance",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b080",
+    "category": "活着的个人独立博客",
+    "name": "胡涂说",
+    "routePath": "https://hutusi.com/feed.xml",
+    "description": "hutusi.com",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b081",
+    "category": "活着的个人独立博客",
+    "name": "鸟窝",
+    "routePath": "https://colobu.com/atom.xml",
+    "description": "万物之始，大道至简，衍化至繁",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b082",
+    "category": "活着的个人独立博客",
+    "name": "卡瓦邦噶！",
+    "routePath": "https://www.kawabangga.com/feed",
+    "description": "无法自制的人得不到自由。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b083",
+    "category": "活着的个人独立博客",
+    "name": "方圆STU",
+    "routePath": "https://fangyuanstu.com/feed/",
+    "description": "天是方的，地是圆的。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b084",
+    "category": "活着的个人独立博客",
+    "name": "折影轻梦",
+    "routePath": "https://nexmoe.com/atom.xml",
+    "description": "崇尚自由、热爱科学与艺术",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b085",
+    "category": "活着的个人独立博客",
+    "name": "不羁阁",
+    "routePath": "https://bujige.net/atom.xml",
+    "description": "行走少年郎 不羁，谓才行高远，不可羁系也",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b086",
+    "category": "活着的个人独立博客",
+    "name": "Cal Paterson",
+    "routePath": "https://calpaterson.com/calpaterson.rss",
+    "description": "Cal Paterson's articles",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b087",
+    "category": "活着的个人独立博客",
+    "name": "3号实验室",
+    "routePath": "https://www.labno3.com/feed/",
+    "description": "树莓派; 开发板; 编程; 折腾",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b088",
+    "category": "活着的个人独立博客",
+    "name": "ZMonster's Blog",
+    "routePath": "https://www.zmonster.me/atom.xml",
+    "description": "巧者劳而智者忧，无能者无所求，饱食而遨游，泛若不系之舟",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b089",
+    "category": "活着的个人独立博客",
+    "name": "十年老程网",
+    "routePath": "http://snlcw.com/feed",
+    "description": "推荐各种VPS主机",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b090",
+    "category": "活着的个人独立博客",
+    "name": "小明明 domicile",
+    "routePath": "http://snlcw.com/feed",
+    "description": "前豆瓣工程师，现在家带娃，远程工作机会联系我哟",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b091",
+    "category": "活着的个人独立博客",
+    "name": "LFhacks.com",
+    "routePath": "https://www.lfhacks.com/rss/",
+    "description": "读万卷书，行万里路",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b092",
+    "category": "活着的个人独立博客",
+    "name": "三省吾身",
+    "routePath": "https://blog.guowenfh.com/atom.xml",
+    "description": "兴趣遍地都是，专注和持之以恒才是真正稀缺的",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b093",
+    "category": "活着的个人独立博客",
+    "name": "夏海比比",
+    "routePath": "https://huiweishijie.com/feed.xml",
+    "description": "关于设计与摄影，一个95后的个人博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b094",
+    "category": "活着的个人独立博客",
+    "name": "TRHX'S BLOG",
+    "routePath": "https://www.itrhx.com/atom.xml",
+    "description": "一入 IT 深似海 从此学习无绝期",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b095",
+    "category": "活着的个人独立博客",
+    "name": "CallMeSoul",
+    "routePath": "https://callmesoul.cn/rss.xml",
+    "description": "callmesoul前端开发者",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b096",
+    "category": "活着的个人独立博客",
+    "name": "龚成博客",
+    "routePath": "https://laogongshuo.com/feed",
+    "description": "不高大但是威猛，不英俊但是潇洒",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b097",
+    "category": "活着的个人独立博客",
+    "name": "Seven's blog",
+    "routePath": "https://blog.diqigan.cn/atom.xml",
+    "description": "你不会找到路，除非你敢于迷路",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b098",
+    "category": "活着的个人独立博客",
+    "name": "治部少辅",
+    "routePath": "https://www.codewoody.com/atom.xml",
+    "description": "你晚来天雨雪，能饮一杯无？",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b099",
+    "category": "活着的个人独立博客",
+    "name": "CRIMX BLOG",
+    "routePath": "https://blog.crimx.com/rss.xml",
+    "description": "CRIMX 的博客，主要记录 Web 前端相关的一些内容，偶尔涉及其它方面。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b100",
+    "category": "活着的个人独立博客",
+    "name": "小非的物理小站",
+    "routePath": "https://xiaophy.com/feed.xml",
+    "description": "信仰共产主义，后现代主义者，结构主义者，奇妙发现世界～～",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b101",
+    "category": "活着的个人独立博客",
+    "name": "Michael翔",
+    "routePath": "https://michael728.github.io/atom.xml",
+    "description": "因上努力，果上随缘！",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b102",
+    "category": "活着的个人独立博客",
+    "name": "Dosk 技术站",
+    "routePath": "https://www.dosk.win/feed.xml",
+    "description": "SpringHack 的无名技术小站",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b103",
+    "category": "活着的个人独立博客",
+    "name": "Lu Shuyu's NoteBook",
+    "routePath": "https://blog.lushuyu.site/about-me/feed",
+    "description": "你好呀，我是一个准大学生，曾经是一个信息学奥林匹克竞赛（OI）选手，ID 为AquaRio。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b104",
+    "category": "活着的个人独立博客",
+    "name": "Xieisabug",
+    "routePath": "https://www.xiejingyang.com/feed/",
+    "description": "吃饭学家，复制学家，偷懒学家。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b105",
+    "category": "活着的个人独立博客",
+    "name": "Ryu Zheng 郑泽鑫的博客",
+    "routePath": "https://zhengzexin.com/feed/index.xml",
+    "description": "一个生信工作者的独立博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b106",
+    "category": "活着的个人独立博客",
+    "name": "轶哥",
+    "routePath": "https://www.wyr.me/rss.xml",
+    "description": "妄图改变世界的全栈程序员。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b107",
+    "category": "活着的个人独立博客",
+    "name": "清竹茶馆",
+    "routePath": "https://blog.vadxq.com/atom.xml",
+    "description": "技术分享,前端开发,生活杂谈",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b108",
+    "category": "活着的个人独立博客",
+    "name": "隋堤倦客",
+    "routePath": "https://fengxu.ink/atom.xml",
+    "description": "我挥舞着键盘和本子，发誓要把这世界写个明明白白！！！",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b109",
+    "category": "活着的个人独立博客",
+    "name": "维基萌",
+    "routePath": "https://www.wikimoe.com/rss.php",
+    "description": "萌即是正义！一名热爱acg的前端设计师的小站！",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b110",
+    "category": "活着的个人独立博客",
+    "name": "StrongWong",
+    "routePath": "https://blog.strongwong.top/atom.xml",
+    "description": "Embedded Software Engineer. Blogging about tech and life.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b111",
+    "category": "活着的个人独立博客",
+    "name": "保罗的小宇宙",
+    "routePath": "https://paugram.com/feed/",
+    "description": "Still single, still lonely.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b112",
+    "category": "活着的个人独立博客",
+    "name": "Mobility",
+    "routePath": "https://lichuanyang.top/atom.xml",
+    "description": "聚沙成塔",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b113",
+    "category": "活着的个人独立博客",
+    "name": "Not LSD",
+    "routePath": "https://notlsd.github.io/atom.xml",
+    "description": "A man cannot be described. He is not LSD.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b114",
+    "category": "活着的个人独立博客",
+    "name": "MikeoPerfect's Diary",
+    "routePath": "https://blog.mikeoperfect.com/atom.xml",
+    "description": "故事太多，需要找个地方记录一下",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b115",
+    "category": "活着的个人独立博客",
+    "name": "爪哇堂 JavaTang",
+    "routePath": "https://www.javatang.com/feed",
+    "description": "荣辱不惊闲看庭前花开花谢，去留无意漫随天外云卷云舒",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b116",
+    "category": "活着的个人独立博客",
+    "name": "暗无天日",
+    "routePath": "https://www.lujun9972.win/rss.xml",
+    "description": "DarkSun的个人博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b117",
+    "category": "活着的个人独立博客",
+    "name": "Grayson's Blog",
+    "routePath": "http://blog.grayson.org.cn/feed.xml",
+    "description": "Grayson's Blog",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b118",
+    "category": "活着的个人独立博客",
+    "name": "格物致知",
+    "routePath": "https://liqiang.io/atom.xml",
+    "description": "专注于分享后端相关的技术以及设计架构思想，偶尔写一些生活和前端相关的东西",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b119",
+    "category": "活着的个人独立博客",
+    "name": "黄琦雲的博客",
+    "routePath": "https://knightyun.github.io/feed.xml",
+    "description": "心中本没有路，用双手敲写康庄大道。知之甚少，学之甚多，生命不休，求索不止。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b120",
+    "category": "活着的个人独立博客",
+    "name": "阳志平的网志",
+    "routePath": "https://www.yangzhiping.com/feed.xml",
+    "description": "致力于认知科学的产品开发、课程设计与科学传播。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b121",
+    "category": "活着的个人独立博客",
+    "name": "落园",
+    "routePath": "https://www.loyhome.com/feed/",
+    "description": "专注经济视角下的互联网",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b122",
+    "category": "活着的个人独立博客",
+    "name": "Her Blue",
+    "routePath": "https://her.blue/rss/",
+    "description": "一个摄影博主，设立了自己的摄影品牌「她的蓝」有没有那么一首诗篇，找不到句点",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b123",
+    "category": "活着的个人独立博客",
+    "name": "伪医生律师的博客",
+    "routePath": "https://chidd.net/feed",
+    "description": "记录、生活、思考",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b124",
+    "category": "活着的个人独立博客",
+    "name": "ZWWoOoOo",
+    "routePath": "https://zww.me/feed",
+    "description": "一个折腾WordPress多年的开发者, 博客里有众多 WordPress技术教程分享",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b125",
+    "category": "活着的个人独立博客",
+    "name": "水八口的冥想盆",
+    "routePath": "https://blog.shuiba.co/feed",
+    "description": "一位居住在日本的女开发者",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b126",
+    "category": "活着的个人独立博客",
+    "name": "失眠海峡",
+    "routePath": "https://blog.imalan.cn/feed/index.xml",
+    "description": "我要与你坦诚相见",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b127",
+    "category": "活着的个人独立博客",
+    "name": "千古壹号的博客",
+    "routePath": "https://qianguyihao.com/atom.xml",
+    "description": "一个京东前端工程师",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b128",
+    "category": "活着的个人独立博客",
+    "name": "涛叔",
+    "routePath": "https://taoshu.in/feed.xml",
+    "description": "互联网从业者，专注效率工具和思维方法",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-b129",
+    "category": "活着的个人独立博客",
+    "name": "可能吧",
+    "routePath": "https://feeds.feedburner.com/kenengbarss",
+    "description": "有趣有用的互联网趋势",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d001",
+    "category": "数码",
+    "name": "少数派",
+    "routePath": "https://sspai.com/feed",
+    "description": "少数派致力于更好地运用数字产品或科学方法，帮助用户提升工作效率和生活品质",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d002",
+    "category": "数码",
+    "name": "数字尾巴",
+    "routePath": "https://www.dgtle.com/rss/dgtle.xml",
+    "description": "分享美好数字生活",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d003",
+    "category": "数码",
+    "name": "Chiphell",
+    "routePath": "https://www.chiphell.com/portal.php?mod=rss",
+    "description": "分享与交流用户体验",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i001",
+    "category": "IT团队博客",
+    "name": "AlloyTeam",
+    "routePath": "http://www.alloyteam.com/feed/",
+    "description": "腾讯全端AlloyTeam团队的技术博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i002",
+    "category": "IT团队博客",
+    "name": "奇舞周刊",
+    "routePath": "https://weekly.75.team/rss",
+    "description": "360前端团队博客，领略前端技术，阅读奇舞周刊",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i004",
+    "category": "IT团队博客",
+    "name": "淘系前端团队",
+    "routePath": "https://fed.taobao.org/atom.xml",
+    "description": "淘宝团队技术博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i005",
+    "category": "IT团队博客",
+    "name": "字节跳动团队技术博客",
+    "routePath": "https://blog.csdn.net/ByteDanceTech/rss/list",
+    "description": "字节跳动团队技术博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i006",
+    "category": "IT团队博客",
+    "name": "美团技术团队博客",
+    "routePath": "https://tech.meituan.com/feed/",
+    "description": "美团技术团队博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i007",
+    "category": "IT团队博客",
+    "name": "云音乐大前端专栏",
+    "routePath": "https://musicfe.dev/rss",
+    "description": "网易云音乐大前端专栏",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i008",
+    "category": "IT团队博客",
+    "name": "百度 FEX 团队",
+    "routePath": "https://fex.baidu.com/feed.xml",
+    "description": "FEX 技术周刊",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i009",
+    "category": "IT团队博客",
+    "name": "JDC",
+    "routePath": "https://jdc.jd.com/feed",
+    "description": "京东设计中心",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-i010",
+    "category": "IT团队博客",
+    "name": "凹凸实验室",
+    "routePath": "https://aotu.io/atom.xml",
+    "description": "凹凸技术揭秘 · 技术精进与业务发展两不误",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c001",
+    "category": "公司官方新闻",
+    "name": "Apple新闻",
+    "routePath": "https://www.apple.com/newsroom/rss-feed.rss",
+    "description": "Apple官方消息",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-h001",
+    "category": "互联网类",
+    "name": "虎嗅",
+    "routePath": "https://www.huxiu.com/rss/0.xml",
+    "description": "虎嗅网新闻",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-h002",
+    "category": "互联网类",
+    "name": "36kr",
+    "routePath": "https://www.36kr.com/feed",
+    "description": "36氪",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-h003",
+    "category": "互联网类",
+    "name": "微软亚洲研究院",
+    "routePath": "https://www.msra.cn/feed",
+    "description": "微软亚洲研究院技术博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-h004",
+    "category": "互联网类",
+    "name": "极客公园",
+    "routePath": "https://www.geekpark.net/rss",
+    "description": "极客公园",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-f001",
+    "category": "金融类",
+    "name": "雪球",
+    "routePath": "https://xueqiu.com/hots/topic/rss",
+    "description": "聪明的投资者都在这里,雪球每日精华",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t001",
+    "category": "科技类",
+    "name": "Hack News",
+    "routePath": "https://news.ycombinator.com/rss",
+    "description": "极其优质的极客新闻",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t002",
+    "category": "科技类",
+    "name": "奇客Solidot–传递最新科技情报",
+    "routePath": "https://www.solidot.org/index.rss",
+    "description": "奇客的资讯，重要的东西",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t003",
+    "category": "科技类",
+    "name": "环球科学",
+    "routePath": "https://feedx.net/rss/huanqiukexue.xml",
+    "description": "科学美国人中文版，一些科普文章",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t004",
+    "category": "科技类",
+    "name": "MIT 科技评论",
+    "routePath": "https://rsshub.v2fy.com/mittrchina/hot",
+    "description": "MIT 科技评论 本周热榜",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t005",
+    "category": "科技类",
+    "name": "产品运营",
+    "routePath": "http://www.woshipm.com/category/operate/feed",
+    "description": "产品运营 - 人人都是产品经理",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t006",
+    "category": "科技类",
+    "name": "产品经理",
+    "routePath": "http://www.woshipm.com/category/pmd/feed",
+    "description": "产品经理 – 人人都是产品经理",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t007",
+    "category": "科技类",
+    "name": "产品100",
+    "routePath": "http://www.chanpin100.com/feed",
+    "description": "产品人学习成长社区",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t008",
+    "category": "科技类",
+    "name": "蓝卡",
+    "routePath": "https://www.lanka.cn/feed",
+    "description": "美好科技生活方式",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-t009",
+    "category": "科技类",
+    "name": "APPDO数字生活指南",
+    "routePath": "https://simonword.com/feed",
+    "description": "Simon的自留地_数码_App_羊毛_相机_数字指南",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-l001",
+    "category": "学习类",
+    "name": "扔物线",
+    "routePath": "https://rengwuxian.com/feed",
+    "description": "帮助 Android 工程师进阶成长",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-l002",
+    "category": "学习类",
+    "name": "MOOC中国",
+    "routePath": "https://www.mooc.cn/feed",
+    "description": "慕课改变你，你改变世界",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-a001",
+    "category": "学术类",
+    "name": "青柠学术",
+    "routePath": "https://iseex.github.io/feed",
+    "description": "每个科研小白都有成为大神的潜力",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-l001",
+    "category": "生活类",
+    "name": "李子柒",
+    "routePath": "https://rsshub.v2fy.com/weibo/user/2970452952",
+    "description": "李子柒的微博",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-l002",
+    "category": "生活类",
+    "name": "理想生活实验室",
+    "routePath": "https://www.toodaylab.com/rss",
+    "description": "为更理想的生活",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-l003",
+    "category": "生活类",
+    "name": "一兜糖",
+    "routePath": "https://rsshub.v2fy.com/yidoutang/index",
+    "description": "家的主理人社区",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d001",
+    "category": "设计类",
+    "name": "Behance",
+    "routePath": "https://www.behance.net/feeds/projects",
+    "description": "Adobe旗下设计网站Behance",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d002",
+    "category": "设计类",
+    "name": "Behance官方博客",
+    "routePath": "https://medium.com/feed/@behance",
+    "description": "Behance官方博客",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d003",
+    "category": "设计类",
+    "name": "Pinterest",
+    "routePath": "https://newsroom.pinterest.com/en/feed/posts.xml",
+    "description": "图片设计社交",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d004",
+    "category": "设计类",
+    "name": "优设",
+    "routePath": "https://www.uisdc.com/feed",
+    "description": "优秀设计联盟-优设网-设计师交流学习平台-看设计文章，学软件教程，找灵感素材，尽在优设网！",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d005",
+    "category": "设计类",
+    "name": "腾讯CDC",
+    "routePath": "https://cdc.tencent.com/feed/",
+    "description": "腾讯用户研究与体验设计部",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d006",
+    "category": "设计类",
+    "name": "ID公社",
+    "routePath": "http://feeds.feedburner.com/ID",
+    "description": "发现有意味的设计",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d007",
+    "category": "设计类",
+    "name": "摄影世界",
+    "routePath": "https://feedx.net/rss/photoworld.xml",
+    "description": "你的随身摄影杂志",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d008",
+    "category": "设计类",
+    "name": "Design Milk",
+    "routePath": "https://design-milk.com/feed/",
+    "description": "Design Milk 是一个分享现代设计与生活方式灵感的网站",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-d009",
+    "category": "设计类",
+    "name": "Smashing Magazine",
+    "routePath": "https://www.smashingmagazine.com/feed/",
+    "description": "Magazine on CSS, JavaScript, front-end, accessibility, UX and design. For developers, designers and front-end engineers.s",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c001",
+    "category": "内容平台",
+    "name": "知乎",
+    "routePath": "https://www.zhihu.com/rss",
+    "description": "知乎每日精选",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c002",
+    "category": "内容平台",
+    "name": "湾区日报",
+    "routePath": "https://wanqu.co/feed/",
+    "description": "关注创业与技术，每天推送3到5篇优质英文文章",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c003",
+    "category": "内容平台",
+    "name": "爱范儿",
+    "routePath": "https://www.ifanr.com/feed",
+    "description": "让未来触手可及",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c004",
+    "category": "内容平台",
+    "name": "小众软件",
+    "routePath": "https://www.appinn.com/feed/",
+    "description": "小众软件RSS",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c005",
+    "category": "内容平台",
+    "name": "199IT",
+    "routePath": "https://www.199it.com/feed",
+    "description": "互联网数据资讯网",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c006",
+    "category": "内容平台",
+    "name": "IT之家",
+    "routePath": "https://www.ithome.com/rss",
+    "description": "IT之家 - 软媒旗下网站",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c007",
+    "category": "内容平台",
+    "name": "HelloGitHub 月刊",
+    "routePath": "https://hellogithub.com/rss",
+    "description": "一切出于兴趣。兴趣是最好的老师，HelloGitHub 就是帮你找到编程的兴趣。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c008",
+    "category": "内容平台",
+    "name": "蠎周刊",
+    "routePath": "https://weekly.pychina.org/feeds/all.atom.xml",
+    "description": "Python各种Weekly中译版。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c009",
+    "category": "内容平台",
+    "name": "WordPress大学",
+    "routePath": "https://www.wpdaxue.com/feed",
+    "description": "WordPress建站资源平台",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c010",
+    "category": "内容平台",
+    "name": "Linux中国",
+    "routePath": "https://linux.cn/rss.xml",
+    "description": "Linux中文开源社区",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c011",
+    "category": "内容平台",
+    "name": "V2EX",
+    "routePath": "https://www.v2ex.com/index.xml",
+    "description": "创意工作者的社区",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c012",
+    "category": "内容平台",
+    "name": "酷壳(左耳朵耗子)",
+    "routePath": "https://coolshell.cn/feed",
+    "description": "酷 壳RSS",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c013",
+    "category": "内容平台",
+    "name": "豆瓣",
+    "routePath": "https://www.douban.com/feed/review/movie",
+    "description": "豆瓣最受欢迎的影评",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c014",
+    "category": "内容平台",
+    "name": "豆瓣",
+    "routePath": "https://www.douban.com/feed/review/book",
+    "description": "豆瓣最受欢迎的书评",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c015",
+    "category": "内容平台",
+    "name": "豆瓣",
+    "routePath": "https://www.douban.com/feed/review/music",
+    "description": "豆瓣最受欢迎的乐评",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c016",
+    "category": "内容平台",
+    "name": "开源中国",
+    "routePath": "https://www.oschina.net/blog/rss",
+    "description": "开源中国社区推荐文章",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c017",
+    "category": "内容平台",
+    "name": "博客园",
+    "routePath": "http://feed.cnblogs.com/blog/picked/rss",
+    "description": "博客园精华区",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c018",
+    "category": "内容平台",
+    "name": "博客园",
+    "routePath": "http://feed.cnblogs.com/blog/sitehome/rss",
+    "description": "博客园首页",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c019",
+    "category": "内容平台",
+    "name": "PTT(台湾论坛)",
+    "routePath": "https://www.ptt.cc/atom/movie.xml",
+    "description": "PTT电影专题",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c020",
+    "category": "内容平台",
+    "name": "PTT(台湾论坛)",
+    "routePath": "https://www.ptt.cc/atom/beauty.xml",
+    "description": "PTT正妹专题",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c021",
+    "category": "内容平台",
+    "name": "吾爱破解",
+    "routePath": "https://rsshub.v2fy.com/discuz/x/https%3a%2f%2fwww.52pojie.cn%2fforum-16-1.html",
+    "description": "吾爱破解精品软件区",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c022",
+    "category": "内容平台",
+    "name": "cnBeta.COM 精彩优秀评论",
+    "routePath": "https://www.cnbeta.com/commentrss.php",
+    "description": "从cnBeta每天数千评论中精选出来的优秀评论",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c023",
+    "category": "内容平台",
+    "name": "比特客栈的文艺复兴",
+    "routePath": "https://bitinn.net/feed/",
+    "description": "We do not choose who we are, but we do choose who we become.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c024",
+    "category": "内容平台",
+    "name": "Pixiv(艺术家社区)",
+    "routePath": "https://rakuen.thec.me/PixivRss/male-20",
+    "description": "男性向作品排行 - 前20",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c025",
+    "category": "内容平台",
+    "name": "Pixiv(艺术家社区)",
+    "routePath": "https://rakuen.thec.me/PixivRss/female-20",
+    "description": "女性向作品排行 - 前20",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c026",
+    "category": "内容平台",
+    "name": "Pixiv(艺术家社区)",
+    "routePath": "http://rakuen.thec.me/PixivRss/daily-20",
+    "description": "Pixiv每日排行 - 前20",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c027",
+    "category": "内容平台",
+    "name": "Pixiv(艺术家社区)",
+    "routePath": "http://rakuen.thec.me/PixivRss/monthly-20",
+    "description": "Pixiv每月排行 - 前20",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c028",
+    "category": "内容平台",
+    "name": "cnBeta",
+    "routePath": "https://feedx.net/rss/cnbetatop.xml",
+    "description": "中文业界资讯",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c029",
+    "category": "内容平台",
+    "name": "China Daily News",
+    "routePath": "http://www.chinadaily.com.cn/rss/cndy_rss.xml",
+    "description": "中国每日新闻",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c030",
+    "category": "内容平台",
+    "name": "MM范",
+    "routePath": "https://rsshub.v2fy.com/95mm/tab/热门",
+    "description": "妹子热门图",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c031",
+    "category": "内容平台",
+    "name": "CNU视觉联盟",
+    "routePath": "https://rsshub.v2fy.com/cnu/selected",
+    "description": "每日精选",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c032",
+    "category": "内容平台",
+    "name": "香水时代",
+    "routePath": "https://rsshub.v2fy.com/nosetime/home",
+    "description": "最新香水评论-发现香水圈的新鲜事",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c033",
+    "category": "内容平台",
+    "name": "恩山无线论坛",
+    "routePath": "https://rsshub.v2fy.com/right/forum/31",
+    "description": "无线路由器爱好者的乐园",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c034",
+    "category": "内容平台",
+    "name": "xLog",
+    "routePath": "https://xlog.app/feed/hottest?interval=1",
+    "description": "An open-source creative community written on the blockchain.",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-c035",
+    "category": "内容平台",
+    "name": "NodeSeek",
+    "routePath": "https://rss.nodeseek.com/",
+    "description": "一个面向Web开发、主机托管、VPS/服务器等技术话题的极客社区",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-m001",
+    "category": "影视资源",
+    "name": "VIP影院",
+    "routePath": "https://bukaivip.com/rss",
+    "description": "666影院 - 全网VIP电影免费看！",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-m002",
+    "category": "影视资源",
+    "name": "LimeTorrents",
+    "routePath": "https://www.limetorrents.pro/rss/",
+    "description": "Latest Torrents RSS",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-m003",
+    "category": "影视资源",
+    "name": "Torlock",
+    "routePath": "https://www.torlock.com/rss.xml",
+    "description": "种子站Torlock",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-m004",
+    "category": "影视资源",
+    "name": "YTS",
+    "routePath": "https://yts.mx/rss",
+    "description": "Most popular Torrents in the smallest file size",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-m005",
+    "category": "影视资源",
+    "name": "RARBG",
+    "routePath": "https://rarbg.to/rss.php",
+    "description": "种子站RARBG",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-g001",
+    "category": "游戏",
+    "name": "机核网",
+    "routePath": "https://www.gcores.com/rss",
+    "description": "不止是游戏",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-g002",
+    "category": "游戏",
+    "name": "游研社",
+    "routePath": "https://www.yystv.cn/rss/feed",
+    "description": "无论你是游戏死忠，还是轻度的休闲玩家，在这里都能找到感兴趣的东西。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-g003",
+    "category": "游戏",
+    "name": "游戏葡萄",
+    "routePath": "https://rsshub.v2fy.com/gamegrape/13",
+    "description": "深度解读游戏",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-r001",
+    "category": "资源类",
+    "name": "书格",
+    "routePath": "https://www.shuge.org/feed/",
+    "description": "有品格的数字古籍图书馆",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-r002",
+    "category": "资源类",
+    "name": "书伴",
+    "routePath": "https://feeds.feedburner.com/bookfere",
+    "description": "为静心阅读而生",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-r003",
+    "category": "资源类",
+    "name": "kindle吧",
+    "routePath": "https://www.kindle8.cc/feed",
+    "description": "海量书单阅读分享者",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-r004",
+    "category": "资源类",
+    "name": "起点中文网",
+    "routePath": "https://rsshub.v2fy.com/qidian/free",
+    "description": "限时免费清单",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg001",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "4K影视屋",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/dianying4K",
+    "description": "蓝光无损电影",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg002",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "编程笑话",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/programmerjokes",
+    "description": "程序员编程笑话",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg003",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "薅羊毛",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/yangmaoshare",
+    "description": "各种购物平台的优惠信息",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg004",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "竹新社",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/tnews365",
+    "description": "7×24不定时编译国内外媒体的即时新闻报道。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg005",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "书和读书",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/GoReading",
+    "description": "好书推荐。",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg006",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "阿里云盘资源分享",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/YunPanPan",
+    "description": "分享资源完成阿里云盘任务，收获精品资源保存到不限速网盘",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg007",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "Google Drive",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/YunPanPan",
+    "description": "资源共享-软件-电影-纪录片-科学上网",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg008",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "扫地僧笔记",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/lover_links",
+    "description": "扫地僧树洞",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg009",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "树莓派家用云服务器",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/zhaoolee_pi",
+    "description": "树莓派家用云服务器交流",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg010",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "快乐星球",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/botmzt",
+    "description": "美女图片",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "editreadme-tg011",
+    "category": "Telegram优质频道RSS订阅",
+    "name": "Newlearnerの自留地",
+    "routePath": "https://rsshub.v2fy.com/telegram/channel/NewlearnerChannel",
+    "description": "不定期推送 IT 相关资讯",
+    "enabled": true,
+    "createdAt": "2026-04-03T01:48:30.810Z",
+    "updatedAt": "2026-04-03T01:48:30.810Z"
+  },
+  {
+    "id": "seed-36kr-newsflashes",
+    "category": "科技商业",
+    "name": "36氪 快讯",
+    "routePath": "/36kr/newsflashes",
+    "description": "36氪官方快讯流，适合快速浏览科技与创投动态。",
+    "enabled": false,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T10:50:05.450Z"
+  },
+  {
+    "id": "seed-36kr-hot-list",
+    "category": "科技商业",
+    "name": "36氪 24小时热榜",
+    "routePath": "/36kr/hot-list",
+    "description": "36氪 24 小时热榜，用来补充热点文章排序视角。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-latepost",
+    "category": "科技商业",
+    "name": "晚点 LatePost",
+    "routePath": "/latepost",
+    "description": "晚点报道流，偏产业与公司深度内容。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-sspai-index",
+    "category": "效率数码",
+    "name": "少数派 首页",
+    "routePath": "/sspai/index",
+    "description": "少数派首页文章更新，覆盖效率工具、数码与方法论。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-sspai-matrix",
+    "category": "效率数码",
+    "name": "少数派 Matrix",
+    "routePath": "/sspai/matrix",
+    "description": "少数派 Matrix 社区流，更新更快，也更偏实践经验。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-infoq-recommend",
+    "category": "工程技术",
+    "name": "InfoQ 推荐",
+    "routePath": "/infoq/recommend",
+    "description": "InfoQ 中文推荐内容，适合跟进工程、架构与 AI 话题。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-aibase-daily",
+    "category": "AI",
+    "name": "AIBase 日报",
+    "routePath": "/aibase/daily",
+    "description": "AIBase 日报，补充 AI 产品和行业快讯。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-jin10",
+    "category": "财经市场",
+    "name": "金十数据 快讯",
+    "routePath": "/jin10",
+    "description": "金十市场快讯，用来观察宏观与金融即时动态。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-rsshub-routes-zh",
+    "category": "维护扩展",
+    "name": "RSSHub 新路由",
+    "routePath": "/rsshub/routes/zh",
+    "description": "RSSHub 官方新路由更新，方便持续扩展订阅池。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  },
+  {
+    "id": "seed-natgeo-dailyphoto",
+    "category": "视觉灵感",
+    "name": "National Geographic 每日一图",
+    "routePath": "/natgeo/dailyphoto",
+    "description": "国家地理每日图片，作为偏轻量的视觉型内容源。",
+    "enabled": true,
+    "createdAt": "2026-04-02T12:00:00.000Z",
+    "updatedAt": "2026-04-02T12:00:00.000Z"
+  }
+]

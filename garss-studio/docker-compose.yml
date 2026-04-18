@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "25173:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      PORT: "3001"
+      HOST: "0.0.0.0"
+      APP_ROOT: /app
+      ACCESS_CODE: ${ACCESS_CODE:-banana}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-garss-studio-prod-secret}
+      SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-168}
+      RSSHUB_BASE_URL: http://rsshub:1200
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      - rsshub
+
+  rsshub:
+    image: diygod/rsshub:chromium-bundled
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: memory

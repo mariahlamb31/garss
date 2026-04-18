@@ -1,0 +1,6 @@
+{
+  "banana": {
+    "autoRefreshIntervalMinutes": 30,
+    "parallelFetchCount": 2
+  }
+}
