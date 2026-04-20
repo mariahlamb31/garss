@@ -5,6 +5,7 @@ export interface Subscription {
   category: string;
   name: string;
   routePath: string;
+  routeTemplate?: string;
   description: string;
   enabled: boolean;
   createdAt: string;
@@ -77,8 +78,18 @@ export interface SubscriptionInput {
   category: string;
   name: string;
   routePath: string;
+  routeTemplate?: string;
   description: string;
   enabled: boolean;
+}
+
+export interface SubscriptionTestResponse {
+  ok: true;
+  routePath: string;
+  targetUrl: string;
+  itemCount: number;
+  sampleTitles: string[];
+  message: string;
 }
 
 export interface CategoryResponse {

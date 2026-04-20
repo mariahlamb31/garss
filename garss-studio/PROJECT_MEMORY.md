@@ -9,6 +9,7 @@
 - `src/styles.css`：当前视觉和布局约定
 - `server/index.ts`：鉴权、订阅源接口、RSS 代理逻辑
 - `scripts/sync-editreadme.mjs`：从 `EditREADME.md` 自动导入分类订阅源
+- `scripts/sync-rsshub-docs.mjs`：从 RSSHub 官方文档同步可编辑的模板路由，默认停用
 
 ## 当前架构
 
@@ -99,3 +100,4 @@
 - 不要重新暴露后端或 RSSHub 的宿主机端口，外部入口应保持单端口 `25173`
 - 涉及 UI 调整时，优先延续锤子便签的暖色、纸面、目录式布局，而不是通用后台模板风格
 - 如果新增订阅源来源渠道，优先复用 `category` 体系，避免再做一套平行分类
+- `rsshub-doc-*` 属于文档同步生成项，再次同步时应更新这些项但默认保持停用

@@ -155,6 +155,38 @@ npm run sync:editreadme
 脚本位置：
 
 - `scripts/sync-editreadme.mjs`
+- `scripts/lib/subscription-import.mjs`
+
+## 从 RSSHub 官方文档同步模板路由
+
+管理页支持把 RSSHub 官方文档中的可用路由直接导入为“模板订阅源”。这些项会进入现有订阅源体系，因此不需要改管理页结构；它们默认 `enabled: false`，但仍然可以在管理页弹窗里继续编辑参数化路径。
+
+```bash
+npm run sync:rsshub-docs
+```
+
+同步来源默认使用 RSSHub 官方 `gh-pages/build/routes.json`：
+
+- `https://raw.githubusercontent.com/DIYgod/RSSHub/refs/heads/gh-pages/build/routes.json`
+
+同步行为：
+
+- 刷新 `storage/subscriptions.json` 里的 `rsshub-doc-*` 项
+- 额外写入 `storage/rsshub-docs-routes.snapshot.json` 作为最近一次同步快照
+- 非 `rsshub-doc-*` 项保持不动
+- 已存在的 `rsshub-doc-*` 项会保留当前 `enabled` 状态，新导入项默认 `enabled: false`
+
+如果当前环境不能直接访问 GitHub，也可以把官方 `routes.json` 先下载到本地后再同步：
+
+```bash
+npm run sync:rsshub-docs -- ./tmp/routes.json
+```
+
+如果希望一次同步 `EditREADME.md` 和 RSSHub 官方文档：
+
+```bash
+npm run sync:sources
+```
 
 ## 当前界面约定
 

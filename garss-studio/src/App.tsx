@@ -1,33 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { SubscriptionEditorModal } from "./components/SubscriptionEditorModal";
 import { io } from "socket.io-client";
+import {
+  ALL_SOURCES_CATEGORY,
+  buildUrlForSourcesCategory,
+  buildUrlForTab,
+  parseAppLocation,
+  readAccessCodeFromCurrentUrl,
+  writeAccessCodeToCurrentUrl,
+} from "./lib/navigation";
+import { buildDuplicateSubscriptionDraft } from "./lib/subscription-editor";
 import { useAppStore } from "./store/useAppStore";
-import type { FeedItem, ReaderSourceState, Subscription, SubscriptionInput } from "./types";
+import type { AppTab, FeedItem, ReaderSourceState, Subscription, SubscriptionInput } from "./types";
 
-type SettingsSection = "fetch" | "about";
-
-function readAccessCodeFromUrl(): string {
-  if (typeof window === "undefined") {
-    return "";
-  }
-
-  return new URLSearchParams(window.location.search).get("pw")?.trim() || "";
-}
-
-function writeAccessCodeToUrl(accessCode: string): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  const url = new URL(window.location.href);
-
-  if (accessCode.trim()) {
-    url.searchParams.set("pw", accessCode.trim());
-  } else {
-    url.searchParams.delete("pw");
-  }
-
-  window.history.replaceState({}, "", url);
-}
+type SettingsSection = "fetch" | "account" | "about";
 
 function formatDateLabel(value: string): string {
   if (!value) {
@@ -79,6 +65,7 @@ function buildEmptyForm(): SubscriptionInput {
     category: "",
     name: "",
     routePath: "",
+    routeTemplate: "",
     description: "",
     enabled: true,
   };
@@ -98,20 +85,32 @@ function splitIntoParagraphs(value: string): string[] {
     .filter(Boolean);
 }
 
+function resolveAvailableSourcesCategory(selectedCategory: string, categories: string[]): string {
+  if (!categories.length) {
+    return "";
+  }
+
+  if (selectedCategory && selectedCategory !== ALL_SOURCES_CATEGORY && categories.includes(selectedCategory)) {
+    return selectedCategory;
+  }
+
+  return categories[0];
+}
+
 function LoginScreen() {
   const isLoggingIn = useAppStore((state) => state.isLoggingIn);
   const loginError = useAppStore((state) => state.loginError);
   const loginWithAccessCode = useAppStore((state) => state.loginWithAccessCode);
-  const [accessCode, setAccessCode] = useState(() => readAccessCodeFromUrl());
+  const [accessCode, setAccessCode] = useState(() => readAccessCodeFromCurrentUrl());
 
   useEffect(() => {
-    setAccessCode(readAccessCodeFromUrl());
+    setAccessCode(readAccessCodeFromCurrentUrl());
   }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedAccessCode = accessCode.trim();
-    writeAccessCodeToUrl(normalizedAccessCode);
+    writeAccessCodeToCurrentUrl(normalizedAccessCode);
     await loginWithAccessCode(normalizedAccessCode);
   }
 
@@ -168,31 +167,30 @@ function ReaderListCard({
       }}
     >
       <div className="note-card-head">
-        <span className="note-chip">{item.subscriptionName}</span>
         <time>{formatDateLabel(item.publishedAt)}</time>
+        <h3>{item.title || "未命名条目"}</h3>
       </div>
-      <h3>{item.title || "未命名条目"}</h3>
-      <p>{item.excerpt || "这个条目没有摘要内容，右侧会优先展示 RSS 提供的正文内容。"}</p>
     </article>
   );
 }
 
-function ReaderArticle({ item }: { item: FeedItem | null }) {
-  if (!item) {
-    return (
-      <div className="empty-state compact reader-article-empty">
-        <div>
-          <h3>选择一篇文章开始阅读</h3>
-          <p>左侧列表会保留当前订阅源的文章，右侧直接展示 RSS 返回的正文内容。</p>
-        </div>
-      </div>
-    );
-  }
-
+function ReaderArticleCard({
+  item,
+  isActive,
+  articleRef,
+}: {
+  item: FeedItem;
+  isActive: boolean;
+  articleRef?: (node: HTMLElement | null) => void;
+}) {
   const paragraphs = splitIntoParagraphs(item.contentText || item.excerpt);
 
   return (
-    <article className="reader-article-sheet">
+    <article
+      ref={articleRef}
+      className={`reader-article-sheet${isActive ? " is-active" : ""}`}
+      data-item-id={item.id}
+    >
       <div className="reader-article-frame reader-article-frame-outer">
         <div className="reader-article-frame reader-article-frame-inner">
           <div className="reader-article-inner">
@@ -233,6 +231,31 @@ function ReaderArticle({ item }: { item: FeedItem | null }) {
         </div>
       </div>
     </article>
+  );
+}
+
+function ReaderArticleStream({
+  items,
+  activeItemId,
+  streamRef,
+  registerArticleNode,
+}: {
+  items: FeedItem[];
+  activeItemId: string;
+  streamRef: React.RefObject<HTMLDivElement | null>;
+  registerArticleNode: (itemId: string, node: HTMLElement | null) => void;
+}) {
+  return (
+    <div ref={streamRef} className="reader-article-stream">
+      {items.map((item) => (
+        <ReaderArticleCard
+          key={item.id}
+          item={item}
+          isActive={item.id === activeItemId}
+          articleRef={(node) => registerArticleNode(item.id, node)}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -303,6 +326,9 @@ function ReaderPanel() {
   );
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState("");
   const [selectedItemId, setSelectedItemId] = useState("");
+  const [isArticleOverlayOpen, setIsArticleOverlayOpen] = useState(false);
+  const articleStreamRef = useRef<HTMLDivElement | null>(null);
+  const articleCardRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const sourceStateList = useMemo(
     () =>
@@ -359,10 +385,58 @@ function ReaderPanel() {
     }
   }, [filteredItems, selectedItemId]);
 
-  const selectedItem = useMemo(
-    () => filteredItems.find((item) => item.id === selectedItemId) || filteredItems[0] || null,
-    [filteredItems, selectedItemId],
-  );
+  useEffect(() => {
+    setIsArticleOverlayOpen(false);
+  }, [selectedSubscriptionId]);
+
+  useEffect(() => {
+    const streamElement = articleStreamRef.current;
+
+    if (!streamElement || !filteredItems.length || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => right.intersectionRatio - left.intersectionRatio);
+        const nextItemId = visibleEntries[0]?.target.getAttribute("data-item-id") || "";
+
+        if (nextItemId) {
+          setSelectedItemId((currentValue) => (currentValue === nextItemId ? currentValue : nextItemId));
+        }
+      },
+      {
+        root: streamElement,
+        rootMargin: "-12% 0px -48% 0px",
+        threshold: [0.2, 0.4, 0.65],
+      },
+    );
+
+    filteredItems.forEach((item) => {
+      const articleNode = articleCardRefs.current[item.id];
+
+      if (articleNode) {
+        observer.observe(articleNode);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, [filteredItems]);
+
+  function registerArticleNode(itemId: string, node: HTMLElement | null) {
+    articleCardRefs.current[itemId] = node;
+  }
+
+  function handleSelectItem(itemId: string) {
+    setSelectedItemId(itemId);
+    setIsArticleOverlayOpen(false);
+    articleCardRefs.current[itemId]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
 
   return (
     <section className="content-panel reader-panel">
@@ -403,6 +477,47 @@ function ReaderPanel() {
         <div className="reader-main">
           {selectedSourceState ? (
             <div className="reader-main-toolbar">
+              {filteredItems.length ? (
+                <div
+                  className={`reader-item-overlay reader-item-overlay-trigger-shell${isArticleOverlayOpen ? " is-open" : ""}`}
+                  onMouseEnter={() => setIsArticleOverlayOpen(true)}
+                  onMouseLeave={() => setIsArticleOverlayOpen(false)}
+                >
+                  <button
+                    type="button"
+                    className="reader-item-overlay-trigger"
+                    aria-label="切换文章列表"
+                    aria-expanded={isArticleOverlayOpen}
+                    onClick={() => setIsArticleOverlayOpen((currentValue) => !currentValue)}
+                  >
+                    <span className="reader-item-overlay-trigger-icon" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                    <span className="reader-item-overlay-trigger-text">文章列表</span>
+                  </button>
+                  <div className="reader-item-overlay-panel-shell">
+                    <div className="reader-item-overlay-panel">
+                      <div className="reader-item-overlay-head">
+                        <span>文章列表</span>
+                        <strong>{filteredItems.length}</strong>
+                      </div>
+
+                      <div className="notes-grid reader-item-list reader-item-overlay-list">
+                        {filteredItems.map((item) => (
+                          <ReaderListCard
+                            key={item.id}
+                            item={item}
+                            isActive={item.id === selectedItemId}
+                            onSelect={handleSelectItem}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               <button
                 type="button"
                 className="secondary-button"
@@ -427,17 +542,12 @@ function ReaderPanel() {
 
           {filteredItems.length ? (
             <div className="reader-detail-layout">
-              <div className="notes-grid reader-item-list">
-                {filteredItems.map((item) => (
-                  <ReaderListCard
-                    key={item.id}
-                    item={item}
-                    isActive={item.id === selectedItem?.id}
-                    onSelect={setSelectedItemId}
-                  />
-                ))}
-              </div>
-              <ReaderArticle item={selectedItem} />
+              <ReaderArticleStream
+                items={filteredItems}
+                activeItemId={selectedItemId}
+                streamRef={articleStreamRef}
+                registerArticleNode={registerArticleNode}
+              />
             </div>
           ) : null}
         </div>
@@ -503,12 +613,15 @@ function SourcesPanel() {
   const removingSourceId = useAppStore((state) => state.removingSourceId);
   const saveSource = useAppStore((state) => state.saveSource);
   const createSourceCategory = useAppStore((state) => state.createSourceCategory);
+  const testSource = useAppStore((state) => state.testSource);
   const toggleSourceEnabled = useAppStore((state) => state.toggleSourceEnabled);
   const removeSource = useAppStore((state) => state.removeSource);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    typeof window === "undefined" ? "" : parseAppLocation(window.location.href).category,
+  );
   const [editingSubscriptionId, setEditingSubscriptionId] = useState("");
   const [form, setForm] = useState<SubscriptionInput>(buildEmptyForm);
 
@@ -519,10 +632,12 @@ function SourcesPanel() {
   }
 
   function handleCreate() {
+    const defaultCategory = resolveAvailableSourcesCategory(selectedCategory, categories);
+
     setEditingSubscriptionId("");
     setForm({
       ...buildEmptyForm(),
-      category: selectedCategory === "all" ? "" : selectedCategory,
+      category: defaultCategory,
     });
     setIsModalOpen(true);
   }
@@ -543,10 +658,18 @@ function SourcesPanel() {
       category: subscription.category,
       name: subscription.name,
       routePath: subscription.routePath,
+      routeTemplate: subscription.routeTemplate,
       description: subscription.description,
       enabled: subscription.enabled,
     });
     setIsModalOpen(true);
+  }
+
+  function handleCreateFromCurrentTemplate() {
+    const draft = buildDuplicateSubscriptionDraft(form);
+
+    setEditingSubscriptionId(draft.editingSubscriptionId);
+    setForm(draft.form);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -556,6 +679,7 @@ function SourcesPanel() {
         category: form.category.trim(),
         name: form.name.trim(),
         routePath: form.routePath.trim(),
+        routeTemplate: form.routeTemplate?.trim() || "",
         description: form.description.trim(),
         enabled: form.enabled,
       },
@@ -578,44 +702,101 @@ function SourcesPanel() {
     const createdCategory = await createSourceCategory(normalizedName);
 
     if (createdCategory) {
+      if (typeof window !== "undefined") {
+        window.history.pushState({}, "", buildUrlForSourcesCategory(window.location.href, createdCategory));
+      }
       setSelectedCategory(createdCategory);
       handleCancelCategoryCreate();
     }
   }
 
-  const categoryOptions = useMemo(() => {
-    const counts = new Map<string, number>();
-
-    for (const subscription of subscriptions) {
-      counts.set(subscription.category, (counts.get(subscription.category) || 0) + 1);
+  function handleSelectCategory(categoryId: string) {
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", buildUrlForSourcesCategory(window.location.href, categoryId));
     }
 
-    return [
-      { id: "all", label: "全部类型", count: subscriptions.length },
-      ...categories.map((category) => ({
+    setSelectedCategory(categoryId);
+  }
+
+  const categoryOptions = useMemo(() => {
+    const counts = new Map<string, { totalCount: number; enabledCount: number }>();
+
+    for (const subscription of subscriptions) {
+      const currentCounts = counts.get(subscription.category) || { totalCount: 0, enabledCount: 0 };
+
+      counts.set(subscription.category, {
+        totalCount: currentCounts.totalCount + 1,
+        enabledCount: currentCounts.enabledCount + (subscription.enabled ? 1 : 0),
+      });
+    }
+
+    return categories.map((category) => {
+      const categoryCounts = counts.get(category) || { totalCount: 0, enabledCount: 0 };
+
+      return {
         id: category,
         label: category,
-        count: counts.get(category) || 0,
-      })),
-    ];
+        countLabel: `${categoryCounts.enabledCount}/${categoryCounts.totalCount}`,
+      };
+    });
   }, [categories, subscriptions]);
 
+  const activeCategory = useMemo(
+    () => resolveAvailableSourcesCategory(selectedCategory, categories),
+    [categories, selectedCategory],
+  );
+
   useEffect(() => {
-    if (selectedCategory === "all") {
+    function syncCategoryFromLocation() {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      const locationState = parseAppLocation(window.location.href);
+
+      if (locationState.tab === "sources") {
+        setSelectedCategory(locationState.category);
+      }
+    }
+
+    syncCategoryFromLocation();
+    window.addEventListener("popstate", syncCategoryFromLocation);
+    window.addEventListener("hashchange", syncCategoryFromLocation);
+
+    return () => {
+      window.removeEventListener("popstate", syncCategoryFromLocation);
+      window.removeEventListener("hashchange", syncCategoryFromLocation);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
       return;
     }
 
-    if (!categoryOptions.some((category) => category.id === selectedCategory)) {
-      setSelectedCategory("all");
+    const nextCategory = resolveAvailableSourcesCategory(selectedCategory, categories);
+    const locationState = parseAppLocation(window.location.href);
+
+    if (locationState.tab !== "sources") {
+      return;
     }
-  }, [categoryOptions, selectedCategory]);
+
+    if (selectedCategory !== nextCategory) {
+      setSelectedCategory(nextCategory);
+    }
+
+    if (!nextCategory) {
+      return;
+    }
+
+    if (locationState.category !== nextCategory) {
+      window.history.replaceState({}, "", buildUrlForSourcesCategory(window.location.href, nextCategory));
+    }
+  }, [categories, selectedCategory]);
 
   const filteredSubscriptions = useMemo(
-    () =>
-      selectedCategory === "all"
-        ? subscriptions
-        : subscriptions.filter((subscription) => subscription.category === selectedCategory),
-    [selectedCategory, subscriptions],
+    () => subscriptions.filter((subscription) => subscription.category === activeCategory),
+    [activeCategory, subscriptions],
   );
 
   return (
@@ -665,11 +846,11 @@ function SourcesPanel() {
               <button
                 key={category.id}
                 type="button"
-                className={selectedCategory === category.id ? "category-item is-active" : "category-item"}
-                onClick={() => setSelectedCategory(category.id)}
+                className={activeCategory === category.id ? "category-item is-active" : "category-item"}
+                onClick={() => handleSelectCategory(category.id)}
               >
                 <span>{category.label}</span>
-                <strong>{category.count}</strong>
+                <strong>{category.countLabel}</strong>
               </button>
             ))}
           </div>
@@ -709,81 +890,23 @@ function SourcesPanel() {
       </div>
 
       {isModalOpen ? (
-        <div className="modal-backdrop" onClick={resetForm}>
-          <div className="modal-panel" onClick={(event) => event.stopPropagation()}>
-            <form className="editor-sheet modal-form-sheet" onSubmit={handleSubmit}>
-              <div className="sheet-head">
-                <h3>{editingSubscriptionId ? "编辑订阅源" : "新增订阅源"}</h3>
-                <p>填写 RSSHub 路径或完整 RSS 地址。完整 URL 会直连抓取，路径则通过内部 RSSHub 服务获取。</p>
-              </div>
-
-              <label className="stack-field">
-                <span>类型</span>
-                <input
-                  type="text"
-                  list="source-category-options"
-                  value={form.category}
-                  onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
-                  placeholder="例如：AI、科技商业、财经市场"
-                />
-              </label>
-              <datalist id="source-category-options">
-                {categories.map((category) => (
-                  <option key={category} value={category} />
-                ))}
-              </datalist>
-
-              <label className="stack-field">
-                <span>名称</span>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                  placeholder="例如：GitHub Trending JS"
-                />
-              </label>
-
-              <label className="stack-field">
-                <span>订阅地址</span>
-                <input
-                  type="text"
-                  value={form.routePath}
-                  onChange={(event) => setForm((current) => ({ ...current, routePath: event.target.value }))}
-                  placeholder="/github/trending/daily/javascript 或 https://example.com/feed.xml"
-                />
-              </label>
-
-              <label className="stack-field">
-                <span>说明</span>
-                <textarea
-                  rows={5}
-                  value={form.description}
-                  onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                  placeholder="可选，用来记录这个源的用途。"
-                />
-              </label>
-
-              <div className="form-actions">
-                <button
-                  type="submit"
-                  className="primary-button"
-                  disabled={savingSource || !form.name.trim() || !form.routePath.trim()}
-                >
-                  {savingSource ? "保存中..." : editingSubscriptionId ? "更新订阅源" : "添加订阅源"}
-                </button>
-                <button type="button" className="secondary-button" onClick={resetForm}>
-                  取消
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <SubscriptionEditorModal
+          categories={categories}
+          form={form}
+          savingSource={savingSource}
+          editingSubscriptionId={editingSubscriptionId}
+          onClose={resetForm}
+          onSubmit={handleSubmit}
+          onCreateFromCurrentTemplate={handleCreateFromCurrentTemplate}
+          onFormChange={(updater) => setForm((current) => updater(current))}
+          onTestSubscription={testSource}
+        />
       ) : null}
     </section>
   );
 }
 
-function SettingsPanel() {
+function SettingsPanel({ onLogout }: { onLogout: () => void }) {
   const subscriptions = useAppStore((state) => state.subscriptions);
   const autoRefreshIntervalMinutes = useAppStore((state) => state.autoRefreshIntervalMinutes);
   const parallelFetchCount = useAppStore((state) => state.parallelFetchCount);
@@ -840,6 +963,13 @@ function SettingsPanel() {
               onClick={() => setSelectedSection("fetch")}
             >
               <span>拉取设置</span>
+            </button>
+            <button
+              type="button"
+              className={selectedSection === "account" ? "category-item is-active" : "category-item"}
+              onClick={() => setSelectedSection("account")}
+            >
+              <span>账号管理</span>
             </button>
             <button
               type="button"
@@ -929,6 +1059,23 @@ function SettingsPanel() {
                 </div>
               </div>
             </section>
+          ) : selectedSection === "account" ? (
+            <section className="editor-sheet settings-sheet settings-page-sheet">
+              <div className="sheet-head">
+                <h3>账号管理</h3>
+                <p>管理当前提取码登录状态。</p>
+              </div>
+              <div className="settings-account-card">
+                <div>
+                  <span>当前会话</span>
+                  <strong>已使用 URL 提取码或本地会话进入工作台</strong>
+                  <p>退出后会清除当前浏览器里的访问状态和 URL 中的 `pw` 参数。</p>
+                </div>
+                <button type="button" className="secondary-button settings-logout-button" onClick={onLogout}>
+                  退出登录
+                </button>
+              </div>
+            </section>
           ) : (
             <section className="editor-sheet settings-sheet settings-page-sheet">
               <div className="sheet-head">
@@ -952,7 +1099,6 @@ function SettingsPanel() {
 export default function App() {
   const authChecked = useAppStore((state) => state.authChecked);
   const authToken = useAppStore((state) => state.authToken);
-  const isLoggingIn = useAppStore((state) => state.isLoggingIn);
   const currentTab = useAppStore((state) => state.currentTab);
   const dataError = useAppStore((state) => state.dataError);
   const setCurrentTab = useAppStore((state) => state.setCurrentTab);
@@ -962,25 +1108,26 @@ export default function App() {
   const clearDataError = useAppStore((state) => state.clearDataError);
   const logout = useAppStore((state) => state.logout);
   const bootstrap = useAppStore((state) => state.bootstrap);
-  const loginWithAccessCode = useAppStore((state) => state.loginWithAccessCode);
-
   useEffect(() => {
     void bootstrap();
   }, [bootstrap]);
 
   useEffect(() => {
-    if (!authChecked || authToken || isLoggingIn) {
-      return;
+    function syncTabFromLocation() {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      setCurrentTab(parseAppLocation(window.location.href).tab);
     }
 
-    const accessCode = readAccessCodeFromUrl();
+    syncTabFromLocation();
+    window.addEventListener("popstate", syncTabFromLocation);
 
-    if (!accessCode) {
-      return;
-    }
-
-    void loginWithAccessCode(accessCode);
-  }, [authChecked, authToken, isLoggingIn, loginWithAccessCode]);
+    return () => {
+      window.removeEventListener("popstate", syncTabFromLocation);
+    };
+  }, [setCurrentTab]);
 
   useEffect(() => {
     if (!authToken) {
@@ -1050,47 +1197,61 @@ export default function App() {
   }
 
   function handleLogout() {
-    writeAccessCodeToUrl("");
+    writeAccessCodeToCurrentUrl("");
     logout();
+  }
+
+  function handleTabChange(tab: AppTab) {
+    if (typeof window !== "undefined") {
+      const nextUrl = buildUrlForTab(window.location.href, tab);
+
+      if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== nextUrl) {
+        window.history.pushState({}, "", nextUrl);
+      }
+    }
+
+    setCurrentTab(tab);
   }
 
   return (
     <div className="app-shell">
       <header className="app-topbar">
-        <div className="brand-block">
-          <img className="brand-logo" src="/logo.png" alt="GARSS logo" />
-          <div>
-            <h1>RSS 阅读工作台</h1>
+        <div className="topbar-primary">
+          <div className="brand-block">
+            <img className="brand-logo" src="/logo.png" alt="GARSS logo" />
+            <div>
+              <h1>RSS 阅读工作台</h1>
+            </div>
           </div>
-        </div>
 
-        <div className="topbar-actions">
-          <nav className="tab-switcher" aria-label="主导航">
+          <nav className="tab-switcher tab-switcher-main" aria-label="主导航">
             <button
               type="button"
               className={currentTab === "reader" ? "tab-button active" : "tab-button"}
-              onClick={() => setCurrentTab("reader")}
+              onClick={() => handleTabChange("reader")}
             >
               阅读 RSS
             </button>
             <button
               type="button"
               className={currentTab === "sources" ? "tab-button active" : "tab-button"}
-              onClick={() => setCurrentTab("sources")}
+              onClick={() => handleTabChange("sources")}
             >
               管理订阅源
             </button>
+          </nav>
+        </div>
+
+        <div className="topbar-actions">
+          <nav className="tab-switcher tab-switcher-settings" aria-label="设置导航">
             <button
               type="button"
               className={currentTab === "settings" ? "tab-button active" : "tab-button"}
-              onClick={() => setCurrentTab("settings")}
+              onClick={() => handleTabChange("settings")}
             >
-              设置
+              ⚙️ 设置
             </button>
           </nav>
-          <button type="button" className="ghost-button" onClick={handleLogout}>
-            退出登录
-          </button>
         </div>
       </header>
 
@@ -1112,7 +1273,7 @@ export default function App() {
               : "workspace settings-workspace"
         }
       >
-        {currentTab === "reader" ? <ReaderPanel /> : currentTab === "sources" ? <SourcesPanel /> : <SettingsPanel />}
+        {currentTab === "reader" ? <ReaderPanel /> : currentTab === "sources" ? <SourcesPanel /> : <SettingsPanel onLogout={handleLogout} />}
       </main>
     </div>
   );

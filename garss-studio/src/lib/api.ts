@@ -6,6 +6,7 @@ import type {
   ReaderSubscriptionResponse,
   SessionResponse,
   SubscriptionInput,
+  SubscriptionTestResponse,
   SubscriptionsResponse,
 } from "../types";
 
@@ -116,6 +117,17 @@ export async function saveSubscription(
       token,
     },
   );
+}
+
+export async function testSubscription(
+  token: string,
+  input: SubscriptionInput,
+): Promise<SubscriptionTestResponse> {
+  return requestJson<SubscriptionTestResponse>("/api/subscriptions/test", {
+    method: "POST",
+    body: input,
+    token,
+  });
 }
 
 export async function removeSubscription(

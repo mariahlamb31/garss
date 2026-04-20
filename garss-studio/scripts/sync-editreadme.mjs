@@ -1,6 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  mergeGeneratedSubscriptions,
+  normalizeText,
+  readStudioSubscriptions,
+  stripHtml,
+  writeJson,
+} from "./lib/subscription-import.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -8,14 +15,6 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 const defaultEditReadmePath = path.join(repoRoot, "EditREADME.md");
 const defaultStudioStoragePath = path.join(repoRoot, "garss-studio", "storage", "subscriptions.json");
 const defaultGarssInfoPath = path.join(repoRoot, "garssInfo.json");
-
-function normalizeText(value) {
-  return value.replace(/\s+/g, " ").trim();
-}
-
-function stripHtml(value) {
-  return normalizeText(value.replace(/<[^>]+>/g, " "));
-}
 
 function extractSourceId(cell, fallbackIndex) {
   const idMatch = cell.match(/id="([^"]+)"/i);
@@ -74,55 +73,22 @@ function parseEditReadme(markdown) {
   return sources;
 }
 
-async function readStudioSubscriptions(filePath) {
-  try {
-    const raw = await fs.readFile(filePath, "utf8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
 function buildStudioSubscriptions(parsedSources, existingSubscriptions) {
-  const now = new Date().toISOString();
-  const existingById = new Map(existingSubscriptions.map((subscription) => [subscription.id, subscription]));
-  const manualSubscriptions = existingSubscriptions.filter(
-    (subscription) => !subscription.id.startsWith("editreadme-"),
-  );
+  const generatedSubscriptions = parsedSources.map((source) => ({
+    id: `editreadme-${source.sourceId.toLowerCase()}`,
+    category: source.category,
+    name: source.title,
+    routePath: source.xmlUrl,
+    description: source.description,
+    enabled: true,
+  }));
 
-  const generatedSubscriptions = parsedSources.map((source) => {
-    const id = `editreadme-${source.sourceId.toLowerCase()}`;
-    const current = existingById.get(id);
-    const nextCore = {
-      category: source.category,
-      name: source.title,
-      routePath: source.xmlUrl,
-      description: source.description,
-    };
-
-    const isUnchanged =
-      current &&
-      current.category === nextCore.category &&
-      current.name === nextCore.name &&
-      current.routePath === nextCore.routePath &&
-      current.description === nextCore.description;
-
-    return {
-      id,
-      ...nextCore,
-      enabled: current?.enabled ?? true,
-      createdAt: current?.createdAt ?? now,
-      updatedAt: isUnchanged ? current.updatedAt : now,
-    };
+  return mergeGeneratedSubscriptions({
+    generatedSubscriptions,
+    existingSubscriptions,
+    generatedIdPrefix: "editreadme",
+    defaultEnabled: true,
   });
-
-  return [...generatedSubscriptions, ...manualSubscriptions];
-}
-
-async function writeJson(filePath, value) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 async function main() {

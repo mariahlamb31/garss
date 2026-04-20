@@ -10,6 +10,7 @@ import Parser from "rss-parser";
 import { Server as SocketIOServer, type Socket } from "socket.io";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { buildFeedItemId } from "./feed-item-id.js";
 
 interface AccessTokenPayload {
   type: "access";
@@ -23,6 +24,7 @@ interface SubscriptionRecord {
   category: string;
   name: string;
   routePath: string;
+  routeTemplate?: string;
   description: string;
   enabled: boolean;
   createdAt: string;
@@ -255,6 +257,11 @@ function normalizeRoutePath(value: unknown): string {
   }
 }
 
+function normalizeRouteTemplate(value: unknown): string {
+  const normalizedRoute = normalizeRoutePath(value);
+  return normalizedRoute.includes(":") ? normalizedRoute : "";
+}
+
 function normalizeBoolean(value: unknown, fallbackValue = true): boolean {
   if (typeof value === "boolean") {
     return value;
@@ -474,25 +481,41 @@ function sanitizeHtml(input: string, baseUrl: string): string {
   return sanitized.trim();
 }
 
-function normalizeCachedFeedItemRecord(value: unknown): FeedItemRecord | null {
+function normalizeCachedFeedItemRecord(value: unknown, index: number): FeedItemRecord | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
   }
 
   const source = value as Partial<FeedItemRecord>;
+  const subscriptionId = normalizeText(source.subscriptionId);
+  const subscriptionName = normalizeText(source.subscriptionName);
+  const routePath = normalizeText(source.routePath);
+  const title = normalizeText(source.title) || "未命名条目";
+  const link = normalizeText(source.link);
+  const author = normalizeText(source.author);
+  const publishedAt = normalizeText(source.publishedAt) || new Date().toISOString();
   const excerpt = normalizeText(source.excerpt);
   const contentHtml = normalizeText(source.contentHtml);
   const contentText = normalizeText(source.contentText) || excerpt;
 
   return {
-    id: normalizeText(source.id),
-    subscriptionId: normalizeText(source.subscriptionId),
-    subscriptionName: normalizeText(source.subscriptionName),
-    routePath: normalizeText(source.routePath),
-    title: normalizeText(source.title) || "未命名条目",
-    link: normalizeText(source.link),
-    author: normalizeText(source.author),
-    publishedAt: normalizeText(source.publishedAt) || new Date().toISOString(),
+    id: buildFeedItemId({
+      subscriptionId,
+      sourceLink: link || routePath,
+      title,
+      guid: normalizeText(source.id),
+      publishedAtFingerprint: publishedAt,
+      excerpt,
+      contentText,
+      index,
+    }),
+    subscriptionId,
+    subscriptionName,
+    routePath,
+    title,
+    link,
+    author,
+    publishedAt,
     excerpt: excerpt || contentText.slice(0, 220),
     contentHtml,
     contentText,
@@ -512,7 +535,7 @@ function normalizeReaderCacheRecord(value: unknown): ReaderCacheRecord | null {
 
   const generatedAt = normalizeText(source.generatedAt) || new Date().toISOString();
   const items = source.items
-    .map((item) => normalizeCachedFeedItemRecord(item))
+    .map((item, index) => normalizeCachedFeedItemRecord(item, index))
     .filter((item): item is FeedItemRecord => Boolean(item?.id && item.subscriptionId));
 
   return {
@@ -662,19 +685,29 @@ function normalizeFeedItem(
   const rawContentHtml = extractRawContentHtml(item);
   const contentHtml = sanitizeHtml(rawContentHtml, sourceLink);
   const contentText = buildContentText(rawContentHtml) || normalizeText(item.contentSnippet);
-
-  const stableKey = `${subscription.id}:${sourceLink}:${item.title || index}`;
+  const title = (item.title || "未命名条目").trim();
+  const publishedAt = choosePublishedAt(item);
+  const excerpt = buildExcerpt(contentText, item);
 
   return {
-    id: crypto.createHash("sha1").update(stableKey).digest("hex"),
+    id: buildFeedItemId({
+      subscriptionId: subscription.id,
+      sourceLink,
+      title,
+      guid: normalizeText(item.guid),
+      publishedAtFingerprint: normalizeText(item.isoDate) || normalizeText(item.pubDate),
+      excerpt,
+      contentText,
+      index,
+    }),
     subscriptionId: subscription.id,
     subscriptionName: subscription.name,
     routePath: subscription.routePath,
-    title: (item.title || "未命名条目").trim(),
+    title,
     link: sourceLink,
     author: normalizeText(item.creator) || normalizeText(item.author),
-    publishedAt: choosePublishedAt(item),
-    excerpt: buildExcerpt(contentText, item),
+    publishedAt,
+    excerpt,
     contentHtml,
     contentText,
   };
@@ -725,6 +758,7 @@ async function readSubscriptions(): Promise<SubscriptionRecord[]> {
     return parsed.map((subscription) => ({
       ...subscription,
       category: normalizeCategory(subscription?.category),
+      routeTemplate: normalizeRouteTemplate(subscription?.routeTemplate ?? subscription?.routePath),
       enabled: normalizeBoolean(subscription?.enabled, true),
     }));
   } catch {
@@ -1060,8 +1094,7 @@ function ensureAuthenticated(request: Request, response: Response, next: NextFun
 }
 
 async function fetchSubscriptionItems(subscription: SubscriptionRecord): Promise<FeedItemRecord[]> {
-  const targetUrl = buildRsshubUrl(subscription.routePath);
-  const xml = await fetchFeedXml(targetUrl);
+  const xml = await fetchFeedXml(buildRsshubUrl(subscription.routePath));
   const feed = await parser.parseString(xml);
   const items = Array.isArray(feed.items) ? feed.items : [];
 
@@ -1861,11 +1894,85 @@ app.post("/api/categories", ensureAuthenticated, async (request, response) => {
   response.status(201).json({ category: name, categories: nextCategories });
 });
 
+/**
+ * @openapi
+ * /api/subscriptions/test:
+ *   post:
+ *     tags:
+ *       - Subscriptions
+ *     summary: Test a subscription route before saving
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SubscriptionInput'
+ *     responses:
+ *       200:
+ *         description: Subscription test succeeded
+ *       400:
+ *         description: Missing name or routePath
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       502:
+ *         description: Upstream RSS fetch failed
+ */
+app.post("/api/subscriptions/test", ensureAuthenticated, async (request, response) => {
+  const category = normalizeCategory(request.body?.category);
+  const name = normalizeText(request.body?.name);
+  const routePath = normalizeRoutePath(request.body?.routePath);
+  const description = normalizeText(request.body?.description);
+  const routeTemplate = normalizeRouteTemplate(request.body?.routeTemplate);
+
+  if (!name) {
+    response.status(400).json({ error: "订阅源名称不能为空。" });
+    return;
+  }
+
+  if (!routePath || routePath === "/") {
+    response.status(400).json({ error: "RSSHub 路径不能为空。" });
+    return;
+  }
+
+  const subscription: SubscriptionRecord = {
+    id: "preview-test",
+    category,
+    name,
+    routePath,
+    routeTemplate,
+    description,
+    enabled: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    const items = await fetchSubscriptionItems(subscription);
+    response.json({
+      ok: true,
+      routePath: subscription.routePath,
+      targetUrl: buildRsshubUrl(subscription.routePath),
+      itemCount: items.length,
+      sampleTitles: items.slice(0, 3).map((item) => item.title).filter(Boolean),
+      message: items.length ? `可正常访问，已获取 ${items.length} 条内容。` : "可正常访问，但当前未返回条目。",
+    });
+  } catch (error) {
+    response.status(502).json({
+      error: getErrorMessage(error),
+      routePath: subscription.routePath,
+      targetUrl: buildRsshubUrl(subscription.routePath),
+    });
+  }
+});
+
 app.post("/api/subscriptions", ensureAuthenticated, async (request, response) => {
   const category = normalizeCategory(request.body?.category);
   const name = normalizeText(request.body?.name);
   const routePath = normalizeRoutePath(request.body?.routePath);
   const description = normalizeText(request.body?.description);
+  const routeTemplate = normalizeRouteTemplate(request.body?.routeTemplate);
   const enabled = normalizeBoolean(request.body?.enabled, true);
 
   if (!name) {
@@ -1891,6 +1998,7 @@ app.post("/api/subscriptions", ensureAuthenticated, async (request, response) =>
     category,
     name,
     routePath,
+    routeTemplate,
     description,
     enabled,
     createdAt: now,
@@ -1995,6 +2103,7 @@ app.put("/api/subscriptions/:id", ensureAuthenticated, async (request, response)
   const name = normalizeText(request.body?.name);
   const routePath = normalizeRoutePath(request.body?.routePath);
   const description = normalizeText(request.body?.description);
+  const nextRouteTemplate = normalizeRouteTemplate(request.body?.routeTemplate);
   const enabled = normalizeBoolean(request.body?.enabled, true);
 
   if (!name) {
@@ -2025,11 +2134,13 @@ app.put("/api/subscriptions/:id", ensureAuthenticated, async (request, response)
   }
 
   const current = subscriptions[index];
+  const routeTemplate = nextRouteTemplate || current.routeTemplate || normalizeRouteTemplate(current.routePath);
   const updated: SubscriptionRecord = {
     ...current,
     category,
     name,
     routePath,
+    routeTemplate,
     description,
     enabled,
     updatedAt: new Date().toISOString(),

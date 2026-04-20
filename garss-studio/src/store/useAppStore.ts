@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { parseAppLocation, readAccessCodeFromCurrentUrl } from "../lib/navigation";
+import { bootstrapAuthSession } from "./bootstrap-auth";
 import {
   createCategory,
   getAppSettings,
@@ -7,6 +9,7 @@ import {
   getReaderSubscriptionItems,
   getSession,
   getSubscriptions,
+  testSubscription,
   login,
   removeSubscription,
   saveSubscription,
@@ -20,10 +23,10 @@ import type {
   ReaderSourceState,
   Subscription,
   SubscriptionInput,
+  SubscriptionTestResponse,
 } from "../types";
 
 const AUTH_TOKEN_STORAGE_KEY = "garss-studio.auth-token";
-const APP_TAB_STORAGE_KEY = "garss-studio.current-tab";
 const DEFAULT_AUTO_REFRESH_INTERVAL_MINUTES = 30;
 const DEFAULT_PARALLEL_FETCH_COUNT = 2;
 
@@ -49,12 +52,11 @@ function writeStoredValue(key: string, value: string): void {
 }
 
 function readInitialTab(): AppTab {
-  const storedTab = readStoredValue(APP_TAB_STORAGE_KEY);
-  if (storedTab === "sources" || storedTab === "settings") {
-    return storedTab;
+  if (typeof window === "undefined") {
+    return "reader";
   }
 
-  return "reader";
+  return parseAppLocation(window.location.href).tab;
 }
 
 function clampParallelFetchCount(value: number): number {
@@ -121,6 +123,7 @@ interface AppStoreState {
   refreshReader: (forceRefresh?: boolean) => Promise<void>;
   refreshReaderSubscription: (subscriptionId: string) => Promise<boolean>;
   saveSource: (input: SubscriptionInput, subscriptionId?: string) => Promise<boolean>;
+  testSource: (input: SubscriptionInput) => Promise<SubscriptionTestResponse>;
   createSourceCategory: (name: string) => Promise<string | null>;
   toggleSourceEnabled: (subscriptionId: string, enabled: boolean) => Promise<boolean>;
   removeSource: (subscriptionId: string) => Promise<boolean>;
@@ -370,25 +373,52 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   removingSourceId: "",
   dataError: "",
   async bootstrap() {
-    const token = get().authToken;
+    const storedToken = get().authToken;
+    const accessCode = readAccessCodeFromCurrentUrl();
 
-    if (!token) {
-      set({ authChecked: true });
+    set({
+      loadingSubscriptions: Boolean(storedToken),
+      loadingReader: Boolean(storedToken),
+      loginError: "",
+    });
+
+    const authResult = await bootstrapAuthSession({
+      storedToken,
+      accessCode,
+      getSession,
+      login,
+      getErrorMessage,
+    });
+
+    if (authResult.status !== "authenticated") {
+      if (authResult.shouldClearStoredToken) {
+        writeStoredValue(AUTH_TOKEN_STORAGE_KEY, "");
+      }
+
+      set({
+        authToken: "",
+        authChecked: true,
+        loadingSubscriptions: false,
+        loadingReader: false,
+        isLoggingIn: false,
+        loginError: authResult.error,
+      });
       return;
     }
 
+    const token = authResult.authToken;
+
+    if (authResult.shouldPersistToken) {
+      writeStoredValue(AUTH_TOKEN_STORAGE_KEY, token);
+    }
+
     try {
-      set({
-        loadingSubscriptions: true,
-        loadingReader: true,
-        loginError: "",
-      });
-      await getSession(token);
       const [subscriptions, settings] = await Promise.all([
         loadSubscriptionsData(token),
         loadAppSettingsData(token),
       ]);
       set({
+        authToken: token,
         authChecked: true,
         subscriptions: subscriptions.subscriptions,
         categories: subscriptions.categories,
@@ -397,8 +427,11 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
         nextAutoRefreshAt: parseTimestamp(settings.nextScheduledAt),
         readerSourceStates: buildInitialReaderSourceStates(subscriptions.subscriptions),
         loadingSubscriptions: false,
+        loadingReader: false,
+        isLoggingIn: false,
         reloadingSourceId: "",
         dataError: "",
+        loginError: "",
       });
       void get().refreshReader(false);
     } catch (error) {
@@ -408,6 +441,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
         authChecked: true,
         loadingSubscriptions: false,
         loadingReader: false,
+        isLoggingIn: false,
         loginError: getErrorMessage(error),
       });
     }
@@ -441,6 +475,10 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
       return true;
     } catch (error) {
       set({
+        authToken: "",
+        authChecked: true,
+        loadingSubscriptions: false,
+        loadingReader: false,
         isLoggingIn: false,
         loginError: getErrorMessage(error),
       });
@@ -473,7 +511,6 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
     });
   },
   setCurrentTab(tab) {
-    writeStoredValue(APP_TAB_STORAGE_KEY, tab);
     set({ currentTab: tab });
   },
   async setAutoRefreshIntervalMinutes(minutes) {
@@ -870,6 +907,15 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
       return false;
     }
   },
+  async testSource(input) {
+    const token = get().authToken;
+
+    if (!token) {
+      throw new Error("当前未登录，无法测试订阅源。");
+    }
+
+    return testSubscription(token, input);
+  },
   async createSourceCategory(name) {
     const token = get().authToken;
 
@@ -911,6 +957,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
           category: subscription.category,
           name: subscription.name,
           routePath: subscription.routePath,
+          routeTemplate: subscription.routeTemplate,
           description: subscription.description,
           enabled,
         },
