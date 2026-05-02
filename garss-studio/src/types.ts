@@ -1,8 +1,9 @@
-export type AppTab = "reader" | "sources" | "settings";
+export type AppTab = "reader" | "sources" | "rsshub" | "settings";
 
 export interface Subscription {
   id: string;
   category: string;
+  categories?: string[];
   name: string;
   routePath: string;
   routeTemplate?: string;
@@ -76,6 +77,7 @@ export interface ReaderSubscriptionResponse {
 
 export interface SubscriptionInput {
   category: string;
+  categories?: string[];
   name: string;
   routePath: string;
   routeTemplate?: string;

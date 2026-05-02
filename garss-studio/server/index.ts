@@ -22,6 +22,7 @@ interface AccessTokenPayload {
 interface SubscriptionRecord {
   id: string;
   category: string;
+  categories?: string[];
   name: string;
   routePath: string;
   routeTemplate?: string;
@@ -119,6 +120,14 @@ function getAccessCode(): string {
 
 function getSigningSecret(): string {
   return (process.env.ACCESS_TOKEN_SECRET || `${getAccessCode()}:garss-studio`).trim();
+}
+
+function isRsshubDocSubscription(subscription: Pick<SubscriptionRecord, "id">): boolean {
+  return subscription.id.startsWith("rsshub-doc-");
+}
+
+function isReaderSubscription(subscription: Pick<SubscriptionRecord, "id" | "enabled">): boolean {
+  return subscription.enabled && !isRsshubDocSubscription(subscription);
 }
 
 function getSessionTtlMs(): number {
@@ -755,12 +764,17 @@ async function readSubscriptions(): Promise<SubscriptionRecord[]> {
       return [];
     }
 
-    return parsed.map((subscription) => ({
-      ...subscription,
-      category: normalizeCategory(subscription?.category),
-      routeTemplate: normalizeRouteTemplate(subscription?.routeTemplate ?? subscription?.routePath),
-      enabled: normalizeBoolean(subscription?.enabled, true),
-    }));
+    return parsed.map((subscription) => {
+      const category = normalizeCategory(subscription?.category);
+
+      return {
+        ...subscription,
+        category,
+        categories: normalizeSubscriptionCategories(subscription?.categories, category),
+        routeTemplate: normalizeRouteTemplate(subscription?.routeTemplate ?? subscription?.routePath),
+        enabled: normalizeBoolean(subscription?.enabled, true),
+      };
+    });
   } catch {
     return [];
   }
@@ -782,6 +796,16 @@ function dedupeCategories(values: string[]): string[] {
   }
 
   return output;
+}
+
+function normalizeSubscriptionCategories(value: unknown, fallbackCategory: string): string[] {
+  const rawValues = Array.isArray(value) ? value : [];
+  const normalized = dedupeCategories([
+    ...rawValues.map((entry) => normalizeCategory(entry)),
+    fallbackCategory,
+  ]);
+
+  return normalized.length ? normalized : [fallbackCategory];
 }
 
 async function readCategories(): Promise<string[]> {
@@ -1051,20 +1075,31 @@ async function broadcastServerStatusForUser(userId: string): Promise<void> {
 }
 
 async function ensureCategory(category: string): Promise<void> {
-  const categories = await readCategories();
+  await ensureCategories([category]);
+}
 
-  if (categories.includes(category)) {
-    return;
+async function ensureCategories(nextCategories: string[]): Promise<void> {
+  const categories = await readCategories();
+  let changed = false;
+
+  for (const category of dedupeCategories(nextCategories)) {
+    if (categories.includes(category)) {
+      continue;
+    }
+
+    categories.push(category);
+    changed = true;
   }
 
-  categories.push(category);
-  await writeCategories(categories);
+  if (changed) {
+    await writeCategories(categories);
+  }
 }
 
 function buildCategoryList(subscriptions: SubscriptionRecord[], explicitCategories: string[]): string[] {
   return dedupeCategories([
     ...explicitCategories,
-    ...subscriptions.map((subscription) => subscription.category),
+    ...subscriptions.flatMap((subscription) => (subscription.categories?.length ? subscription.categories : [subscription.category])),
   ]);
 }
 
@@ -1428,7 +1463,7 @@ async function refreshAllSubscriptionsIntoCache(parallelFetchCount: number): Pro
 
   fullRefreshInFlight = (async () => {
     const subscriptions = await readSubscriptions();
-    const enabledSubscriptions = subscriptions.filter((subscription) => subscription.enabled);
+    const enabledSubscriptions = subscriptions.filter(isReaderSubscription);
     const workerCount = Math.min(enabledSubscriptions.length, clampParallelFetchCount(parallelFetchCount));
 
     if (!workerCount) {
@@ -1921,6 +1956,7 @@ app.post("/api/categories", ensureAuthenticated, async (request, response) => {
  */
 app.post("/api/subscriptions/test", ensureAuthenticated, async (request, response) => {
   const category = normalizeCategory(request.body?.category);
+  const categories = normalizeSubscriptionCategories(request.body?.categories, category);
   const name = normalizeText(request.body?.name);
   const routePath = normalizeRoutePath(request.body?.routePath);
   const description = normalizeText(request.body?.description);
@@ -1939,6 +1975,7 @@ app.post("/api/subscriptions/test", ensureAuthenticated, async (request, respons
   const subscription: SubscriptionRecord = {
     id: "preview-test",
     category,
+    categories,
     name,
     routePath,
     routeTemplate,
@@ -1969,6 +2006,7 @@ app.post("/api/subscriptions/test", ensureAuthenticated, async (request, respons
 
 app.post("/api/subscriptions", ensureAuthenticated, async (request, response) => {
   const category = normalizeCategory(request.body?.category);
+  const categories = normalizeSubscriptionCategories(request.body?.categories, category);
   const name = normalizeText(request.body?.name);
   const routePath = normalizeRoutePath(request.body?.routePath);
   const description = normalizeText(request.body?.description);
@@ -1995,7 +2033,8 @@ app.post("/api/subscriptions", ensureAuthenticated, async (request, response) =>
   const now = new Date().toISOString();
   const subscription: SubscriptionRecord = {
     id: crypto.randomUUID(),
-    category,
+    category: categories[0] || category,
+    categories,
     name,
     routePath,
     routeTemplate,
@@ -2007,7 +2046,7 @@ app.post("/api/subscriptions", ensureAuthenticated, async (request, response) =>
 
   subscriptions.unshift(subscription);
   await writeSubscriptions(subscriptions);
-  await ensureCategory(category);
+  await ensureCategories(categories);
   response.status(201).json({ subscription });
 });
 
@@ -2100,6 +2139,7 @@ app.post("/api/subscriptions", ensureAuthenticated, async (request, response) =>
 app.put("/api/subscriptions/:id", ensureAuthenticated, async (request, response) => {
   const id = normalizeText(request.params.id);
   const category = normalizeCategory(request.body?.category);
+  const categories = normalizeSubscriptionCategories(request.body?.categories, category);
   const name = normalizeText(request.body?.name);
   const routePath = normalizeRoutePath(request.body?.routePath);
   const description = normalizeText(request.body?.description);
@@ -2137,7 +2177,8 @@ app.put("/api/subscriptions/:id", ensureAuthenticated, async (request, response)
   const routeTemplate = nextRouteTemplate || current.routeTemplate || normalizeRouteTemplate(current.routePath);
   const updated: SubscriptionRecord = {
     ...current,
-    category,
+    category: categories[0] || category,
+    categories,
     name,
     routePath,
     routeTemplate,
@@ -2148,7 +2189,7 @@ app.put("/api/subscriptions/:id", ensureAuthenticated, async (request, response)
 
   subscriptions[index] = updated;
   await writeSubscriptions(subscriptions);
-  await ensureCategory(category);
+  await ensureCategories(categories);
 
   if (current.routePath !== updated.routePath) {
     await deleteReaderCache(updated.id);
@@ -2208,7 +2249,7 @@ app.get("/api/reader/items", ensureAuthenticated, async (request, response) => {
   const forceRefresh = shouldForceRefresh(request.query.refresh);
   const readerCacheCollection = forceRefresh ? undefined : await readReaderCacheCollection();
   const results = await Promise.all(
-    subscriptions.filter((subscription) => subscription.enabled).map(async (subscription) => {
+    subscriptions.filter(isReaderSubscription).map(async (subscription) => {
       try {
         const cacheRecord = await getSubscriptionReaderData(subscription, forceRefresh, readerCacheCollection);
         return {
@@ -2306,8 +2347,8 @@ app.get("/api/reader/subscriptions/:id", ensureAuthenticated, async (request, re
     return;
   }
 
-  if (!subscription.enabled) {
-    response.status(409).json({ error: "该订阅源已停用，请先启用后再拉取。" });
+  if (!isReaderSubscription(subscription)) {
+    response.status(409).json({ error: "该订阅源未在管理订阅源中启用，不能进入阅读。" });
     return;
   }
 

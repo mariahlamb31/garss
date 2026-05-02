@@ -14,7 +14,8 @@
 - RSS：通过 Docker 拉起 RSSHub 服务，后端代理并转发给前端
 - 模块：
   - 阅读已订阅 RSS
-  - 管理 RSS 订阅源
+  - 管理用户自己的 RSS 订阅源
+  - RSSHUB 模板路由
 
 ## 目录
 
@@ -59,9 +60,9 @@ docker compose -f docker-compose.dev.yml up --build
 
 启动后：
 
-- 统一入口：http://127.0.0.1:25173
+- 统一入口：http://localhost:25173
 
-开发环境下，浏览器只访问 `25173`。前端通过 Vite 代理 `/api` 和 `/socket.io` 到后端；后端和 RSSHub 不再暴露宿主机端口。
+开发环境下，浏览器只访问 `25173`。前端通过 Vite 代理 `/api` 和 `/socket.io` 到后端；后端和 RSSHub 不再暴露宿主机端口。Vite HMR WebSocket 也复用这个入口端口，因此修改 `src/` 后应直接热更新，不需要重建镜像。
 
 `docker-compose.dev.yml` 默认会注入 `SCHEDULER_ENABLED=false`，避免开发容器启动时立刻触发后端全量自动拉取导致内存暴涨。这个默认值只影响自动调度：
 
@@ -159,7 +160,7 @@ npm run sync:editreadme
 
 ## 从 RSSHub 官方文档同步模板路由
 
-管理页支持把 RSSHub 官方文档中的可用路由直接导入为“模板订阅源”。这些项会进入现有订阅源体系，因此不需要改管理页结构；它们默认 `enabled: false`，但仍然可以在管理页弹窗里继续编辑参数化路径。
+RSSHUB 模块支持把 RSSHub 官方文档中的可用路由直接导入为“模板订阅源”。这些项会进入独立的 `RSSHUB` 顶级页面，不再混入“管理订阅源”；它们默认 `enabled: false`，但仍然可以在弹窗里继续编辑参数化路径。
 
 ```bash
 npm run sync:rsshub-docs
@@ -203,10 +204,15 @@ npm run sync:sources
 
 管理页：
 
-- 左侧是分类列表
-- 左侧支持通过小加号就地创建新类型，空类型也会持久化保留
-- 右侧是当前分类下的订阅源列表
+- 平铺展示用户自有订阅源列表，不展示 `rsshub-doc-*` 模板项
+- 分类只是订阅源属性，顶部提供类型筛选
 - 新增和编辑都通过弹窗表单完成
+
+RSSHUB 页：
+
+- 左侧是 RSSHub 官方文档分类
+- 右侧只展示 `rsshub-doc-*` 模板项
+- 支持编辑参数化路径和启用模板，但不提供用户分类创建入口
 
 设置页：
 

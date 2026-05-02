@@ -84,6 +84,14 @@ function parseTimestamp(value: string | undefined): number {
   return Number.isFinite(timestamp) ? timestamp : 0;
 }
 
+function isRsshubDocSubscription(subscription: Subscription): boolean {
+  return subscription.id.startsWith("rsshub-doc-");
+}
+
+function isReaderSubscription(subscription: Subscription): boolean {
+  return subscription.enabled && !isRsshubDocSubscription(subscription);
+}
+
 interface AppStoreState {
   authToken: string;
   authChecked: boolean;
@@ -617,7 +625,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
     }
 
     const { subscriptions } = get();
-    const activeSubscriptions = subscriptions.filter((subscription) => subscription.enabled);
+    const activeSubscriptions = subscriptions.filter(isReaderSubscription);
     const requestId = currentReaderRequestId + 1;
     currentReaderRequestId = requestId;
 
@@ -630,7 +638,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
       readerErrors: [],
       readerSourceStates: nextStates,
       activeFetchCount: 0,
-      completedFetchCount: subscriptions.length - activeSubscriptions.length,
+      completedFetchCount: subscriptions.filter((subscription) => !isReaderSubscription(subscription)).length,
       dataError: "",
     });
 
@@ -778,7 +786,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
     const token = get().authToken;
     const subscription = get().subscriptions.find((entry) => entry.id === subscriptionId);
 
-    if (!token || !subscription || !subscription.enabled) {
+    if (!token || !subscription || !isReaderSubscription(subscription)) {
       return false;
     }
 
@@ -955,6 +963,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
         token,
         {
           category: subscription.category,
+          categories: subscription.categories?.length ? subscription.categories : [subscription.category],
           name: subscription.name,
           routePath: subscription.routePath,
           routeTemplate: subscription.routeTemplate,

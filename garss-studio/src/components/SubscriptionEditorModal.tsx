@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildRoutePathFromTemplate,
   extractRouteTemplateMeta,
@@ -11,11 +11,12 @@ interface SubscriptionEditorModalProps {
   form: SubscriptionInput;
   savingSource: boolean;
   editingSubscriptionId: string;
+  viewOnly?: boolean;
   onClose: () => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  onCreateFromCurrentTemplate: () => void;
   onFormChange: (updater: (current: SubscriptionInput) => SubscriptionInput) => void;
   onTestSubscription: (input: SubscriptionInput) => Promise<SubscriptionTestResponse>;
+  onCreateSubscriptionDraft?: (input: SubscriptionInput) => void;
 }
 
 interface TestFeedback {
@@ -46,19 +47,41 @@ function normalizeTemplateCandidate(form: SubscriptionInput): string {
   return form.routePath.includes(":") ? form.routePath.trim() : "";
 }
 
+function normalizeCategoryList(values: Array<string | undefined>): string[] {
+  const seen = new Set<string>();
+  const output: string[] = [];
+
+  for (const value of values) {
+    const normalized = (value || "").trim();
+
+    if (!normalized || seen.has(normalized)) {
+      continue;
+    }
+
+    seen.add(normalized);
+    output.push(normalized);
+  }
+
+  return output;
+}
+
 export function SubscriptionEditorModal({
   categories,
   form,
   savingSource,
   editingSubscriptionId,
+  viewOnly = false,
   onClose,
   onSubmit,
-  onCreateFromCurrentTemplate,
   onFormChange,
   onTestSubscription,
+  onCreateSubscriptionDraft,
 }: SubscriptionEditorModalProps) {
   const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
   const [testFeedback, setTestFeedback] = useState<TestFeedback>(buildIdleFeedback);
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const backdropPointerStartedRef = useRef(false);
   const templateCandidate = normalizeTemplateCandidate(form);
   const templateMeta = useMemo(
     () => extractRouteTemplateMeta(templateCandidate, form.description),
@@ -77,6 +100,14 @@ export function SubscriptionEditorModal({
         ? buildRoutePathFromTemplate(templateMeta.template, parameterValues)
         : form.routePath,
     [form.routePath, parameterValues, templateMeta],
+  );
+  const categoryOptions = useMemo(() => {
+    const currentCategories = normalizeCategoryList([...(form.categories || []), form.category]);
+    return normalizeCategoryList([...categories, ...currentCategories]);
+  }, [categories, form.categories, form.category]);
+  const selectedCategories = useMemo(
+    () => normalizeCategoryList([...(form.categories || []), form.category]),
+    [form.categories, form.category],
   );
   const hasMissingRequiredParameter = templateMeta.parameters.some(
     (parameter) => !parameter.optional && !parameterValues[parameter.name]?.trim(),
@@ -103,6 +134,35 @@ export function SubscriptionEditorModal({
 
   function updateForm(updater: (current: SubscriptionInput) => SubscriptionInput) {
     onFormChange(updater);
+  }
+
+  function updateCategories(nextCategories: string[]) {
+    const normalized = normalizeCategoryList(nextCategories);
+    updateForm((current) => ({
+      ...current,
+      category: normalized[0] || "",
+      categories: normalized,
+    }));
+  }
+
+  function handleToggleCategory(category: string) {
+    if (selectedCategories.includes(category)) {
+      updateCategories(selectedCategories.filter((entry) => entry !== category));
+      return;
+    }
+
+    updateCategories([...selectedCategories, category]);
+  }
+
+  function handleAddCategory() {
+    const normalizedName = newCategoryName.trim();
+
+    if (!normalizedName) {
+      return;
+    }
+
+    updateCategories([...selectedCategories, normalizedName]);
+    setNewCategoryName("");
   }
 
   function handleRoutePathChange(value: string) {
@@ -173,40 +233,57 @@ export function SubscriptionEditorModal({
     }
   }
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-panel" onClick={(event) => event.stopPropagation()}>
-        <form className="modal-form-sheet" onSubmit={(event) => void onSubmit(event)}>
-          <div className="sheet-head">
-            <h3>{editingSubscriptionId ? "编辑订阅源" : "新增订阅源"}</h3>
-            <p>保留整条地址直改，同时对 RSSHub 模板路由提供参数填写和保存前自测。</p>
-          </div>
+  function buildSubscriptionDraft(): SubscriptionInput {
+    return {
+      category: selectedCategories[0] || form.category.trim(),
+      categories: selectedCategories,
+      name: form.name.trim(),
+      routePath: form.routePath.trim(),
+      routeTemplate: form.routeTemplate?.trim() || templateMeta.template || "",
+      description: form.description.trim(),
+      enabled: true,
+    };
+  }
 
-          <label className="stack-field">
-            <span>类型</span>
-            <input
-              type="text"
-              list="source-category-options"
-              value={form.category}
-              onChange={(event) => updateForm((current) => ({ ...current, category: event.target.value }))}
-              placeholder="例如：AI、科技商业、财经市场"
-            />
-          </label>
-          <datalist id="source-category-options">
-            {categories.map((category) => (
-              <option key={category} value={category} />
-            ))}
-          </datalist>
+  function handleBackdropPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    backdropPointerStartedRef.current = event.target === event.currentTarget;
+  }
+
+  function handleBackdropClick(event: React.MouseEvent<HTMLDivElement>) {
+    const shouldClose = backdropPointerStartedRef.current && event.target === event.currentTarget;
+    backdropPointerStartedRef.current = false;
+
+    if (shouldClose) {
+      onClose();
+    }
+  }
+
+  return (
+    <div className="modal-backdrop" onPointerDown={handleBackdropPointerDown} onClick={handleBackdropClick}>
+      <div className="modal-panel" onClick={(event) => event.stopPropagation()}>
+        <form className={`modal-form-sheet${viewOnly ? " is-view-only" : ""}`} onSubmit={(event) => void onSubmit(event)}>
+          <div className="sheet-head">
+            <h3>{viewOnly ? "查看订阅源" : editingSubscriptionId ? "编辑订阅源" : "新增订阅源"}</h3>
+            {!viewOnly ? <p>保留整条地址直改，同时对 RSSHub 模板路由提供参数填写和保存前自测。</p> : null}
+          </div>
 
           <label className="stack-field">
             <span>名称</span>
             <input
               type="text"
               value={form.name}
+              disabled={viewOnly}
               onChange={(event) => updateForm((current) => ({ ...current, name: event.target.value }))}
               placeholder="例如：GitHub Trending JS"
             />
           </label>
+
+          {viewOnly && form.description.trim() ? (
+            <label className="stack-field">
+              <span>说明</span>
+              <textarea rows={3} value={form.description} disabled placeholder="可选，用来记录这个源的用途。" />
+            </label>
+          ) : null}
 
           {templateMeta.isTemplate ? (
             <section className="template-editor-block">
@@ -260,6 +337,7 @@ export function SubscriptionEditorModal({
               <input
                 type="text"
                 value={form.routePath}
+                disabled={viewOnly}
                 onChange={(event) => handleRoutePathChange(event.target.value)}
                 placeholder="/github/trending/daily/javascript 或 https://example.com/feed.xml"
               />
@@ -274,15 +352,88 @@ export function SubscriptionEditorModal({
             </div>
           </label>
 
-          <label className="stack-field">
-            <span>说明</span>
-            <textarea
-              rows={5}
-              value={form.description}
-              onChange={(event) => updateForm((current) => ({ ...current, description: event.target.value }))}
-              placeholder="可选，用来记录这个源的用途。"
-            />
-          </label>
+          {!viewOnly ? (
+            <section className={`advanced-options${viewOnly || isAdvancedOpen ? " is-open" : ""}`}>
+              <button
+                type="button"
+                className="advanced-options-trigger"
+                aria-expanded={isAdvancedOpen}
+                onClick={() => setIsAdvancedOpen((currentValue) => !currentValue)}
+              >
+                <span>高级选项</span>
+                <strong>{isAdvancedOpen ? "收起" : "展开"}</strong>
+              </button>
+              <div className="advanced-options-body">
+                <label className="stack-field">
+                  <span>类型</span>
+                  <div className="category-tag-editor">
+                    <div className="category-tag-list">
+                      {selectedCategories.length ? (
+                        selectedCategories.map((category) => (
+                          <button
+                            key={`selected-${category}`}
+                            type="button"
+                            className="category-tag is-selected"
+                            onClick={() => handleToggleCategory(category)}
+                          >
+                            <span>{category}</span>
+                            <strong>×</strong>
+                          </button>
+                        ))
+                      ) : (
+                        <small className="field-help">还没有类型，可以从预制类型选择或直接新增。</small>
+                      )}
+                    </div>
+                    {categoryOptions.length ? (
+                      <div className="category-preset-list">
+                        {categoryOptions.map((category) => {
+                          const isSelected = selectedCategories.includes(category);
+
+                          return (
+                            <button
+                              key={`preset-${category}`}
+                              type="button"
+                              className={isSelected ? "category-preset is-selected" : "category-preset"}
+                              onClick={() => handleToggleCategory(category)}
+                            >
+                              {category}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                    <div className="category-create-row">
+                      <input
+                        type="text"
+                        value={newCategoryName}
+                        onChange={(event) => setNewCategoryName(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            handleAddCategory();
+                          }
+                        }}
+                        placeholder="新增类型"
+                      />
+                      <button type="button" className="secondary-button" onClick={handleAddCategory} disabled={!newCategoryName.trim()}>
+                        添加
+                      </button>
+                    </div>
+                  </div>
+                </label>
+
+                <label className="stack-field">
+                  <span>说明</span>
+                  <textarea
+                    rows={5}
+                    value={form.description}
+                    onChange={(event) => updateForm((current) => ({ ...current, description: event.target.value }))}
+                    placeholder="可选，用来记录这个源的用途。"
+                  />
+                </label>
+              </div>
+            </section>
+          ) : null}
 
           {hasMissingRequiredParameter ? (
             <div className="editor-test-row">
@@ -292,7 +443,14 @@ export function SubscriptionEditorModal({
 
           {testFeedback.status === "success" ? (
             <div className="test-feedback-card is-success">
-              <strong>{testFeedback.message}</strong>
+              <div className="test-feedback-head">
+                <strong>{testFeedback.message}</strong>
+                {viewOnly && onCreateSubscriptionDraft ? (
+                  <button type="button" className="secondary-button" onClick={() => onCreateSubscriptionDraft(buildSubscriptionDraft())}>
+                    一键添加订阅源
+                  </button>
+                ) : null}
+              </div>
               {testFeedback.targetUrl ? <small>请求地址：{testFeedback.targetUrl}</small> : null}
               {testFeedback.sampleTitles.length ? (
                 <ul>
@@ -311,28 +469,20 @@ export function SubscriptionEditorModal({
             </div>
           ) : null}
 
-          <div className="form-actions">
-            <button
-              type="submit"
-              className="primary-button"
-              disabled={savingSource || !form.name.trim() || !form.routePath.trim()}
-            >
-              {savingSource ? "保存中..." : editingSubscriptionId ? "更新订阅源" : "添加订阅源"}
-            </button>
-            {editingSubscriptionId ? (
+          {!viewOnly ? (
+            <div className="form-actions">
               <button
-                type="button"
-                className="secondary-button"
-                onClick={onCreateFromCurrentTemplate}
-                disabled={savingSource}
+                type="submit"
+                className="primary-button"
+                disabled={savingSource || !form.name.trim() || !form.routePath.trim()}
               >
-                基于当前模板创建新订阅
+                {savingSource ? "保存中..." : editingSubscriptionId ? "更新订阅源" : "添加订阅源"}
               </button>
-            ) : null}
-            <button type="button" className="secondary-button" onClick={onClose}>
-              取消
-            </button>
-          </div>
+              <button type="button" className="secondary-button" onClick={onClose}>
+                取消
+              </button>
+            </div>
+          ) : null}
         </form>
       </div>
     </div>

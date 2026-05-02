@@ -3,17 +3,21 @@ import { SubscriptionEditorModal } from "./components/SubscriptionEditorModal";
 import { io } from "socket.io-client";
 import {
   ALL_SOURCES_CATEGORY,
+  buildUrlForRsshubCategory,
   buildUrlForSourcesCategory,
   buildUrlForTab,
   parseAppLocation,
   readAccessCodeFromCurrentUrl,
   writeAccessCodeToCurrentUrl,
 } from "./lib/navigation";
-import { buildDuplicateSubscriptionDraft } from "./lib/subscription-editor";
 import { useAppStore } from "./store/useAppStore";
 import type { AppTab, FeedItem, ReaderSourceState, Subscription, SubscriptionInput } from "./types";
 
 type SettingsSection = "fetch" | "account" | "about";
+type SpeedTestResult = {
+  status: "testing" | "success" | "error";
+  ms?: number;
+};
 
 function formatDateLabel(value: string): string {
   if (!value) {
@@ -63,6 +67,7 @@ function formatIntervalLabel(value: number): string {
 function buildEmptyForm(): SubscriptionInput {
   return {
     category: "",
+    categories: [],
     name: "",
     routePath: "",
     routeTemplate: "",
@@ -71,11 +76,78 @@ function buildEmptyForm(): SubscriptionInput {
   };
 }
 
+function normalizeCategoryList(values: Array<string | undefined>): string[] {
+  const seen = new Set<string>();
+  const output: string[] = [];
+
+  for (const value of values) {
+    const normalized = (value || "").trim();
+
+    if (!normalized || seen.has(normalized)) {
+      continue;
+    }
+
+    seen.add(normalized);
+    output.push(normalized);
+  }
+
+  return output;
+}
+
+function getSubscriptionCategories(subscription: Pick<Subscription, "category" | "categories">): string[] {
+  return normalizeCategoryList([...(subscription.categories || []), subscription.category]);
+}
+
+function getInputCategories(input: SubscriptionInput): string[] {
+  return normalizeCategoryList([...(input.categories || []), input.category]);
+}
+
 const AUTO_REFRESH_OPTION_VALUES = [5, 10, 15, 30, 60, 120, 180, 360, 720, 1440];
 const PARALLEL_FETCH_OPTION_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SOURCE_DRAFT_STORAGE_KEY = "garss-studio.source-draft";
 
 function buildSortedOptions(defaultValues: number[], currentValue: number): number[] {
   return Array.from(new Set([...defaultValues, currentValue])).sort((left, right) => left - right);
+}
+
+function readSourceDraft(): SubscriptionInput | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const rawDraft = window.sessionStorage.getItem(SOURCE_DRAFT_STORAGE_KEY);
+
+  if (!rawDraft) {
+    return null;
+  }
+
+  window.sessionStorage.removeItem(SOURCE_DRAFT_STORAGE_KEY);
+
+  try {
+    const parsedDraft = JSON.parse(rawDraft) as Partial<SubscriptionInput>;
+    return {
+      ...buildEmptyForm(),
+      category: typeof parsedDraft.category === "string" ? parsedDraft.category : "",
+      categories: Array.isArray(parsedDraft.categories)
+        ? parsedDraft.categories.filter((entry): entry is string => typeof entry === "string")
+        : [],
+      name: typeof parsedDraft.name === "string" ? parsedDraft.name : "",
+      routePath: typeof parsedDraft.routePath === "string" ? parsedDraft.routePath : "",
+      routeTemplate: typeof parsedDraft.routeTemplate === "string" ? parsedDraft.routeTemplate : "",
+      description: typeof parsedDraft.description === "string" ? parsedDraft.description : "",
+      enabled: typeof parsedDraft.enabled === "boolean" ? parsedDraft.enabled : true,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeSourceDraft(draft: SubscriptionInput): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.sessionStorage.setItem(SOURCE_DRAFT_STORAGE_KEY, JSON.stringify(draft));
 }
 
 function splitIntoParagraphs(value: string): string[] {
@@ -95,6 +167,28 @@ function resolveAvailableSourcesCategory(selectedCategory: string, categories: s
   }
 
   return categories[0];
+}
+
+function isRsshubDocSubscription(subscription: Subscription): boolean {
+  return subscription.id.startsWith("rsshub-doc-");
+}
+
+function isRsshubDocCategory(category: string): boolean {
+  return category.trim().startsWith("RSSHub 文档 /");
+}
+
+function buildVisibleCategories(subscriptions: Subscription[], explicitCategories: string[], includeRsshubDocs: boolean): string[] {
+  const subscriptionCategories = subscriptions
+    .filter((subscription) => isRsshubDocSubscription(subscription) === includeRsshubDocs)
+    .flatMap((subscription) => getSubscriptionCategories(subscription));
+  const categoryCandidates = includeRsshubDocs
+    ? subscriptionCategories
+    : [
+        ...explicitCategories.filter((category) => !isRsshubDocCategory(category)),
+        ...subscriptionCategories,
+      ];
+
+  return Array.from(new Set(categoryCandidates)).filter(Boolean);
 }
 
 function LoginScreen() {
@@ -234,51 +328,6 @@ function ReaderArticleCard({
   );
 }
 
-function ReaderArticleStream({
-  items,
-  activeItemId,
-  streamRef,
-  registerArticleNode,
-}: {
-  items: FeedItem[];
-  activeItemId: string;
-  streamRef: React.RefObject<HTMLDivElement | null>;
-  registerArticleNode: (itemId: string, node: HTMLElement | null) => void;
-}) {
-  return (
-    <div ref={streamRef} className="reader-article-stream">
-      {items.map((item) => (
-        <ReaderArticleCard
-          key={item.id}
-          item={item}
-          isActive={item.id === activeItemId}
-          articleRef={(node) => registerArticleNode(item.id, node)}
-        />
-      ))}
-    </div>
-  );
-}
-
-function getReaderSourceStatusLabel(status: ReaderSourceState["status"]): string {
-  if (status === "loading") {
-    return "拉取中";
-  }
-
-  if (status === "success") {
-    return "已完成";
-  }
-
-  if (status === "error") {
-    return "失败";
-  }
-
-  if (status === "disabled") {
-    return "已停用";
-  }
-
-  return "等待中";
-}
-
 function ReaderSourceCard({
   sourceState,
   isActive,
@@ -300,9 +349,6 @@ function ReaderSourceCard({
     >
       <div className="source-index-meta">
         <span>{updatedLabel}</span>
-        <span className={`source-index-status is-${sourceState.status}`}>
-          {getReaderSourceStatusLabel(sourceState.status)}
-        </span>
       </div>
       <div className="source-index-main">
         <h3>{sourceState.subscriptionName}</h3>
@@ -321,48 +367,101 @@ function ReaderPanel() {
   const reloadingSourceId = useAppStore((state) => state.reloadingSourceId);
   const refreshReaderSubscription = useAppStore((state) => state.refreshReaderSubscription);
   const enabledSubscriptions = useMemo(
-    () => subscriptions.filter((subscription) => subscription.enabled),
+    () => subscriptions.filter((subscription) => subscription.enabled && !isRsshubDocSubscription(subscription)),
     [subscriptions],
   );
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState("");
+  const [expandedSubscriptionId, setExpandedSubscriptionId] = useState("");
   const [selectedItemId, setSelectedItemId] = useState("");
-  const [isArticleOverlayOpen, setIsArticleOverlayOpen] = useState(false);
-  const articleStreamRef = useRef<HTMLDivElement | null>(null);
-  const articleCardRefs = useRef<Record<string, HTMLElement | null>>({});
+  const [completedSourceOrder, setCompletedSourceOrder] = useState<string[]>([]);
+  const [isSourceDrawerOpen, setIsSourceDrawerOpen] = useState(false);
+  const articleScrollRef = useRef<HTMLDivElement | null>(null);
 
-  const sourceStateList = useMemo(
+  const baseSourceStateList = useMemo(
     () =>
-      enabledSubscriptions
-        .map(
-          (subscription) =>
-            readerSourceStates[subscription.id] || {
-              subscriptionId: subscription.id,
-              subscriptionName: subscription.name,
-              routePath: subscription.routePath,
-              status: "idle",
-              itemCount: 0,
-              message: "等待拉取",
-              updatedAt: "",
-            },
-        )
-        .sort((left, right) => {
-          const leftRank = left.status === "error" ? 1 : 0;
-          const rightRank = right.status === "error" ? 1 : 0;
-          return leftRank - rightRank;
-        }),
+      enabledSubscriptions.map(
+        (subscription) =>
+          readerSourceStates[subscription.id] || {
+            subscriptionId: subscription.id,
+            subscriptionName: subscription.name,
+            routePath: subscription.routePath,
+            status: "idle",
+            itemCount: 0,
+            message: "等待拉取",
+            updatedAt: "",
+          },
+      ),
     [enabledSubscriptions, readerSourceStates],
   );
 
   useEffect(() => {
+    setCompletedSourceOrder((currentOrder) => {
+      const completedIds = baseSourceStateList
+        .filter((sourceState) => sourceState.status === "success")
+        .map((sourceState) => sourceState.subscriptionId);
+      const completedIdSet = new Set(completedIds);
+      const retainedOrder = currentOrder.filter((subscriptionId) => completedIdSet.has(subscriptionId));
+      const nextOrder = [
+        ...retainedOrder,
+        ...completedIds.filter((subscriptionId) => !retainedOrder.includes(subscriptionId)),
+      ];
+
+      if (nextOrder.length === currentOrder.length && nextOrder.every((subscriptionId, index) => subscriptionId === currentOrder[index])) {
+        return currentOrder;
+      }
+
+      return nextOrder;
+    });
+  }, [baseSourceStateList]);
+
+  const sourceStateList = useMemo(() => {
+    const completedRankById = new Map(completedSourceOrder.map((subscriptionId, index) => [subscriptionId, index]));
+    const sourceRankById = new Map(enabledSubscriptions.map((subscription, index) => [subscription.id, index]));
+
+    return [...baseSourceStateList].sort((left, right) => {
+      const isLeftCompleted = left.status === "success";
+      const isRightCompleted = right.status === "success";
+
+      if (isLeftCompleted !== isRightCompleted) {
+        return isLeftCompleted ? -1 : 1;
+      }
+
+      if (isLeftCompleted && isRightCompleted) {
+        return (
+          (completedRankById.get(left.subscriptionId) ?? Number.MAX_SAFE_INTEGER) -
+          (completedRankById.get(right.subscriptionId) ?? Number.MAX_SAFE_INTEGER)
+        );
+      }
+
+      return (
+        (sourceRankById.get(left.subscriptionId) ?? Number.MAX_SAFE_INTEGER) -
+        (sourceRankById.get(right.subscriptionId) ?? Number.MAX_SAFE_INTEGER)
+      );
+    });
+  }, [baseSourceStateList, completedSourceOrder, enabledSubscriptions]);
+
+  useEffect(() => {
     if (!enabledSubscriptions.length) {
       setSelectedSubscriptionId("");
+      setExpandedSubscriptionId("");
       return;
     }
 
     if (!enabledSubscriptions.some((subscription) => subscription.id === selectedSubscriptionId)) {
-      setSelectedSubscriptionId(enabledSubscriptions[0]?.id || "");
+      const fallbackSubscriptionId = enabledSubscriptions[0]?.id || "";
+      setSelectedSubscriptionId(fallbackSubscriptionId);
+      setExpandedSubscriptionId(fallbackSubscriptionId);
     }
   }, [enabledSubscriptions, selectedSubscriptionId]);
+
+  useEffect(() => {
+    if (
+      expandedSubscriptionId &&
+      !enabledSubscriptions.some((subscription) => subscription.id === expandedSubscriptionId)
+    ) {
+      setExpandedSubscriptionId("");
+    }
+  }, [enabledSubscriptions, expandedSubscriptionId]);
 
   const selectedSourceState = useMemo(
     () => sourceStateList.find((sourceState) => sourceState.subscriptionId === selectedSubscriptionId) || null,
@@ -373,6 +472,19 @@ function ReaderPanel() {
     () => items.filter((item) => item.subscriptionId === selectedSubscriptionId),
     [items, selectedSubscriptionId],
   );
+  const selectedItem = useMemo(
+    () => filteredItems.find((item) => item.id === selectedItemId) || null,
+    [filteredItems, selectedItemId],
+  );
+  const selectedItemIndex = useMemo(
+    () => filteredItems.findIndex((item) => item.id === selectedItemId),
+    [filteredItems, selectedItemId],
+  );
+  const previousItem = selectedItemIndex > 0 ? filteredItems[selectedItemIndex - 1] : null;
+  const nextItem =
+    selectedItemIndex >= 0 && selectedItemIndex < filteredItems.length - 1
+      ? filteredItems[selectedItemIndex + 1]
+      : null;
 
   useEffect(() => {
     if (!filteredItems.length) {
@@ -386,72 +498,80 @@ function ReaderPanel() {
   }, [filteredItems, selectedItemId]);
 
   useEffect(() => {
-    setIsArticleOverlayOpen(false);
+    setIsSourceDrawerOpen(false);
   }, [selectedSubscriptionId]);
 
-  useEffect(() => {
-    const streamElement = articleStreamRef.current;
-
-    if (!streamElement || !filteredItems.length || typeof IntersectionObserver === "undefined") {
+  function scrollArticleViewportToTop() {
+    if (typeof window === "undefined") {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((left, right) => right.intersectionRatio - left.intersectionRatio);
-        const nextItemId = visibleEntries[0]?.target.getAttribute("data-item-id") || "";
-
-        if (nextItemId) {
-          setSelectedItemId((currentValue) => (currentValue === nextItemId ? currentValue : nextItemId));
-        }
-      },
-      {
-        root: streamElement,
-        rootMargin: "-12% 0px -48% 0px",
-        threshold: [0.2, 0.4, 0.65],
-      },
-    );
-
-    filteredItems.forEach((item) => {
-      const articleNode = articleCardRefs.current[item.id];
-
-      if (articleNode) {
-        observer.observe(articleNode);
-      }
+    window.requestAnimationFrame(() => {
+      articleScrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
     });
-
-    return () => observer.disconnect();
-  }, [filteredItems]);
-
-  function registerArticleNode(itemId: string, node: HTMLElement | null) {
-    articleCardRefs.current[itemId] = node;
   }
 
   function handleSelectItem(itemId: string) {
     setSelectedItemId(itemId);
-    setIsArticleOverlayOpen(false);
-    articleCardRefs.current[itemId]?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    setIsSourceDrawerOpen(false);
+    scrollArticleViewportToTop();
+  }
+
+  function handleSelectSource(subscriptionId: string) {
+    if (expandedSubscriptionId === subscriptionId) {
+      setExpandedSubscriptionId("");
+      return;
+    }
+
+    setSelectedSubscriptionId(subscriptionId);
+    setExpandedSubscriptionId(subscriptionId);
+    setIsSourceDrawerOpen(false);
+  }
+
+  function handleNavigateArticle(item: FeedItem | null) {
+    if (!item) {
+      return;
+    }
+
+    setSelectedItemId(item.id);
+    scrollArticleViewportToTop();
   }
 
   return (
     <section className="content-panel reader-panel">
       <div className="reader-layout">
-        <aside className="reader-sidebar">
+        <aside className={`reader-sidebar${isSourceDrawerOpen ? " is-open" : ""}`} aria-label="订阅源导航">
           {enabledSubscriptions.length ? (
             <div className="source-status-grid">
-              {sourceStateList.map((sourceState) => (
-                <ReaderSourceCard
-                  key={sourceState.subscriptionId}
-                  sourceState={sourceState}
-                  isActive={sourceState.subscriptionId === selectedSubscriptionId}
-                  onSelect={setSelectedSubscriptionId}
-                />
-              ))}
+              {sourceStateList.map((sourceState) => {
+                const isSourceActive = sourceState.subscriptionId === selectedSubscriptionId;
+                const isSourceExpanded = sourceState.subscriptionId === expandedSubscriptionId;
+
+                return (
+                  <div className="reader-source-entry" key={sourceState.subscriptionId}>
+                    <ReaderSourceCard
+                      sourceState={sourceState}
+                      isActive={isSourceActive}
+                      onSelect={handleSelectSource}
+                    />
+                    {isSourceActive && filteredItems.length ? (
+                      <div
+                        className={`reader-source-article-sublist${isSourceExpanded ? " is-expanded" : ""}`}
+                        aria-label={`${sourceState.subscriptionName} 文章列表`}
+                      >
+                        {filteredItems.map((item) => (
+                          <ReaderListCard
+                            key={item.id}
+                            item={item}
+                            isActive={item.id === selectedItemId}
+                            onSelect={handleSelectItem}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
             </div>
           ) : null}
 
@@ -468,56 +588,35 @@ function ReaderPanel() {
             <div className="empty-state compact">
               <div>
                 <h3>暂无启用中的订阅源</h3>
-                <p>去“管理订阅源”打开至少一个 RSS 源后，这里才会显示拉取状态和文章。</p>
+                <p>去“管理订阅源”打开至少一个用户订阅源后，这里才会显示拉取状态和文章。</p>
               </div>
             </div>
           ) : null}
         </aside>
+        <button
+          type="button"
+          className={`reader-source-drawer-backdrop${isSourceDrawerOpen ? " is-open" : ""}`}
+          aria-label="关闭订阅源导航"
+          onClick={() => setIsSourceDrawerOpen(false)}
+        />
 
         <div className="reader-main">
           {selectedSourceState ? (
             <div className="reader-main-toolbar">
-              {filteredItems.length ? (
-                <div
-                  className={`reader-item-overlay reader-item-overlay-trigger-shell${isArticleOverlayOpen ? " is-open" : ""}`}
-                  onMouseEnter={() => setIsArticleOverlayOpen(true)}
-                  onMouseLeave={() => setIsArticleOverlayOpen(false)}
-                >
-                  <button
-                    type="button"
-                    className="reader-item-overlay-trigger"
-                    aria-label="切换文章列表"
-                    aria-expanded={isArticleOverlayOpen}
-                    onClick={() => setIsArticleOverlayOpen((currentValue) => !currentValue)}
-                  >
-                    <span className="reader-item-overlay-trigger-icon" aria-hidden="true">
-                      <span />
-                      <span />
-                      <span />
-                    </span>
-                    <span className="reader-item-overlay-trigger-text">文章列表</span>
-                  </button>
-                  <div className="reader-item-overlay-panel-shell">
-                    <div className="reader-item-overlay-panel">
-                      <div className="reader-item-overlay-head">
-                        <span>文章列表</span>
-                        <strong>{filteredItems.length}</strong>
-                      </div>
-
-                      <div className="notes-grid reader-item-list reader-item-overlay-list">
-                        {filteredItems.map((item) => (
-                          <ReaderListCard
-                            key={item.id}
-                            item={item}
-                            isActive={item.id === selectedItemId}
-                            onSelect={handleSelectItem}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
+              <button
+                type="button"
+                className="reader-source-drawer-trigger"
+                aria-label="打开订阅源导航"
+                aria-expanded={isSourceDrawerOpen}
+                onClick={() => setIsSourceDrawerOpen(true)}
+              >
+                <span className="reader-item-overlay-trigger-icon" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+                <span className="reader-source-drawer-trigger-text">订阅源</span>
+              </button>
               <button
                 type="button"
                 className="secondary-button"
@@ -540,14 +639,31 @@ function ReaderPanel() {
             </div>
           ) : null}
 
-          {filteredItems.length ? (
+          {selectedItem ? (
             <div className="reader-detail-layout">
-              <ReaderArticleStream
-                items={filteredItems}
-                activeItemId={selectedItemId}
-                streamRef={articleStreamRef}
-                registerArticleNode={registerArticleNode}
-              />
+              <div ref={articleScrollRef} className="reader-article-stream">
+                <ReaderArticleCard item={selectedItem} isActive />
+                <nav className="reader-article-pagination" aria-label="文章翻页">
+                  <button
+                    type="button"
+                    className="reader-article-page-button"
+                    onClick={() => handleNavigateArticle(previousItem)}
+                    disabled={!previousItem}
+                  >
+                    <span>上一篇</span>
+                    <strong>{previousItem?.title || "没有上一篇"}</strong>
+                  </button>
+                  <button
+                    type="button"
+                    className="reader-article-page-button"
+                    onClick={() => handleNavigateArticle(nextItem)}
+                    disabled={!nextItem}
+                  >
+                    <span>下一篇</span>
+                    <strong>{nextItem?.title || "没有下一篇"}</strong>
+                  </button>
+                </nav>
+              </div>
             </div>
           ) : null}
         </div>
@@ -560,6 +676,10 @@ function SourceManagerCard({
   subscription,
   isSaving,
   isRemoving,
+  speedTestResult,
+  canToggle = true,
+  canRemove = true,
+  actionLabel = "编辑",
   onEdit,
   onToggle,
   onRemove,
@@ -567,6 +687,10 @@ function SourceManagerCard({
   subscription: Subscription;
   isSaving: boolean;
   isRemoving: boolean;
+  speedTestResult?: SpeedTestResult;
+  canToggle?: boolean;
+  canRemove?: boolean;
+  actionLabel?: string;
   onEdit: (subscription: Subscription) => void;
   onToggle: (subscription: Subscription, enabled: boolean) => void;
   onRemove: (subscription: Subscription) => void;
@@ -579,33 +703,58 @@ function SourceManagerCard({
           <span>{subscription.routePath}</span>
         </div>
         <div className="source-card-actions">
-          <button
-            type="button"
-            className={subscription.enabled ? "toggle-switch is-on" : "toggle-switch"}
-            aria-pressed={subscription.enabled}
-            aria-label={subscription.enabled ? `停用 ${subscription.name}` : `启用 ${subscription.name}`}
-            onClick={() => onToggle(subscription, !subscription.enabled)}
-            disabled={isSaving || isRemoving}
-          >
-            <span className="toggle-switch-handle" />
-          </button>
+          {canToggle ? (
+            <button
+              type="button"
+              className={subscription.enabled ? "toggle-switch is-on" : "toggle-switch"}
+              aria-pressed={subscription.enabled}
+              aria-label={subscription.enabled ? `停用 ${subscription.name}` : `启用 ${subscription.name}`}
+              onClick={() => onToggle(subscription, !subscription.enabled)}
+              disabled={isSaving || isRemoving}
+            >
+              <span className="toggle-switch-handle" />
+            </button>
+          ) : null}
           <button type="button" className="ghost-button" onClick={() => onEdit(subscription)}>
-            编辑
+            {actionLabel}
           </button>
-          <button type="button" className="ghost-button danger" onClick={() => onRemove(subscription)} disabled={isSaving || isRemoving}>
-            {isRemoving ? "删除中..." : "删除"}
-          </button>
+          {canRemove ? (
+            <button type="button" className="ghost-button danger" onClick={() => onRemove(subscription)} disabled={isSaving || isRemoving}>
+              {isRemoving ? "删除中..." : "删除"}
+            </button>
+          ) : null}
         </div>
       </div>
       <p>{subscription.description || "未填写说明，可以把它当作你自己的订阅备注。"}</p>
       <small>
-        {subscription.category} · {subscription.enabled ? "已启用" : "已停用"} · 最近更新：{formatDateLabel(subscription.updatedAt)}
+        {getSubscriptionCategories(subscription).join(" / ")} · {subscription.enabled ? "已启用" : "已停用"} · 最近更新：{formatDateLabel(subscription.updatedAt)}
       </small>
+      {speedTestResult ? (
+        <span className={`source-speed-badge is-${speedTestResult.status}`}>
+          {speedTestResult.status === "testing" ? "测速中" : speedTestResult.status === "success" ? `${speedTestResult.ms}ms` : "失败"}
+        </span>
+      ) : null}
     </article>
   );
 }
 
-function SourcesPanel() {
+function SubscriptionManagementPanel({
+  mode,
+  title,
+  emptyTitle,
+  emptyDescription,
+  emptyCategoryDescription,
+  allowCategoryCreate,
+  allowSourceCreate,
+}: {
+  mode: "sources" | "rsshub";
+  title: string;
+  emptyTitle: string;
+  emptyDescription: string;
+  emptyCategoryDescription: string;
+  allowCategoryCreate: boolean;
+  allowSourceCreate: boolean;
+}) {
   const categories = useAppStore((state) => state.categories);
   const subscriptions = useAppStore((state) => state.subscriptions);
   const savingSource = useAppStore((state) => state.savingSource);
@@ -614,6 +763,7 @@ function SourcesPanel() {
   const saveSource = useAppStore((state) => state.saveSource);
   const createSourceCategory = useAppStore((state) => state.createSourceCategory);
   const testSource = useAppStore((state) => state.testSource);
+  const setCurrentTab = useAppStore((state) => state.setCurrentTab);
   const toggleSourceEnabled = useAppStore((state) => state.toggleSourceEnabled);
   const removeSource = useAppStore((state) => state.removeSource);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -624,6 +774,20 @@ function SourcesPanel() {
   );
   const [editingSubscriptionId, setEditingSubscriptionId] = useState("");
   const [form, setForm] = useState<SubscriptionInput>(buildEmptyForm);
+  const [speedTestResults, setSpeedTestResults] = useState<Record<string, SpeedTestResult>>({});
+  const [isSpeedTesting, setIsSpeedTesting] = useState(false);
+  const [speedTestProgress, setSpeedTestProgress] = useState({ completed: 0, total: 0 });
+  const isRsshubMode = mode === "rsshub";
+  const usesCategorySidebar = isRsshubMode;
+  const panelSubscriptions = useMemo(
+    () => subscriptions.filter((subscription) => isRsshubDocSubscription(subscription) === isRsshubMode),
+    [isRsshubMode, subscriptions],
+  );
+  const panelCategories = useMemo(
+    () => buildVisibleCategories(subscriptions, categories, isRsshubMode),
+    [categories, isRsshubMode, subscriptions],
+  );
+  const buildCategoryUrl = isRsshubMode ? buildUrlForRsshubCategory : buildUrlForSourcesCategory;
 
   function resetForm() {
     setIsModalOpen(false);
@@ -631,15 +795,42 @@ function SourcesPanel() {
     setForm(buildEmptyForm());
   }
 
+  function resolveDefaultSourceCategory() {
+    return (
+      selectedCategory && selectedCategory !== ALL_SOURCES_CATEGORY && panelCategories.includes(selectedCategory)
+        ? selectedCategory
+        : panelCategories[0] || ""
+    );
+  }
+
   function handleCreate() {
-    const defaultCategory = resolveAvailableSourcesCategory(selectedCategory, categories);
+    const defaultCategory = resolveDefaultSourceCategory();
 
     setEditingSubscriptionId("");
     setForm({
       ...buildEmptyForm(),
       category: defaultCategory,
+      categories: defaultCategory ? [defaultCategory] : [],
     });
     setIsModalOpen(true);
+  }
+
+  function handleCreateFromRsshubDraft(draft: SubscriptionInput) {
+    writeSourceDraft({
+      ...buildEmptyForm(),
+      name: draft.name,
+      routePath: draft.routePath,
+      description: draft.description,
+      enabled: true,
+    });
+
+    resetForm();
+
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", buildUrlForTab(window.location.href, "sources"));
+    }
+
+    setCurrentTab("sources");
   }
 
   function handleStartCategoryCreate() {
@@ -656,6 +847,7 @@ function SourcesPanel() {
     setEditingSubscriptionId(subscription.id);
     setForm({
       category: subscription.category,
+      categories: getSubscriptionCategories(subscription),
       name: subscription.name,
       routePath: subscription.routePath,
       routeTemplate: subscription.routeTemplate,
@@ -665,18 +857,13 @@ function SourcesPanel() {
     setIsModalOpen(true);
   }
 
-  function handleCreateFromCurrentTemplate() {
-    const draft = buildDuplicateSubscriptionDraft(form);
-
-    setEditingSubscriptionId(draft.editingSubscriptionId);
-    setForm(draft.form);
-  }
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const nextCategories = getInputCategories(form);
     const succeeded = await saveSource(
       {
-        category: form.category.trim(),
+        category: nextCategories[0] || form.category.trim(),
+        categories: nextCategories,
         name: form.name.trim(),
         routePath: form.routePath.trim(),
         routeTemplate: form.routeTemplate?.trim() || "",
@@ -703,7 +890,7 @@ function SourcesPanel() {
 
     if (createdCategory) {
       if (typeof window !== "undefined") {
-        window.history.pushState({}, "", buildUrlForSourcesCategory(window.location.href, createdCategory));
+        window.history.pushState({}, "", buildCategoryUrl(window.location.href, createdCategory));
       }
       setSelectedCategory(createdCategory);
       handleCancelCategoryCreate();
@@ -712,7 +899,7 @@ function SourcesPanel() {
 
   function handleSelectCategory(categoryId: string) {
     if (typeof window !== "undefined") {
-      window.history.pushState({}, "", buildUrlForSourcesCategory(window.location.href, categoryId));
+      window.history.pushState({}, "", buildCategoryUrl(window.location.href, categoryId));
     }
 
     setSelectedCategory(categoryId);
@@ -720,30 +907,57 @@ function SourcesPanel() {
 
   const categoryOptions = useMemo(() => {
     const counts = new Map<string, { totalCount: number; enabledCount: number }>();
+    const totalCounts = { totalCount: 0, enabledCount: 0 };
 
-    for (const subscription of subscriptions) {
-      const currentCounts = counts.get(subscription.category) || { totalCount: 0, enabledCount: 0 };
+    for (const subscription of panelSubscriptions) {
+      totalCounts.totalCount += 1;
+      totalCounts.enabledCount += subscription.enabled ? 1 : 0;
 
-      counts.set(subscription.category, {
-        totalCount: currentCounts.totalCount + 1,
-        enabledCount: currentCounts.enabledCount + (subscription.enabled ? 1 : 0),
-      });
+      for (const category of getSubscriptionCategories(subscription)) {
+        const currentCounts = counts.get(category) || { totalCount: 0, enabledCount: 0 };
+        counts.set(category, {
+          totalCount: currentCounts.totalCount + 1,
+          enabledCount: currentCounts.enabledCount + (subscription.enabled ? 1 : 0),
+        });
+      }
     }
 
-    return categories.map((category) => {
+    const categoryItems = panelCategories.map((category) => {
       const categoryCounts = counts.get(category) || { totalCount: 0, enabledCount: 0 };
+      const label = isRsshubMode ? category.replace(/^RSSHub 文档\s*\/\s*/, "") : category;
 
       return {
         id: category,
-        label: category,
-        countLabel: `${categoryCounts.enabledCount}/${categoryCounts.totalCount}`,
+        label,
+        countLabel: isRsshubMode ? String(categoryCounts.totalCount) : `${categoryCounts.enabledCount}/${categoryCounts.totalCount}`,
       };
     });
-  }, [categories, subscriptions]);
+
+    if (!usesCategorySidebar) {
+      return [
+        {
+          id: ALL_SOURCES_CATEGORY,
+          label: "全部类型",
+          countLabel: `${totalCounts.enabledCount}/${totalCounts.totalCount}`,
+        },
+        ...categoryItems,
+      ];
+    }
+
+    return categoryItems;
+  }, [isRsshubMode, panelCategories, panelSubscriptions, usesCategorySidebar]);
 
   const activeCategory = useMemo(
-    () => resolveAvailableSourcesCategory(selectedCategory, categories),
-    [categories, selectedCategory],
+    () => {
+      if (!usesCategorySidebar) {
+        return selectedCategory && selectedCategory !== ALL_SOURCES_CATEGORY && panelCategories.includes(selectedCategory)
+          ? selectedCategory
+          : ALL_SOURCES_CATEGORY;
+      }
+
+      return resolveAvailableSourcesCategory(selectedCategory, panelCategories);
+    },
+    [panelCategories, selectedCategory, usesCategorySidebar],
   );
 
   useEffect(() => {
@@ -754,7 +968,7 @@ function SourcesPanel() {
 
       const locationState = parseAppLocation(window.location.href);
 
-      if (locationState.tab === "sources") {
+      if (locationState.tab === mode) {
         setSelectedCategory(locationState.category);
       }
     }
@@ -767,17 +981,21 @@ function SourcesPanel() {
       window.removeEventListener("popstate", syncCategoryFromLocation);
       window.removeEventListener("hashchange", syncCategoryFromLocation);
     };
-  }, []);
+  }, [mode]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    const nextCategory = resolveAvailableSourcesCategory(selectedCategory, categories);
+    const nextCategory = usesCategorySidebar
+      ? resolveAvailableSourcesCategory(selectedCategory, panelCategories)
+      : selectedCategory && selectedCategory !== ALL_SOURCES_CATEGORY && panelCategories.includes(selectedCategory)
+        ? selectedCategory
+        : ALL_SOURCES_CATEGORY;
     const locationState = parseAppLocation(window.location.href);
 
-    if (locationState.tab !== "sources") {
+    if (locationState.tab !== mode) {
       return;
     }
 
@@ -790,78 +1008,189 @@ function SourcesPanel() {
     }
 
     if (locationState.category !== nextCategory) {
-      window.history.replaceState({}, "", buildUrlForSourcesCategory(window.location.href, nextCategory));
+      window.history.replaceState({}, "", buildCategoryUrl(window.location.href, nextCategory));
     }
-  }, [categories, selectedCategory]);
+  }, [buildCategoryUrl, mode, panelCategories, selectedCategory, usesCategorySidebar]);
+
+  useEffect(() => {
+    if (isRsshubMode || isModalOpen) {
+      return;
+    }
+
+    const sourceDraft = readSourceDraft();
+
+    if (!sourceDraft) {
+      return;
+    }
+
+    setEditingSubscriptionId("");
+    setForm({
+      ...sourceDraft,
+      category: resolveDefaultSourceCategory(),
+      categories: sourceDraft.categories?.length ? sourceDraft.categories : [resolveDefaultSourceCategory()].filter(Boolean),
+    });
+    setIsModalOpen(true);
+  }, [isModalOpen, isRsshubMode, panelCategories, selectedCategory]);
 
   const filteredSubscriptions = useMemo(
-    () => subscriptions.filter((subscription) => subscription.category === activeCategory),
-    [activeCategory, subscriptions],
+    () =>
+      activeCategory === ALL_SOURCES_CATEGORY
+        ? panelSubscriptions
+        : panelSubscriptions.filter((subscription) => getSubscriptionCategories(subscription).includes(activeCategory)),
+    [activeCategory, panelSubscriptions],
   );
+
+  async function handleSpeedTestVisibleSubscriptions() {
+    if (isSpeedTesting || !filteredSubscriptions.length) {
+      return;
+    }
+
+    const targets = filteredSubscriptions.filter((subscription) => !isRsshubDocSubscription(subscription));
+
+    if (!targets.length) {
+      return;
+    }
+
+    setIsSpeedTesting(true);
+    setSpeedTestProgress({ completed: 0, total: targets.length });
+    setSpeedTestResults((current) => {
+      const next = { ...current };
+
+      for (const subscription of targets) {
+        next[subscription.id] = { status: "testing" };
+      }
+
+      return next;
+    });
+
+    let cursor = 0;
+    let completed = 0;
+    const workerCount = Math.min(4, targets.length);
+
+    async function runWorker() {
+      while (cursor < targets.length) {
+        const subscription = targets[cursor];
+        cursor += 1;
+        const startedAt = performance.now();
+
+        try {
+          await testSource({
+            category: subscription.category,
+            categories: getSubscriptionCategories(subscription),
+            name: subscription.name,
+            routePath: subscription.routePath,
+            routeTemplate: subscription.routeTemplate,
+            description: subscription.description,
+            enabled: subscription.enabled,
+          });
+          const elapsedMs = Math.max(1, Math.round(performance.now() - startedAt));
+          setSpeedTestResults((current) => ({
+            ...current,
+            [subscription.id]: { status: "success", ms: elapsedMs },
+          }));
+        } catch {
+          setSpeedTestResults((current) => ({
+            ...current,
+            [subscription.id]: { status: "error" },
+          }));
+        } finally {
+          completed += 1;
+          setSpeedTestProgress({ completed, total: targets.length });
+        }
+      }
+    }
+
+    await Promise.all(Array.from({ length: workerCount }, () => runWorker()));
+    setIsSpeedTesting(false);
+  }
 
   return (
     <section className="content-panel sources-panel">
-      <div className="sources-layout">
-        <aside className="sources-sidebar">
-          <div className="sources-sidebar-head">
-            <div className="sources-sidebar-title">
-              <span>类型</span>
-              <button
-                type="button"
-                className="category-create-trigger"
-                onClick={handleStartCategoryCreate}
-                aria-label="创建新类型"
-                disabled={isCreatingCategory}
-              >
-                +
-              </button>
+      <div className={`sources-layout${usesCategorySidebar ? "" : " is-flat"}`}>
+        {usesCategorySidebar ? (
+          <aside className="sources-sidebar">
+            <div className="sources-sidebar-head">
+              <div className="sources-sidebar-title">
+                <span>{title}</span>
+                {allowCategoryCreate ? (
+                  <button
+                    type="button"
+                    className="category-create-trigger"
+                    onClick={handleStartCategoryCreate}
+                    aria-label="创建新类型"
+                    disabled={isCreatingCategory}
+                  >
+                    +
+                  </button>
+                ) : null}
+              </div>
             </div>
-          </div>
-          <div className="category-list">
-            {isCreatingCategory ? (
-              <form className="category-create-inline" onSubmit={handleCreateCategory}>
-                <input
-                  type="text"
-                  autoFocus
-                  value={newCategoryName}
-                  onChange={(event) => setNewCategoryName(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Escape") {
-                      handleCancelCategoryCreate();
-                    }
-                  }}
-                  placeholder="新建类型"
-                />
-                <div className="category-create-actions">
-                  <button type="submit" className="inline-action-button" disabled={creatingCategory || !newCategoryName.trim()}>
-                    {creatingCategory ? "创建中" : "保存"}
-                  </button>
-                  <button type="button" className="inline-action-button is-muted" onClick={handleCancelCategoryCreate}>
-                    取消
-                  </button>
-                </div>
-              </form>
-            ) : null}
-            {categoryOptions.map((category) => (
-              <button
-                key={category.id}
-                type="button"
-                className={activeCategory === category.id ? "category-item is-active" : "category-item"}
-                onClick={() => handleSelectCategory(category.id)}
-              >
-                <span>{category.label}</span>
-                <strong>{category.countLabel}</strong>
-              </button>
-            ))}
-          </div>
-        </aside>
+            <div className="category-list">
+              {allowCategoryCreate && isCreatingCategory ? (
+                <form className="category-create-inline" onSubmit={handleCreateCategory}>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={newCategoryName}
+                    onChange={(event) => setNewCategoryName(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Escape") {
+                        handleCancelCategoryCreate();
+                      }
+                    }}
+                    placeholder="新建类型"
+                  />
+                  <div className="category-create-actions">
+                    <button type="submit" className="inline-action-button" disabled={creatingCategory || !newCategoryName.trim()}>
+                      {creatingCategory ? "创建中" : "保存"}
+                    </button>
+                    <button type="button" className="inline-action-button is-muted" onClick={handleCancelCategoryCreate}>
+                      取消
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+              {categoryOptions.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  className={activeCategory === category.id ? "category-item is-active" : "category-item"}
+                  onClick={() => handleSelectCategory(category.id)}
+                >
+                  <span>{category.label}</span>
+                  <strong>{category.countLabel}</strong>
+                </button>
+              ))}
+            </div>
+          </aside>
+        ) : null}
 
         <div className="source-list">
-          <div className="source-list-toolbar">
-            <button type="button" className="primary-button" onClick={handleCreate}>
-              新增订阅源
-            </button>
-          </div>
+          {allowSourceCreate ? (
+            <div className="source-list-toolbar">
+              <label className="source-filter-control">
+                <span>类型</span>
+                <select value={activeCategory} onChange={(event) => handleSelectCategory(event.target.value)}>
+                  {categoryOptions.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.label} · {category.countLabel}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button type="button" className="primary-button" onClick={handleCreate}>
+                新增订阅源
+              </button>
+              <button
+                type="button"
+                className="secondary-button source-speed-test-button"
+                onClick={() => void handleSpeedTestVisibleSubscriptions()}
+                disabled={isSpeedTesting || !filteredSubscriptions.length}
+              >
+                {isSpeedTesting ? `测速中 ${speedTestProgress.completed}/${speedTestProgress.total}` : "一键测速"}
+              </button>
+            </div>
+          ) : null}
           {filteredSubscriptions.length ? (
             filteredSubscriptions.map((subscription) => (
               <SourceManagerCard
@@ -869,6 +1198,10 @@ function SourcesPanel() {
                 subscription={subscription}
                 isSaving={savingSource}
                 isRemoving={removingSourceId === subscription.id}
+                speedTestResult={speedTestResults[subscription.id]}
+                canToggle={!isRsshubMode}
+                canRemove={!isRsshubMode}
+                actionLabel={isRsshubMode ? "查看" : "编辑"}
                 onEdit={handleEdit}
                 onToggle={(target, enabled) => void toggleSourceEnabled(target.id, enabled)}
                 onRemove={(target) => void removeSource(target.id)}
@@ -877,12 +1210,8 @@ function SourcesPanel() {
           ) : (
             <div className="empty-state compact">
               <div>
-                <h3>{subscriptions.length ? "这个类型下还没有订阅源" : "还没有任何订阅源"}</h3>
-                <p>
-                  {subscriptions.length
-                    ? "切换到其他类型，或点击“新增订阅源”补充新的 RSSHub 路径。"
-                    : "建议先加 1 到 3 个 RSSHub 路径，确认阅读流转顺畅后再扩展。"}
-                </p>
+                <h3>{panelSubscriptions.length ? "这个类型下还没有订阅源" : emptyTitle}</h3>
+                <p>{panelSubscriptions.length ? emptyCategoryDescription : emptyDescription}</p>
               </div>
             </div>
           )}
@@ -891,18 +1220,47 @@ function SourcesPanel() {
 
       {isModalOpen ? (
         <SubscriptionEditorModal
-          categories={categories}
+          categories={panelCategories}
           form={form}
           savingSource={savingSource}
           editingSubscriptionId={editingSubscriptionId}
+          viewOnly={isRsshubMode}
           onClose={resetForm}
           onSubmit={handleSubmit}
-          onCreateFromCurrentTemplate={handleCreateFromCurrentTemplate}
           onFormChange={(updater) => setForm((current) => updater(current))}
           onTestSubscription={testSource}
+          onCreateSubscriptionDraft={isRsshubMode ? handleCreateFromRsshubDraft : undefined}
         />
       ) : null}
     </section>
+  );
+}
+
+function SourcesPanel() {
+  return (
+    <SubscriptionManagementPanel
+      mode="sources"
+      title="类型"
+      emptyTitle="还没有任何用户订阅源"
+      emptyDescription="这里现在只保存你自己维护的订阅源。点击“新增订阅源”补充 RSSHub 路径或完整 RSS 地址。"
+      emptyCategoryDescription="切换到其他类型，或点击“新增订阅源”补充新的订阅源。"
+      allowCategoryCreate
+      allowSourceCreate
+    />
+  );
+}
+
+function RsshubPanel() {
+  return (
+    <SubscriptionManagementPanel
+      mode="rsshub"
+      title="RSSHUB"
+      emptyTitle="还没有同步 RSSHUB 模板"
+      emptyDescription="运行 npm run sync:rsshub-docs 后，这里会展示 RSSHub 官方文档导入的模板路由。"
+      emptyCategoryDescription="切换到其他 RSSHUB 类型查看模板路由。"
+      allowCategoryCreate={false}
+      allowSourceCreate={false}
+    />
   );
 }
 
@@ -930,7 +1288,7 @@ function SettingsPanel({ onLogout }: { onLogout: () => void }) {
   }, []);
 
   const enabledSubscriptionCount = useMemo(
-    () => subscriptions.filter((subscription) => subscription.enabled).length,
+    () => subscriptions.filter((subscription) => subscription.enabled && !isRsshubDocSubscription(subscription)).length,
     [subscriptions],
   );
   const autoRefreshOptions = useMemo(
@@ -1216,42 +1574,51 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="app-topbar">
-        <div className="topbar-primary">
-          <div className="brand-block">
-            <img className="brand-logo" src="/logo.png" alt="GARSS logo" />
-            <div>
-              <h1>RSS 阅读工作台</h1>
+        <div className="app-topbar-inner">
+          <div className="topbar-primary">
+            <div className="brand-block">
+              <img className="brand-logo" src="/logo.png" alt="GARSS logo" />
+              <div>
+                <h1>嘎RSS</h1>
+              </div>
             </div>
+
+            <nav className="tab-switcher tab-switcher-main" aria-label="主导航">
+              <button
+                type="button"
+                className={currentTab === "reader" ? "tab-button active" : "tab-button"}
+                onClick={() => handleTabChange("reader")}
+              >
+                阅读 RSS
+              </button>
+              <button
+                type="button"
+                className={currentTab === "sources" ? "tab-button active" : "tab-button"}
+                onClick={() => handleTabChange("sources")}
+              >
+                订阅源
+              </button>
+              <button
+                type="button"
+                className={currentTab === "rsshub" ? "tab-button active" : "tab-button"}
+                onClick={() => handleTabChange("rsshub")}
+              >
+                RSSHUB
+              </button>
+            </nav>
           </div>
 
-          <nav className="tab-switcher tab-switcher-main" aria-label="主导航">
-            <button
-              type="button"
-              className={currentTab === "reader" ? "tab-button active" : "tab-button"}
-              onClick={() => handleTabChange("reader")}
-            >
-              阅读 RSS
-            </button>
-            <button
-              type="button"
-              className={currentTab === "sources" ? "tab-button active" : "tab-button"}
-              onClick={() => handleTabChange("sources")}
-            >
-              管理订阅源
-            </button>
-          </nav>
-        </div>
-
-        <div className="topbar-actions">
-          <nav className="tab-switcher tab-switcher-settings" aria-label="设置导航">
-            <button
-              type="button"
-              className={currentTab === "settings" ? "tab-button active" : "tab-button"}
-              onClick={() => handleTabChange("settings")}
-            >
-              ⚙️ 设置
-            </button>
-          </nav>
+          <div className="topbar-actions">
+            <nav className="tab-switcher tab-switcher-settings" aria-label="设置导航">
+              <button
+                type="button"
+                className={currentTab === "settings" ? "tab-button active" : "tab-button"}
+                onClick={() => handleTabChange("settings")}
+              >
+                ⚙️ 设置
+              </button>
+            </nav>
+          </div>
         </div>
       </header>
 
@@ -1268,12 +1635,20 @@ export default function App() {
         className={
           currentTab === "reader"
             ? "workspace reader-workspace"
-            : currentTab === "sources"
+            : currentTab === "sources" || currentTab === "rsshub"
               ? "workspace sources-workspace"
               : "workspace settings-workspace"
         }
       >
-        {currentTab === "reader" ? <ReaderPanel /> : currentTab === "sources" ? <SourcesPanel /> : <SettingsPanel onLogout={handleLogout} />}
+        {currentTab === "reader" ? (
+          <ReaderPanel />
+        ) : currentTab === "sources" ? (
+          <SourcesPanel />
+        ) : currentTab === "rsshub" ? (
+          <RsshubPanel />
+        ) : (
+          <SettingsPanel onLogout={handleLogout} />
+        )}
       </main>
     </div>
   );

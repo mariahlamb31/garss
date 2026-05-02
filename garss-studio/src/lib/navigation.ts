@@ -21,6 +21,8 @@ function normalizePathname(pathname: string): string {
 
 function parseTabFromPathname(pathname: string): AppTab {
   switch (normalizePathname(pathname)) {
+    case "/rsshub":
+      return "rsshub";
     case "/sources":
       return "sources";
     case "/settings":
@@ -46,6 +48,8 @@ function buildPathname(tab: AppTab): string {
   switch (tab) {
     case "sources":
       return "/sources";
+    case "rsshub":
+      return "/rsshub";
     case "settings":
       return "/settings";
     case "reader":
@@ -60,7 +64,7 @@ export function parseAppLocation(input: string): ParsedAppLocation {
 
   return {
     tab,
-    category: tab === "sources" ? normalizeCategory(url.hash) : ALL_SOURCES_CATEGORY,
+    category: tab === "sources" || tab === "rsshub" ? normalizeCategory(url.hash) : ALL_SOURCES_CATEGORY,
     accessCode: url.searchParams.get("pw")?.trim() || "",
   };
 }
@@ -101,8 +105,16 @@ export function buildUrlForTab(input: string, tab: AppTab): string {
 }
 
 export function buildUrlForSourcesCategory(input: string, category: string): string {
+  return buildUrlForCategory(input, "sources", category);
+}
+
+export function buildUrlForRsshubCategory(input: string, category: string): string {
+  return buildUrlForCategory(input, "rsshub", category);
+}
+
+function buildUrlForCategory(input: string, tab: "sources" | "rsshub", category: string): string {
   const url = toUrl(input);
-  url.pathname = buildPathname("sources");
+  url.pathname = buildPathname(tab);
   url.hash = normalizeCategory(category) === ALL_SOURCES_CATEGORY ? "" : category;
   return `${url.pathname}${url.search}${url.hash}`;
 }
