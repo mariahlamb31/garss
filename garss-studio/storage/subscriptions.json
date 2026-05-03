@@ -1,5 +1,19 @@
 [
   {
+    "id": "d2ca4a33-6005-4efe-b549-9737d2d76d6d",
+    "category": "资源类",
+    "categories": [
+      "资源类"
+    ],
+    "name": "豆瓣 - 豆瓣电影分类",
+    "routePath": "/douban/movie/classification",
+    "routeTemplate": "",
+    "description": "排序方式可选值如下 近期热门 标记最多 评分最高 最近上映 U T S R | 示例：/douban/movie/classification/R/7.5/Netflix,2020 | 参数：sort: 排序方式，默认为U；score: 最低评分，默认不限制；tags: 分类标签，多个标签之间用英文逗号分隔，常见的标签到豆瓣电影的分类页面查看，支持自定义标签 | 源码：other/classification.ts",
+    "enabled": true,
+    "createdAt": "2026-05-03T07:28:33.654Z",
+    "updatedAt": "2026-05-03T07:28:33.654Z"
+  },
+  {
     "id": "844ee06d-82fd-4098-87ac-56bc116748f5",
     "category": "未分类",
     "name": "共产党员网 - 最新发布",

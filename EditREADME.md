@@ -269,6 +269,7 @@
 | R002 | 书伴 |  为静心阅读而生 | {{latest_content}}  |  [订阅地址](https://feeds.feedburner.com/bookfere) |  
 | R003 | kindle吧 |  海量书单阅读分享者 | {{latest_content}}  |  [订阅地址](https://www.kindle8.cc/feed) | 
 | R004 | 起点中文网 |  限时免费清单 | {{latest_content}}  |  [订阅地址](http://rsshub:1200/qidian/free) | 
+| N002 | 豆瓣 - 豆瓣电影分类 | 排序方式可选值如下 近期热门 标记最多 评分最高 最近上映 U T S R &#124; 示例：/douban/movie/classification/R/7.5/Netflix,2020 &#124; 参数：sort: 排序方式，默认为U；score: 最低评分，默认不限制；tags: 分类标签，多个标签之间用英文逗号分隔，常见的标签到豆瓣电影的分类页面查看，支持自定义标签 &#124; 源码：other/classification.ts | {{latest_content}} | [订阅地址](http://rsshub:1200/douban/movie/classification) |
 | <h2 id="Telegram优质频道RSS订阅">Telegram优质频道RSS订阅</h2> |  |   |  |
 | TG001 | 4K影视屋 |  蓝光无损电影 | {{latest_content}}  |  [订阅地址](http://rsshub:1200/telegram/channel/dianying4K) |  
 | TG002 | 编程笑话 |  程序员编程笑话 | {{latest_content}}  |  [订阅地址](http://rsshub:1200/telegram/channel/programmerjokes) |  
