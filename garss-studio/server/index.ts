@@ -109,6 +109,11 @@ const DEFAULT_AUTO_REFRESH_INTERVAL_MINUTES = 30;
 const DEFAULT_PARALLEL_FETCH_COUNT = 2;
 const FEED_FETCH_TIMEOUT_MS = 15_000;
 const MAX_FEED_BYTES = 5 * 1024 * 1024;
+const IMAGE_PROXY_TIMEOUT_MS = 12_000;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const IMAGE_PROXY_USER_AGENT =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+const blockedImageProxyHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1", "backend", "frontend", "rsshub"]);
 const openApiScanPaths = [
   path.join(rootDir, "server/**/*.ts"),
   path.join(rootDir, "dist-server/server/**/*.js"),
@@ -566,6 +571,44 @@ function buildRsshubUrl(routePath: string): string {
   return new URL(routePath, base).toString();
 }
 
+function normalizeImageProxyTargetUrl(value: unknown): string {
+  const rawValue = normalizeText(value);
+
+  if (!rawValue) {
+    throw new Error("url 参数不能为空。");
+  }
+
+  let targetUrl: URL;
+
+  try {
+    targetUrl = new URL(rawValue);
+  } catch {
+    throw new Error("url 参数必须是合法的绝对地址。");
+  }
+
+  if (targetUrl.protocol !== "http:" && targetUrl.protocol !== "https:") {
+    throw new Error("url 参数只支持 http 或 https。");
+  }
+
+  const hostname = targetUrl.hostname.toLowerCase();
+
+  if (blockedImageProxyHosts.has(hostname) || hostname.endsWith(".localhost")) {
+    throw new Error("不支持代理内部主机图片。");
+  }
+
+  return targetUrl.toString();
+}
+
+function buildImageProxyReferer(targetUrl: string): string {
+  const parsedUrl = new URL(targetUrl);
+
+  if (parsedUrl.hostname.toLowerCase().endsWith("doubanio.com")) {
+    return "https://movie.douban.com/";
+  }
+
+  return `${parsedUrl.protocol}//${parsedUrl.host}/`;
+}
+
 function formatByteLimit(bytes: number): string {
   return `${Math.round(bytes / 1024 / 1024)} MB`;
 }
@@ -635,6 +678,55 @@ async function readResponseTextWithinLimit(
     }
 
     return textParts.join("");
+  } finally {
+    try {
+      await reader.cancel();
+    } catch {
+      // Ignore cancellation errors after the stream has completed or been aborted.
+    }
+  }
+}
+
+async function readResponseBufferWithinLimit(
+  response: globalThis.Response,
+  controller: AbortController,
+  maxBytes: number,
+): Promise<Buffer> {
+  const declaredContentLength = parseContentLength(response.headers.get("content-length"));
+
+  if (declaredContentLength !== null && declaredContentLength > maxBytes) {
+    controller.abort();
+    throw new Error(`response too large (limit ${formatByteLimit(maxBytes)})`);
+  }
+
+  if (!response.body) {
+    return Buffer.alloc(0);
+  }
+
+  const reader = response.body.getReader();
+  let totalBytes = 0;
+  const chunks: Buffer[] = [];
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      const chunk = Buffer.from(value.buffer, value.byteOffset, value.byteLength);
+      totalBytes += chunk.byteLength;
+
+      if (totalBytes > maxBytes) {
+        controller.abort();
+        throw new Error(`response too large (limit ${formatByteLimit(maxBytes)})`);
+      }
+
+      chunks.push(chunk);
+    }
+
+    return Buffer.concat(chunks, totalBytes);
   } finally {
     try {
       await reader.cancel();
@@ -1620,6 +1712,60 @@ app.get("/api/health", async (_request, response) => {
     subscriptions: subscriptions.length,
     now: new Date().toISOString(),
   });
+});
+
+app.get("/api/image-proxy", async (request, response) => {
+  let targetUrl: string;
+
+  try {
+    targetUrl = normalizeImageProxyTargetUrl(request.query.url);
+  } catch (error) {
+    response.status(400).json({ error: getErrorMessage(error) });
+    return;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), IMAGE_PROXY_TIMEOUT_MS);
+
+  try {
+    const upstreamResponse = await fetch(targetUrl, {
+      headers: {
+        accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        referer: buildImageProxyReferer(targetUrl),
+        "user-agent": IMAGE_PROXY_USER_AGENT,
+      },
+      redirect: "follow",
+      signal: controller.signal,
+    });
+
+    if (!upstreamResponse.ok) {
+      response.status(upstreamResponse.status).json({ error: `upstream returned ${upstreamResponse.status}` });
+      return;
+    }
+
+    const contentType = upstreamResponse.headers.get("content-type") || "application/octet-stream";
+
+    if (!contentType.toLowerCase().startsWith("image/")) {
+      response.status(415).json({ error: "upstream content is not an image" });
+      return;
+    }
+
+    const imageBuffer = await readResponseBufferWithinLimit(upstreamResponse, controller, MAX_IMAGE_BYTES);
+
+    response.setHeader("Content-Type", contentType);
+    response.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    response.send(imageBuffer);
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      response.status(504).json({ error: `request timed out after ${IMAGE_PROXY_TIMEOUT_MS}ms` });
+      return;
+    }
+
+    response.status(502).json({ error: getErrorMessage(error) });
+  } finally {
+    clearTimeout(timeout);
+  }
 });
 
 app.get("/api/rsshub/fetch", ensureAuthenticated, async (request, response) => {
