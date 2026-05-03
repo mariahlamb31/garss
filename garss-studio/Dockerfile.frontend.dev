@@ -1,0 +1,12 @@
+FROM node:22-bookworm
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY scripts ./scripts
+
+EXPOSE 25173
+
+CMD ["sh", "scripts/dev-entrypoint.sh", "npm", "run", "dev:docker"]

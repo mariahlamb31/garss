@@ -1,17 +1,169 @@
-import feedparser
 import time
 import os
 import re
-import pytz
-from datetime import datetime
-import yagmail
-import requests
-import markdown
 import json
 import shutil
-from urllib.parse import urlparse
+import email.utils
+import urllib.error
+import urllib.request
+import xml.etree.ElementTree as ET
+from datetime import datetime
+from urllib.parse import quote, urljoin, urlparse
+from zoneinfo import ZoneInfo
 from multiprocessing import Pool,  Manager
 
+try:
+    import feedparser
+except ImportError:
+    feedparser = None
+
+try:
+    import markdown
+except ImportError:
+    markdown = None
+
+try:
+    import requests
+except ImportError:
+    requests = None
+
+try:
+    import yagmail
+except ImportError:
+    yagmail = None
+
+
+GARSS_STUDIO_ACCESS_TOKEN = ""
+
+
+def get_garss_studio_base_url():
+    return os.environ.get("GARSS_STUDIO_BASE_URL", "http://127.0.0.1:25173").rstrip("/")
+
+
+def get_garss_studio_access_code():
+    return os.environ.get("GARSS_STUDIO_ACCESS_CODE") or os.environ.get("ACCESS_CODE") or "banana"
+
+
+def is_garss_studio_rsshub_url(feed_url):
+    parse_result = urlparse(feed_url)
+    return parse_result.scheme in ["http", "https"] and parse_result.netloc in ["rsshub:1200", "rsshub.v2fy.com"]
+
+
+def get_rsshub_route_path(feed_url):
+    parse_result = urlparse(feed_url)
+    route_path = parse_result.path or "/"
+
+    if parse_result.query:
+        route_path = route_path + "?" + parse_result.query
+
+    return route_path
+
+
+def get_garss_studio_access_token():
+    global GARSS_STUDIO_ACCESS_TOKEN
+
+    if GARSS_STUDIO_ACCESS_TOKEN:
+        return GARSS_STUDIO_ACCESS_TOKEN
+
+    login_url = urljoin(get_garss_studio_base_url() + "/", "api/auth/login")
+    response_data = http_post_json(login_url, {"accessCode": get_garss_studio_access_code()}, 8)
+    GARSS_STUDIO_ACCESS_TOKEN = response_data["token"]
+    return GARSS_STUDIO_ACCESS_TOKEN
+
+
+def http_get_content(url, timeout, headers):
+    if requests:
+        response = requests.get(url, timeout=timeout, headers=headers)
+        response.raise_for_status()
+        return response.content
+
+    request = urllib.request.Request(url, headers=headers)
+
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return response.read()
+
+
+def http_post_json(url, body, timeout):
+    encoded_body = json.dumps(body).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=encoded_body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def get_feed_url_content(feed_url, timeout, headers):
+    if not is_garss_studio_rsshub_url(feed_url):
+        return http_get_content(feed_url, timeout, headers)
+
+    route_path = get_rsshub_route_path(feed_url)
+    fetch_url = urljoin(get_garss_studio_base_url() + "/", "api/rsshub/fetch") + "?routePath=" + quote(route_path, safe="")
+    return http_get_content(
+        fetch_url,
+        timeout,
+        {
+            **headers,
+            "Authorization": "Bearer " + get_garss_studio_access_token(),
+        },
+    )
+
+
+def parse_entry_date(value):
+    parsed_date = email.utils.parsedate_to_datetime(value or "")
+
+    if parsed_date:
+        return parsed_date.strftime("%Y-%m-%d")
+
+    return datetime.today().strftime("%Y-%m-%d")
+
+
+def parse_feed_entries_with_stdlib(feed_url_content):
+    root = ET.fromstring(feed_url_content)
+    entries = []
+
+    if root.tag.endswith("rss") or root.find("./channel") is not None:
+        for item in root.findall("./channel/item"):
+            title = item.findtext("title", default="")
+            link = item.findtext("link", default="")
+            published = item.findtext("pubDate", default="") or item.findtext("date", default="")
+            entries.append({"title": title, "link": link, "date": parse_entry_date(published)})
+        return entries
+
+    namespaces = {"atom": "http://www.w3.org/2005/Atom"}
+    for entry in root.findall("./atom:entry", namespaces):
+        title = entry.findtext("atom:title", default="", namespaces=namespaces)
+        link_element = entry.find("atom:link", namespaces)
+        link = link_element.get("href", "") if link_element is not None else ""
+        published = entry.findtext("atom:published", default="", namespaces=namespaces) or entry.findtext(
+            "atom:updated",
+            default="",
+            namespaces=namespaces,
+        )
+        entries.append({"title": title, "link": link, "date": parse_entry_date(published)})
+
+    return entries
+
+
+def parse_feed_entries(feed_url_content):
+    if not feedparser:
+        return parse_feed_entries_with_stdlib(feed_url_content)
+
+    feed = feedparser.parse(feed_url_content)
+    feed_entries = feed["entries"]
+    result = []
+
+    for entrie in feed_entries:
+        result.append({
+            "title": entrie["title"],
+            "link": entrie["link"],
+            "date": time.strftime("%Y-%m-%d", entrie["published_parsed"])
+        })
+
+    return result
 
 
 def get_rss_info(feed_url, index, rss_info_list):
@@ -27,15 +179,14 @@ def get_rss_info(feed_url, index, rss_info_list):
                     "Content-Encoding": "gzip"
                 }
                 # 三次分别设置8, 16, 24秒钟超时
-                feed_url_content = requests.get(feed_url,  timeout= (i+1)*8 ,headers = headers).content
-                feed = feedparser.parse(feed_url_content)
-                feed_entries = feed["entries"]
+                feed_url_content = get_feed_url_content(feed_url, (i+1)*8, headers)
+                feed_entries = parse_feed_entries(feed_url_content)
                 feed_entries_length = len(feed_entries)
                 print("==feed_url=>>", feed_url, "==len=>>", feed_entries_length)
                 for entrie in feed_entries[0: feed_entries_length-1]:
                     title = entrie["title"]
                     link = entrie["link"]
-                    date = time.strftime("%Y-%m-%d", entrie["published_parsed"])
+                    date = entrie["date"]
 
                     title = title.replace("\n", "")
                     title = title.replace("\r", "")
@@ -67,6 +218,14 @@ def get_rss_info(feed_url, index, rss_info_list):
 
 
 def send_mail(email, title, contents):
+    if os.environ.get("GARSS_SKIP_MAIL", "") == "1":
+        print("已设置 GARSS_SKIP_MAIL=1，跳过邮件发送")
+        return
+
+    if not yagmail:
+        print("当前环境没有 yagmail，跳过邮件发送")
+        return
+
     # 判断secret.json是否存在
     user = ""
     password = ""
@@ -115,7 +274,7 @@ def replace_readme():
         # 填充统计RSS数量
         new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{rss_num}}", str(len(before_info_list)))
         # 填充统计时间
-        ga_rss_datetime = datetime.fromtimestamp(int(time.time()),pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d %H:%M:%S')
+        ga_rss_datetime = datetime.fromtimestamp(int(time.time()), ZoneInfo('Asia/Shanghai')).strftime('%Y-%m-%d %H:%M:%S')
         new_edit_readme_md[0] = new_edit_readme_md[0].replace("{{ga_rss_datetime}}", str(ga_rss_datetime))
 
         # 使用进程池进行数据获取，获得rss_info_list
@@ -340,7 +499,7 @@ def main():
     create_json()
     create_opml()
     readme_md = replace_readme()
-    content = markdown.markdown(readme_md[0], extensions=['tables', 'fenced_code'])
+    content = markdown.markdown(readme_md[0], extensions=['tables', 'fenced_code']) if markdown else readme_md[0]
     cp_readme_md_to_docs()
     cp_media_to_docs()
     email_list = get_email_list()

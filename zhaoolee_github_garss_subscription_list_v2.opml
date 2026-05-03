@@ -2,7 +2,7 @@
 <head>
 <title>嘎!RSS</title>
 <dateCreated>Sat, 04 Dec 2021 04:18:35 GMT</dateCreated>
-<dateModified>Sat, 24 Sep 2022 05:09:34 GMT</dateModified>
+<dateModified>Sun, 03 May 2026 05:39:29 GMT</dateModified>
 <ownerName>zhaoolee</ownerName>
 <ownerEmail>zhaoolee@gmail.com</ownerEmail>
 <expansionState/>
@@ -20,7 +20,7 @@
 <outline  text="小众软件" description="分享免费、小巧、实用、有趣、绿色的软件" htmlUrl="https://www.appinn.com/feed/" language="unknown" title="小众软件" type="rss" version="RSS2" xmlUrl="https://www.appinn.com/feed/"/>
 <outline  text="懒得勤快的博客" description="懒得勤快，互联网分享精神，勤于发现，乐于分享" htmlUrl="https://masuit.com/rss" language="unknown" title="懒得勤快的博客" type="rss" version="RSS2" xmlUrl="https://masuit.com/rss"/>
 <outline  text="反斗限免" description="反斗软件旗下软件限免资讯网站" htmlUrl="https://free.apprcn.com/feed/" language="unknown" title="反斗限免" type="rss" version="RSS2" xmlUrl="https://free.apprcn.com/feed/"/>
-<outline  text="异次元软件世界" description="极具人气和特色的软件网站！专注于推荐优秀软件、APP应用和互联网资源，每篇图文评测都极其用心，并提供大量软件资源下载。" htmlUrl="https://rsshub.v2fy.com/iplay/home" language="unknown" title="异次元软件世界" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/iplay/home"/>
+<outline  text="异次元软件世界" description="极具人气和特色的软件网站！专注于推荐优秀软件、APP应用和互联网资源，每篇图文评测都极其用心，并提供大量软件资源下载。" htmlUrl="http://rsshub:1200/iplay/home" language="unknown" title="异次元软件世界" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/iplay/home"/>
 <outline  text="阮一峰的网络日志" description="一个科技博客，讲解的知识通俗易懂" htmlUrl="http://www.ruanyifeng.com/blog/atom.xml" language="unknown" title="阮一峰的网络日志" type="rss" version="RSS2" xmlUrl="http://www.ruanyifeng.com/blog/atom.xml"/>
 <outline  text="当我在扯淡" description="王垠的博客，观点奇妙有趣" htmlUrl="https://yinwang1.wordpress.com/feed/" language="unknown" title="当我在扯淡" type="rss" version="RSS2" xmlUrl="https://yinwang1.wordpress.com/feed/"/>
 <outline  text="黑果小兵的部落阁" description="Hackintosh安装镜像、教程及经验分享" htmlUrl="https://blog.daliansky.net/atom.xml" language="unknown" title="黑果小兵的部落阁" type="rss" version="RSS2" xmlUrl="https://blog.daliansky.net/atom.xml"/>
@@ -148,6 +148,8 @@
 <outline  text="水八口的冥想盆" description="一位居住在日本的女开发者" htmlUrl="https://blog.shuiba.co/feed" language="unknown" title="水八口的冥想盆" type="rss" version="RSS2" xmlUrl="https://blog.shuiba.co/feed"/>
 <outline  text="失眠海峡" description="我要与你坦诚相见" htmlUrl="https://blog.imalan.cn/feed/index.xml" language="unknown" title="失眠海峡" type="rss" version="RSS2" xmlUrl="https://blog.imalan.cn/feed/index.xml"/>
 <outline  text="千古壹号的博客" description="一个京东前端工程师" htmlUrl="https://qianguyihao.com/atom.xml" language="unknown" title="千古壹号的博客" type="rss" version="RSS2" xmlUrl="https://qianguyihao.com/atom.xml"/>
+<outline  text="涛叔" description="互联网从业者，专注效率工具和思维方法" htmlUrl="https://taoshu.in/feed.xml" language="unknown" title="涛叔" type="rss" version="RSS2" xmlUrl="https://taoshu.in/feed.xml"/>
+<outline  text="可能吧" description="有趣有用的互联网趋势" htmlUrl="https://feeds.feedburner.com/kenengbarss" language="unknown" title="可能吧" type="rss" version="RSS2" xmlUrl="https://feeds.feedburner.com/kenengbarss"/>
 <outline  text="少数派" description="少数派致力于更好地运用数字产品或科学方法，帮助用户提升工作效率和生活品质" htmlUrl="https://sspai.com/feed" language="unknown" title="少数派" type="rss" version="RSS2" xmlUrl="https://sspai.com/feed"/>
 <outline  text="数字尾巴" description="分享美好数字生活" htmlUrl="https://www.dgtle.com/rss/dgtle.xml" language="unknown" title="数字尾巴" type="rss" version="RSS2" xmlUrl="https://www.dgtle.com/rss/dgtle.xml"/>
 <outline  text="Chiphell" description="分享与交流用户体验" htmlUrl="https://www.chiphell.com/portal.php?mod=rss" language="unknown" title="Chiphell" type="rss" version="RSS2" xmlUrl="https://www.chiphell.com/portal.php?mod=rss"/>
@@ -169,7 +171,7 @@
 <outline  text="Hack News" description="极其优质的极客新闻" htmlUrl="https://news.ycombinator.com/rss" language="unknown" title="Hack News" type="rss" version="RSS2" xmlUrl="https://news.ycombinator.com/rss"/>
 <outline  text="奇客Solidot–传递最新科技情报" description="奇客的资讯，重要的东西" htmlUrl="https://www.solidot.org/index.rss" language="unknown" title="奇客Solidot–传递最新科技情报" type="rss" version="RSS2" xmlUrl="https://www.solidot.org/index.rss"/>
 <outline  text="环球科学" description="科学美国人中文版，一些科普文章" htmlUrl="https://feedx.net/rss/huanqiukexue.xml" language="unknown" title="环球科学" type="rss" version="RSS2" xmlUrl="https://feedx.net/rss/huanqiukexue.xml"/>
-<outline  text="MIT 科技评论" description="MIT 科技评论 本周热榜" htmlUrl="https://rsshub.v2fy.com/mittrchina/hot" language="unknown" title="MIT 科技评论" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/mittrchina/hot"/>
+<outline  text="MIT 科技评论" description="MIT 科技评论 本周热榜" htmlUrl="http://rsshub:1200/mittrchina/hot" language="unknown" title="MIT 科技评论" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/mittrchina/hot"/>
 <outline  text="产品运营" description="产品运营 - 人人都是产品经理" htmlUrl="http://www.woshipm.com/category/operate/feed" language="unknown" title="产品运营" type="rss" version="RSS2" xmlUrl="http://www.woshipm.com/category/operate/feed"/>
 <outline  text="产品经理" description="产品经理 – 人人都是产品经理" htmlUrl="http://www.woshipm.com/category/pmd/feed" language="unknown" title="产品经理" type="rss" version="RSS2" xmlUrl="http://www.woshipm.com/category/pmd/feed"/>
 <outline  text="产品100" description="产品人学习成长社区" htmlUrl="http://www.chanpin100.com/feed" language="unknown" title="产品100" type="rss" version="RSS2" xmlUrl="http://www.chanpin100.com/feed"/>
@@ -178,9 +180,9 @@
 <outline  text="扔物线" description="帮助 Android 工程师进阶成长" htmlUrl="https://rengwuxian.com/feed" language="unknown" title="扔物线" type="rss" version="RSS2" xmlUrl="https://rengwuxian.com/feed"/>
 <outline  text="MOOC中国" description="慕课改变你，你改变世界" htmlUrl="https://www.mooc.cn/feed" language="unknown" title="MOOC中国" type="rss" version="RSS2" xmlUrl="https://www.mooc.cn/feed"/>
 <outline  text="青柠学术" description="每个科研小白都有成为大神的潜力" htmlUrl="https://iseex.github.io/feed" language="unknown" title="青柠学术" type="rss" version="RSS2" xmlUrl="https://iseex.github.io/feed"/>
-<outline  text="李子柒" description="李子柒的微博" htmlUrl="https://rsshub.v2fy.com/weibo/user/2970452952" language="unknown" title="李子柒" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/weibo/user/2970452952"/>
+<outline  text="李子柒" description="李子柒的微博" htmlUrl="http://rsshub:1200/weibo/user/2970452952" language="unknown" title="李子柒" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/weibo/user/2970452952"/>
 <outline  text="理想生活实验室" description="为更理想的生活" htmlUrl="https://www.toodaylab.com/rss" language="unknown" title="理想生活实验室" type="rss" version="RSS2" xmlUrl="https://www.toodaylab.com/rss"/>
-<outline  text="一兜糖" description="家的主理人社区" htmlUrl="https://rsshub.v2fy.com/yidoutang/index" language="unknown" title="一兜糖" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/yidoutang/index"/>
+<outline  text="一兜糖" description="家的主理人社区" htmlUrl="http://rsshub:1200/yidoutang/index" language="unknown" title="一兜糖" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/yidoutang/index"/>
 <outline  text="Behance" description="Adobe旗下设计网站Behance" htmlUrl="https://www.behance.net/feeds/projects" language="unknown" title="Behance" type="rss" version="RSS2" xmlUrl="https://www.behance.net/feeds/projects"/>
 <outline  text="Behance官方博客" description="Behance官方博客" htmlUrl="https://medium.com/feed/@behance" language="unknown" title="Behance官方博客" type="rss" version="RSS2" xmlUrl="https://medium.com/feed/@behance"/>
 <outline  text="Pinterest" description="图片设计社交" htmlUrl="https://newsroom.pinterest.com/en/feed/posts.xml" language="unknown" title="Pinterest" type="rss" version="RSS2" xmlUrl="https://newsroom.pinterest.com/en/feed/posts.xml"/>
@@ -188,6 +190,8 @@
 <outline  text="腾讯CDC" description="腾讯用户研究与体验设计部" htmlUrl="https://cdc.tencent.com/feed/" language="unknown" title="腾讯CDC" type="rss" version="RSS2" xmlUrl="https://cdc.tencent.com/feed/"/>
 <outline  text="ID公社" description="发现有意味的设计" htmlUrl="http://feeds.feedburner.com/ID" language="unknown" title="ID公社" type="rss" version="RSS2" xmlUrl="http://feeds.feedburner.com/ID"/>
 <outline  text="摄影世界" description="你的随身摄影杂志" htmlUrl="https://feedx.net/rss/photoworld.xml" language="unknown" title="摄影世界" type="rss" version="RSS2" xmlUrl="https://feedx.net/rss/photoworld.xml"/>
+<outline  text="Design Milk" description="Design Milk 是一个分享现代设计与生活方式灵感的网站" htmlUrl="https://design-milk.com/feed/" language="unknown" title="Design Milk" type="rss" version="RSS2" xmlUrl="https://design-milk.com/feed/"/>
+<outline  text="Smashing Magazine" description="Magazine on CSS, JavaScript, front-end, accessibility, UX and design. For developers, designers and front-end engineers.s" htmlUrl="https://www.smashingmagazine.com/feed/" language="unknown" title="Smashing Magazine" type="rss" version="RSS2" xmlUrl="https://www.smashingmagazine.com/feed/"/>
 <outline  text="知乎" description="知乎每日精选" htmlUrl="https://www.zhihu.com/rss" language="unknown" title="知乎" type="rss" version="RSS2" xmlUrl="https://www.zhihu.com/rss"/>
 <outline  text="湾区日报" description="关注创业与技术，每天推送3到5篇优质英文文章" htmlUrl="https://wanqu.co/feed/" language="unknown" title="湾区日报" type="rss" version="RSS2" xmlUrl="https://wanqu.co/feed/"/>
 <outline  text="爱范儿" description="让未来触手可及" htmlUrl="https://www.ifanr.com/feed" language="unknown" title="爱范儿" type="rss" version="RSS2" xmlUrl="https://www.ifanr.com/feed"/>
@@ -208,7 +212,7 @@
 <outline  text="博客园" description="博客园首页" htmlUrl="http://feed.cnblogs.com/blog/sitehome/rss" language="unknown" title="博客园" type="rss" version="RSS2" xmlUrl="http://feed.cnblogs.com/blog/sitehome/rss"/>
 <outline  text="PTT(台湾论坛)" description="PTT电影专题" htmlUrl="https://www.ptt.cc/atom/movie.xml" language="unknown" title="PTT(台湾论坛)" type="rss" version="RSS2" xmlUrl="https://www.ptt.cc/atom/movie.xml"/>
 <outline  text="PTT(台湾论坛)" description="PTT正妹专题" htmlUrl="https://www.ptt.cc/atom/beauty.xml" language="unknown" title="PTT(台湾论坛)" type="rss" version="RSS2" xmlUrl="https://www.ptt.cc/atom/beauty.xml"/>
-<outline  text="吾爱破解" description="吾爱破解精品软件区" htmlUrl="https://rsshub.v2fy.com/discuz/x/https%3a%2f%2fwww.52pojie.cn%2fforum-16-1.html" language="unknown" title="吾爱破解" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/discuz/x/https%3a%2f%2fwww.52pojie.cn%2fforum-16-1.html"/>
+<outline  text="吾爱破解" description="吾爱破解精品软件区" htmlUrl="http://rsshub:1200/discuz/x/https%3a%2f%2fwww.52pojie.cn%2fforum-16-1.html" language="unknown" title="吾爱破解" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/discuz/x/https%3a%2f%2fwww.52pojie.cn%2fforum-16-1.html"/>
 <outline  text="cnBeta.COM 精彩优秀评论" description="从cnBeta每天数千评论中精选出来的优秀评论" htmlUrl="https://www.cnbeta.com/commentrss.php" language="unknown" title="cnBeta.COM 精彩优秀评论" type="rss" version="RSS2" xmlUrl="https://www.cnbeta.com/commentrss.php"/>
 <outline  text="比特客栈的文艺复兴" description="We do not choose who we are, but we do choose who we become." htmlUrl="https://bitinn.net/feed/" language="unknown" title="比特客栈的文艺复兴" type="rss" version="RSS2" xmlUrl="https://bitinn.net/feed/"/>
 <outline  text="Pixiv(艺术家社区)" description="男性向作品排行 - 前20" htmlUrl="https://rakuen.thec.me/PixivRss/male-20" language="unknown" title="Pixiv(艺术家社区)" type="rss" version="RSS2" xmlUrl="https://rakuen.thec.me/PixivRss/male-20"/>
@@ -217,10 +221,12 @@
 <outline  text="Pixiv(艺术家社区)" description="Pixiv每月排行 - 前20" htmlUrl="http://rakuen.thec.me/PixivRss/monthly-20" language="unknown" title="Pixiv(艺术家社区)" type="rss" version="RSS2" xmlUrl="http://rakuen.thec.me/PixivRss/monthly-20"/>
 <outline  text="cnBeta" description="中文业界资讯" htmlUrl="https://feedx.net/rss/cnbetatop.xml" language="unknown" title="cnBeta" type="rss" version="RSS2" xmlUrl="https://feedx.net/rss/cnbetatop.xml"/>
 <outline  text="China Daily News" description="中国每日新闻" htmlUrl="http://www.chinadaily.com.cn/rss/cndy_rss.xml" language="unknown" title="China Daily News" type="rss" version="RSS2" xmlUrl="http://www.chinadaily.com.cn/rss/cndy_rss.xml"/>
-<outline  text="MM范" description="妹子热门图" htmlUrl="https://rsshub.v2fy.com/95mm/tab/热门" language="unknown" title="MM范" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/95mm/tab/热门"/>
-<outline  text="CNU视觉联盟" description="每日精选" htmlUrl="https://rsshub.v2fy.com/cnu/selected" language="unknown" title="CNU视觉联盟" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/cnu/selected"/>
-<outline  text="香水时代" description="最新香水评论-发现香水圈的新鲜事" htmlUrl="https://rsshub.v2fy.com/nosetime/home" language="unknown" title="香水时代" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/nosetime/home"/>
-<outline  text="恩山无线论坛" description="无线路由器爱好者的乐园" htmlUrl="https://rsshub.v2fy.com/right/forum/31" language="unknown" title="恩山无线论坛" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/right/forum/31"/>
+<outline  text="MM范" description="妹子热门图" htmlUrl="http://rsshub:1200/95mm/tab/热门" language="unknown" title="MM范" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/95mm/tab/热门"/>
+<outline  text="CNU视觉联盟" description="每日精选" htmlUrl="http://rsshub:1200/cnu/selected" language="unknown" title="CNU视觉联盟" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/cnu/selected"/>
+<outline  text="香水时代" description="最新香水评论-发现香水圈的新鲜事" htmlUrl="http://rsshub:1200/nosetime/home" language="unknown" title="香水时代" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/nosetime/home"/>
+<outline  text="恩山无线论坛" description="无线路由器爱好者的乐园" htmlUrl="http://rsshub:1200/right/forum/31" language="unknown" title="恩山无线论坛" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/right/forum/31"/>
+<outline  text="xLog" description="An open-source creative community written on the blockchain." htmlUrl="https://xlog.app/feed/hottest?interval=1" language="unknown" title="xLog" type="rss" version="RSS2" xmlUrl="https://xlog.app/feed/hottest?interval=1"/>
+<outline  text="NodeSeek" description="一个面向Web开发、主机托管、VPS/服务器等技术话题的极客社区" htmlUrl="https://rss.nodeseek.com/" language="unknown" title="NodeSeek" type="rss" version="RSS2" xmlUrl="https://rss.nodeseek.com/"/>
 <outline  text="VIP影院" description="666影院 - 全网VIP电影免费看！" htmlUrl="https://bukaivip.com/rss" language="unknown" title="VIP影院" type="rss" version="RSS2" xmlUrl="https://bukaivip.com/rss"/>
 <outline  text="LimeTorrents" description="Latest Torrents RSS" htmlUrl="https://www.limetorrents.pro/rss/" language="unknown" title="LimeTorrents" type="rss" version="RSS2" xmlUrl="https://www.limetorrents.pro/rss/"/>
 <outline  text="Torlock" description="种子站Torlock" htmlUrl="https://www.torlock.com/rss.xml" language="unknown" title="Torlock" type="rss" version="RSS2" xmlUrl="https://www.torlock.com/rss.xml"/>
@@ -228,22 +234,23 @@
 <outline  text="RARBG" description="种子站RARBG" htmlUrl="https://rarbg.to/rss.php" language="unknown" title="RARBG" type="rss" version="RSS2" xmlUrl="https://rarbg.to/rss.php"/>
 <outline  text="机核网" description="不止是游戏" htmlUrl="https://www.gcores.com/rss" language="unknown" title="机核网" type="rss" version="RSS2" xmlUrl="https://www.gcores.com/rss"/>
 <outline  text="游研社" description="无论你是游戏死忠，还是轻度的休闲玩家，在这里都能找到感兴趣的东西。" htmlUrl="https://www.yystv.cn/rss/feed" language="unknown" title="游研社" type="rss" version="RSS2" xmlUrl="https://www.yystv.cn/rss/feed"/>
-<outline  text="游戏葡萄" description="深度解读游戏" htmlUrl="https://rsshub.v2fy.com/gamegrape/13" language="unknown" title="游戏葡萄" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/gamegrape/13"/>
+<outline  text="游戏葡萄" description="深度解读游戏" htmlUrl="http://rsshub:1200/gamegrape/13" language="unknown" title="游戏葡萄" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/gamegrape/13"/>
 <outline  text="书格" description="有品格的数字古籍图书馆" htmlUrl="https://www.shuge.org/feed/" language="unknown" title="书格" type="rss" version="RSS2" xmlUrl="https://www.shuge.org/feed/"/>
 <outline  text="书伴" description="为静心阅读而生" htmlUrl="https://feeds.feedburner.com/bookfere" language="unknown" title="书伴" type="rss" version="RSS2" xmlUrl="https://feeds.feedburner.com/bookfere"/>
 <outline  text="kindle吧" description="海量书单阅读分享者" htmlUrl="https://www.kindle8.cc/feed" language="unknown" title="kindle吧" type="rss" version="RSS2" xmlUrl="https://www.kindle8.cc/feed"/>
-<outline  text="起点中文网" description="限时免费清单" htmlUrl="https://rsshub.v2fy.com/qidian/free" language="unknown" title="起点中文网" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/qidian/free"/>
-<outline  text="4K影视屋" description="蓝光无损电影" htmlUrl="https://rsshub.v2fy.com/telegram/channel/dianying4K" language="unknown" title="4K影视屋" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/dianying4K"/>
-<outline  text="编程笑话" description="程序员编程笑话" htmlUrl="https://rsshub.v2fy.com/telegram/channel/programmerjokes" language="unknown" title="编程笑话" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/programmerjokes"/>
-<outline  text="薅羊毛" description="各种购物平台的优惠信息" htmlUrl="https://rsshub.v2fy.com/telegram/channel/yangmaoshare" language="unknown" title="薅羊毛" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/yangmaoshare"/>
-<outline  text="竹新社" description="7×24不定时编译国内外媒体的即时新闻报道。" htmlUrl="https://rsshub.v2fy.com/telegram/channel/tnews365" language="unknown" title="竹新社" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/tnews365"/>
-<outline  text="书和读书" description="好书推荐。" htmlUrl="https://rsshub.v2fy.com/telegram/channel/GoReading" language="unknown" title="书和读书" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/GoReading"/>
-<outline  text="阿里云盘资源分享" description="分享资源完成阿里云盘任务，收获精品资源保存到不限速网盘" htmlUrl="https://rsshub.v2fy.com/telegram/channel/YunPanPan" language="unknown" title="阿里云盘资源分享" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/YunPanPan"/>
-<outline  text="Google Drive" description="资源共享-软件-电影-纪录片-科学上网" htmlUrl="https://rsshub.v2fy.com/telegram/channel/YunPanPan" language="unknown" title="Google Drive" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/YunPanPan"/>
-<outline  text="扫地僧笔记" description="扫地僧树洞" htmlUrl="https://rsshub.v2fy.com/telegram/channel/lover_links" language="unknown" title="扫地僧笔记" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/lover_links"/>
-<outline  text="树莓派家用云服务器" description="树莓派家用云服务器交流" htmlUrl="https://rsshub.v2fy.com/telegram/channel/zhaoolee_pi" language="unknown" title="树莓派家用云服务器" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/zhaoolee_pi"/>
-<outline  text="快乐星球" description="美女图片" htmlUrl="https://rsshub.v2fy.com/telegram/channel/botmzt" language="unknown" title="快乐星球" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/botmzt"/>
-<outline  text="Newlearnerの自留地" description="不定期推送 IT 相关资讯" htmlUrl="https://rsshub.v2fy.com/telegram/channel/NewlearnerChannel" language="unknown" title="Newlearnerの自留地" type="rss" version="RSS2" xmlUrl="https://rsshub.v2fy.com/telegram/channel/NewlearnerChannel"/>
+<outline  text="起点中文网" description="限时免费清单" htmlUrl="http://rsshub:1200/qidian/free" language="unknown" title="起点中文网" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/qidian/free"/>
+<outline  text="4K影视屋" description="蓝光无损电影" htmlUrl="http://rsshub:1200/telegram/channel/dianying4K" language="unknown" title="4K影视屋" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/dianying4K"/>
+<outline  text="编程笑话" description="程序员编程笑话" htmlUrl="http://rsshub:1200/telegram/channel/programmerjokes" language="unknown" title="编程笑话" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/programmerjokes"/>
+<outline  text="薅羊毛" description="各种购物平台的优惠信息" htmlUrl="http://rsshub:1200/telegram/channel/yangmaoshare" language="unknown" title="薅羊毛" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/yangmaoshare"/>
+<outline  text="竹新社" description="7×24不定时编译国内外媒体的即时新闻报道。" htmlUrl="http://rsshub:1200/telegram/channel/tnews365" language="unknown" title="竹新社" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/tnews365"/>
+<outline  text="书和读书" description="好书推荐。" htmlUrl="http://rsshub:1200/telegram/channel/GoReading" language="unknown" title="书和读书" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/GoReading"/>
+<outline  text="阿里云盘资源分享" description="分享资源完成阿里云盘任务，收获精品资源保存到不限速网盘" htmlUrl="http://rsshub:1200/telegram/channel/YunPanPan" language="unknown" title="阿里云盘资源分享" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/YunPanPan"/>
+<outline  text="Google Drive" description="资源共享-软件-电影-纪录片-科学上网" htmlUrl="http://rsshub:1200/telegram/channel/YunPanPan" language="unknown" title="Google Drive" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/YunPanPan"/>
+<outline  text="扫地僧笔记" description="扫地僧树洞" htmlUrl="http://rsshub:1200/telegram/channel/lover_links" language="unknown" title="扫地僧笔记" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/lover_links"/>
+<outline  text="树莓派家用云服务器" description="树莓派家用云服务器交流" htmlUrl="http://rsshub:1200/telegram/channel/zhaoolee_pi" language="unknown" title="树莓派家用云服务器" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/zhaoolee_pi"/>
+<outline  text="快乐星球" description="美女图片" htmlUrl="http://rsshub:1200/telegram/channel/botmzt" language="unknown" title="快乐星球" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/botmzt"/>
+<outline  text="Newlearnerの自留地" description="不定期推送 IT 相关资讯" htmlUrl="http://rsshub:1200/telegram/channel/NewlearnerChannel" language="unknown" title="Newlearnerの自留地" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/telegram/channel/NewlearnerChannel"/>
+<outline  text="共产党员网 - 最新发布" description="最新发布 : : zxfb &#124; 示例：/12371/zxfb &#124; 参数：category: 新闻分类名，预设 zxfb &#124; 来源：www.12371.cn &#124; 源码：zxfb.ts" htmlUrl="http://rsshub:1200/12371/zxfb" language="unknown" title="共产党员网 - 最新发布" type="rss" version="RSS2" xmlUrl="http://rsshub:1200/12371/zxfb"/>
 
 </body>
 </opml>

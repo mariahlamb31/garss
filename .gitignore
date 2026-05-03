@@ -2,3 +2,8 @@ secret.json
 local_secret.json
 .DS_Store
 ./README.md
+garss-studio/.playwright-cli
+.playwright-cli
+__pycache__/
+*.pyc
+garss-studio/.tmp-chrome-mcp-client.mjs

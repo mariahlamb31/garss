@@ -1,0 +1,48 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.dev
+    ports:
+      - "25173:25173"
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:3001
+      VITE_HMR_HOST: localhost
+      VITE_HMR_CLIENT_PORT: "25173"
+      VITE_USE_POLLING: "true"
+    volumes:
+      - .:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.dev
+    environment:
+      PORT: "3001"
+      HOST: "0.0.0.0"
+      APP_ROOT: /app
+      ACCESS_CODE: ${ACCESS_CODE:-banana}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-garss-studio-dev-secret}
+      SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-168}
+      RSSHUB_BASE_URL: http://rsshub:1200
+      SCHEDULER_ENABLED: ${SCHEDULER_ENABLED:-false}
+      NODE_OPTIONS: --max-old-space-size=6144
+    volumes:
+      - .:/app
+      - backend_node_modules:/app/node_modules
+      - ./storage:/app/storage
+    depends_on:
+      - rsshub
+
+  rsshub:
+    image: diygod/rsshub:chromium-bundled
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: memory
+
+volumes:
+  frontend_node_modules:
+  backend_node_modules:
