@@ -9,7 +9,39 @@
 这个名为**嘎!RSS**的项目会利用免费的Github Actions服务, 提供一个内容全面的信息流, 让现代人的知识体系更广泛, 减弱信息茧房对现代人的影响, 让**非茧房信息流**造福人类~
 [《嘎!RSS》永久开源页面: https://github.com/zhaoolee/garss](https://github.com/zhaoolee/garss)
 
-## 推荐使用什么软件订阅RSS？
+## 舒适阅读的锤子便签风格客户端（2026年5月3日更新）
+
+### 1. 锤子便签风格，舒适阅读
+
+![](./README.assets/623b13c62366ee504501de1cc7498c178fb4dfc6ff6e568fee6b55a155fe810e.png)
+
+### 2. 支持畅享模式与传统模式切换
+
+![](./README.assets/e004241d9ad9d7887c91e846c242471287271b390f5f631e8a78fc118e2f96b3.png)
+
+### 3. 轻量化管理，控制订阅源是否启用
+
+![](./README.assets/f6a63aed0cc760717e05172d003598328c02bb614e72ff53f2babeb0bf52d17c.png)
+
+### 4. 集成RSSHub，用社区的力量获取更多数据源
+
+
+![](./README.assets/608c2736217add927e9f47109d049a021914ec9ca3b5e17f4e2d7886e5ccb313.png)
+
+
+### 5. Docker自动化定时可视化拉取
+
+![](./README.assets/90d74483dd047f4d64bb5a8837a4e24b256ead1d8128adb5f0408166594c02fb.png)
+
+```bash
+cd garss-studio
+cp .env.example .env
+docker compose up --build -d
+```
+访问 [http://127.0.0.1:25173/reader?pw=banana](http://127.0.0.1:25173/reader?pw=banana) 即可
+
+
+## 小白使用什么软件订阅RSS？
 我推荐一款免费的浏览器扩展程序Feedbro ，使用教程[Chrome插件英雄榜第96期《Feedbro》在Chrome中订阅RSS信息流](https://www.v2fy.com/p/096-feedbro-2021-02-27/)
 
 ## 主要功能

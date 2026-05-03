@@ -4,3 +4,6 @@ local_secret.json
 ./README.md
 garss-studio/.playwright-cli
 .playwright-cli
+__pycache__/
+*.pyc
+garss-studio/.tmp-chrome-mcp-client.mjs

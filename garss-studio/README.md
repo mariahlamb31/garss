@@ -38,9 +38,9 @@ cp .env.example .env
 - `ACCESS_CODE`：前端登录使用的提取码
 - `ACCESS_TOKEN_SECRET`：后端签名密钥
 - `SESSION_TTL_HOURS`：登录有效期
-- `RSSHUB_BASE_URL`：默认指向 Docker Compose 内部的 `rsshub` 服务
-- `SCHEDULER_ENABLED`：是否启用后端自动调度，默认 `true`
-- `VITE_API_PROXY_TARGET`：Vite 开发代理指向的后端内部地址，默认开发容器使用 `http://backend:3001`
+- `SCHEDULER_ENABLED`：是否启用后端自动调度，生产默认 `true`，开发 compose 默认 `false`
+
+内部端口和服务地址由 Docker Compose 注入，不需要写进 `.env`。例如后端容器内部监听 `3001`，前端代理到 `backend:3001`，RSSHub 指向 `rsshub:1200`；这些都不需要客户直接配置或访问。
 
 ## 提取码 URL
 
