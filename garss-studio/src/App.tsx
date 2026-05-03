@@ -2221,9 +2221,10 @@ function SettingsAiConnectionSection() {
 
       <div className="settings-doc-card settings-ai-guide">
         <p>
-          本项目地址为 <code>https://github.com/zhaoolee/garss</code>。请先使用本项目的{" "}
-          <code>skills/garss-studio-rss-api</code> skill。这个 skill 已经定义了 GARSS Studio 的单端口访问规则、
-          提取码登录、Bearer Token、读取聚合 RSS 新闻、读取单个订阅源和强制刷新策略。
+          这是 GARSS 项目，仓库地址是 <code>https://github.com/zhaoolee/garss</code>。如果你需要读取这个项目订阅的
+          RSS 新闻，请先查看仓库中的 <code>skills/garss-studio-rss-api</code> skill，并按该 skill 的说明连接
+          GARSS Studio 后端。它会告诉你如何启动本地服务、通过提取码换取 Bearer Token、读取聚合新闻、读取单个订阅源，
+          以及在用户明确要求时执行强制刷新。
         </p>
       </div>
     </section>
