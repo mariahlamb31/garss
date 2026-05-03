@@ -393,6 +393,7 @@ a {
 .source-status-grid {
   grid-template-columns: 1fr;
   gap: 0;
+  align-content: start;
   height: 100%;
   min-height: 0;
   overflow: hidden;
