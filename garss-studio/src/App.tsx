@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { SubscriptionEditorModal } from "./components/SubscriptionEditorModal";
 import { io } from "socket.io-client";
 import {
@@ -13,11 +14,17 @@ import {
 import { useAppStore } from "./store/useAppStore";
 import type { AppTab, FeedItem, ReaderSourceState, Subscription, SubscriptionInput } from "./types";
 
-type SettingsSection = "fetch" | "rsshub" | "account" | "about";
+type SettingsSection = "fetch" | "rsshub" | "ai" | "api" | "account" | "about";
 type ReaderNavigationMode = "traditional" | "pure";
 type SpeedTestResult = {
   status: "testing" | "success" | "error";
   ms?: number;
+};
+type ApiDocumentItem = {
+  method: string;
+  path: string;
+  auth: "公开" | "Bearer Token";
+  description: string;
 };
 
 function formatDateLabel(value: string): string {
@@ -153,6 +160,28 @@ const SOURCE_DRAFT_STORAGE_KEY = "garss-studio.source-draft";
 const ARTICLE_IMAGE_ENHANCEMENT_STORAGE_KEY = "garss-studio.article-image-enhancement";
 const INLINE_URL_PATTERN = /https?:\/\/[^\s<>"']+/g;
 const IMAGE_URL_PATTERN = /https?:\/\/[^\s<>"']+?\.(?:jpe?g|png|gif|webp|avif)(?:\?[^\s<>"']*)?(?:#[^\s<>"']*)?/gi;
+const API_DOCUMENT_ITEMS: ApiDocumentItem[] = [
+  { method: "GET", path: "/api/docs", auth: "公开", description: "打开 Swagger UI，可交互查看和调试后端接口。" },
+  { method: "GET", path: "/api/openapi.json", auth: "公开", description: "获取机器可读的 OpenAPI JSON。" },
+  { method: "GET", path: "/api/health", auth: "公开", description: "检查后端健康状态、RSSHub 基础地址和订阅源数量。" },
+  { method: "GET", path: "/api/image-proxy?url={imageUrl}", auth: "公开", description: "代理读取远端图片，供文章图片预览使用。" },
+  { method: "POST", path: "/api/auth/login", auth: "公开", description: "使用提取码登录，返回后续请求所需的 Bearer token。" },
+  { method: "GET", path: "/api/auth/session", auth: "Bearer Token", description: "校验当前 token 并返回会话状态。" },
+  { method: "GET", path: "/api/subscriptions", auth: "Bearer Token", description: "获取订阅源列表和合并后的分类列表。" },
+  { method: "POST", path: "/api/subscriptions", auth: "Bearer Token", description: "创建一个 RSS 订阅源，routePath 可为 RSSHub 路径或完整 RSS URL。" },
+  { method: "POST", path: "/api/subscriptions/test", auth: "Bearer Token", description: "保存前测试订阅源是否可正常拉取，并返回样例标题。" },
+  { method: "PUT", path: "/api/subscriptions/{id}", auth: "Bearer Token", description: "更新订阅源名称、分类、路径、描述和启用状态。" },
+  { method: "DELETE", path: "/api/subscriptions/{id}", auth: "Bearer Token", description: "删除订阅源，并清理该订阅源的阅读缓存。" },
+  { method: "GET", path: "/api/settings", auth: "Bearer Token", description: "读取当前用户桶的自动拉取设置和下一次调度时间。" },
+  { method: "PUT", path: "/api/settings", auth: "Bearer Token", description: "更新自动拉取时间间隔和单次并行拉取数量。" },
+  { method: "POST", path: "/api/categories", auth: "Bearer Token", description: "创建一个显式分类。" },
+  { method: "PUT", path: "/api/categories/{name}", auth: "Bearer Token", description: "重命名分类，并同步更新相关订阅源。" },
+  { method: "DELETE", path: "/api/categories/{name}", auth: "Bearer Token", description: "删除分类，相关订阅源会移动到默认分类。" },
+  { method: "GET", path: "/api/rsshub/fetch?routePath={path}", auth: "Bearer Token", description: "按 RSSHub 路径直接获取原始 XML。" },
+  { method: "GET", path: "/api/reader/items?refresh={boolean}", auth: "Bearer Token", description: "获取所有已启用订阅源的聚合文章；refresh=true 会强制重新拉取。" },
+  { method: "GET", path: "/api/reader/subscriptions/{id}?refresh={boolean}", auth: "Bearer Token", description: "获取单个订阅源的文章；refresh=true 会强制刷新该源缓存。" },
+  { method: "Socket.IO", path: "/socket.io", auth: "Bearer Token", description: "实时推送后端状态和拉取任务进度，连接时通过 auth.token 传入 token。" },
+];
 
 function buildSortedOptions(defaultValues: number[], currentValue: number): number[] {
   return Array.from(new Set([...defaultValues, currentValue])).sort((left, right) => left - right);
@@ -284,19 +313,16 @@ function insertImagePreviewsIntoUrlBlocks(template: HTMLTemplateElement): void {
     }
 
     const rawLines = (preElement.textContent || "").split(/\n/);
-    const nonEmptyLines = rawLines
-      .map((line) => line.trim())
-      .filter(Boolean);
-    const imageUrls = nonEmptyLines.flatMap(extractImageUrls);
+    const lineImageUrlList = rawLines.map(extractImageUrls);
 
-    if (!imageUrls.length || imageUrls.length / nonEmptyLines.length < 0.6) {
+    if (!lineImageUrlList.some((imageUrls) => imageUrls.length)) {
       continue;
     }
 
     const fragment = document.createDocumentFragment();
 
     rawLines.forEach((rawLine, index) => {
-      const lineImageUrls = extractImageUrls(rawLine);
+      const lineImageUrls = lineImageUrlList[index] || [];
 
       fragment.appendChild(document.createTextNode(rawLine));
 
@@ -410,6 +436,7 @@ function enhanceArticleHtml(html: string, shouldEnhanceImageUrls: boolean): stri
 
 function ReaderArticleContent({ html, shouldEnhanceImageUrls }: { html: string; shouldEnhanceImageUrls: boolean }) {
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const [fullscreenImage, setFullscreenImage] = useState<{ src: string; alt: string } | null>(null);
   const enhancedHtml = useMemo(() => enhanceArticleHtml(html, shouldEnhanceImageUrls), [html, shouldEnhanceImageUrls]);
 
   useEffect(() => {
@@ -486,6 +513,30 @@ function ReaderArticleContent({ html, shouldEnhanceImageUrls }: { html: string; 
       cleanupCallbacks.push(() => copyButton.removeEventListener("click", handleCopy));
     }
 
+    const handleImageClick = (event: MouseEvent) => {
+      const targetElement = event.target instanceof Element ? event.target : null;
+      const imageElement = targetElement?.closest("img") as HTMLImageElement | null;
+
+      if (!imageElement || !contentElement.contains(imageElement)) {
+        return;
+      }
+
+      const imageSource = imageElement.currentSrc || imageElement.src;
+
+      if (!imageSource) {
+        return;
+      }
+
+      event.preventDefault();
+      setFullscreenImage({
+        src: imageSource,
+        alt: imageElement.alt || "文章图片",
+      });
+    };
+
+    contentElement.addEventListener("click", handleImageClick);
+    cleanupCallbacks.push(() => contentElement.removeEventListener("click", handleImageClick));
+
     return () => {
       for (const cleanup of cleanupCallbacks) {
         cleanup();
@@ -493,12 +544,63 @@ function ReaderArticleContent({ html, shouldEnhanceImageUrls }: { html: string; 
     };
   }, [enhancedHtml]);
 
+  useEffect(() => {
+    if (!fullscreenImage || typeof window === "undefined") {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setFullscreenImage(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [fullscreenImage]);
+
   return (
-    <div
-      ref={contentRef}
-      className="reader-article-content"
-      dangerouslySetInnerHTML={{ __html: enhancedHtml }}
-    />
+    <>
+      <div
+        ref={contentRef}
+        className="reader-article-content"
+        dangerouslySetInnerHTML={{ __html: enhancedHtml }}
+      />
+      {fullscreenImage && typeof document !== "undefined" ? createPortal(
+        <div
+          className="reader-image-viewer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="图片预览"
+          onClick={() => setFullscreenImage(null)}
+        >
+          <div className="reader-image-viewer-actions">
+            <a
+              className="reader-image-viewer-download"
+              href={fullscreenImage.src}
+              download
+              onClick={(event) => event.stopPropagation()}
+            >
+              下载
+            </a>
+            <button
+              type="button"
+              className="reader-image-viewer-close"
+              aria-label="关闭图片预览"
+              onClick={() => setFullscreenImage(null)}
+            >
+              ×
+            </button>
+          </div>
+          <img
+            src={fullscreenImage.src}
+            alt={fullscreenImage.alt}
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>,
+        document.body,
+      ) : null}
+    </>
   );
 }
 
@@ -594,6 +696,7 @@ function ReaderListCard({
   return (
     <article
       className={`reader-note-card${isActive ? " is-active" : ""}`}
+      data-reader-nav-item-id={item.id}
       role="button"
       tabIndex={0}
       aria-pressed={isActive}
@@ -625,6 +728,7 @@ function ReaderPureListCard({
   return (
     <article
       className={`reader-pure-note-card${isActive ? " is-active" : ""}`}
+      data-reader-nav-item-id={item.id}
       role="button"
       tabIndex={0}
       aria-pressed={isActive}
@@ -934,7 +1038,11 @@ function ReaderPanel() {
 
     return Array.from(groupedItems.values());
   }, [normalizedSourceFilterQuery, sortedReaderItems]);
-  const activeNavigationItems = readerNavigationMode === "pure" ? sortedReaderItems : filteredItems;
+  const visibleReaderItems = useMemo(
+    () => visibleReaderDateGroups.flatMap((dateGroup) => dateGroup.items),
+    [visibleReaderDateGroups],
+  );
+  const activeNavigationItems = readerNavigationMode === "pure" ? visibleReaderItems : filteredItems;
   const selectedItem = useMemo(
     () => activeNavigationItems.find((item) => item.id === selectedItemId) || null,
     [activeNavigationItems, selectedItemId],
@@ -979,6 +1087,24 @@ function ReaderPanel() {
       setExpandedReaderDate(visibleReaderDateGroups[0]?.dateKey || "");
     }
   }, [expandedReaderDate, readerNavigationMode, visibleReaderDateGroups]);
+
+  useEffect(() => {
+    if (!selectedItemId || typeof window === "undefined") {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      const navigationItem = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-reader-nav-item-id]"),
+      ).find((element) => element.dataset.readerNavItemId === selectedItemId);
+
+      navigationItem?.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    });
+  }, [expandedReaderDate, expandedSubscriptionId, readerNavigationMode, selectedItemId]);
 
   useEffect(() => {
     setIsSourceDrawerOpen(false);
@@ -1029,6 +1155,8 @@ function ReaderPanel() {
 
     if (readerNavigationMode === "pure") {
       setExpandedReaderDate(buildReaderDateGroupKey(item.publishedAt));
+    } else {
+      setExpandedSubscriptionId(item.subscriptionId);
     }
 
     scrollArticleViewportToTop();
@@ -2083,6 +2211,60 @@ function RsshubPanel() {
   );
 }
 
+function SettingsAiConnectionSection() {
+  return (
+    <section className="editor-sheet settings-sheet settings-page-sheet">
+      <div className="sheet-head">
+        <h3>连接AI</h3>
+        <p>把下面这段提示词交给 AI，让它优先读取项目内置 skill，再使用后端接口读取订阅 RSS 新闻。</p>
+      </div>
+
+      <div className="settings-doc-card settings-ai-guide">
+        <p>
+          本项目地址为 <code>https://github.com/zhaoolee/garss</code>。请先使用本项目的{" "}
+          <code>skills/garss-studio-rss-api</code> skill。这个 skill 已经定义了 GARSS Studio 的单端口访问规则、
+          提取码登录、Bearer Token、读取聚合 RSS 新闻、读取单个订阅源和强制刷新策略。
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function SettingsApiDocsSection() {
+  return (
+    <section className="editor-sheet settings-sheet settings-page-sheet">
+      <div className="sheet-head">
+        <h3>API开放文档</h3>
+        <p>当前后端提供的接口清单。完整机器可读版本可查看 OpenAPI JSON。</p>
+      </div>
+
+      <div className="settings-doc-links">
+        <a href="/api/docs" target="_blank" rel="noreferrer">
+          Swagger UI
+        </a>
+        <a href="/api/openapi.json" target="_blank" rel="noreferrer">
+          OpenAPI JSON
+        </a>
+      </div>
+
+      <div className="settings-api-list">
+        {API_DOCUMENT_ITEMS.map((item) => (
+          <article className="settings-api-item" key={`${item.method}-${item.path}`}>
+            <div className="settings-api-line">
+              <span className="settings-api-method">{item.method}</span>
+              <code>{item.path}</code>
+              <span className={item.auth === "公开" ? "settings-api-auth" : "settings-api-auth is-protected"}>
+                {item.auth}
+              </span>
+            </div>
+            <p>{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function SettingsPanel({ initialSection = "fetch", onLogout }: { initialSection?: SettingsSection; onLogout: () => void }) {
   const subscriptions = useAppStore((state) => state.subscriptions);
   const autoRefreshIntervalMinutes = useAppStore((state) => state.autoRefreshIntervalMinutes);
@@ -2151,6 +2333,20 @@ function SettingsPanel({ initialSection = "fetch", onLogout }: { initialSection?
               onClick={() => setSelectedSection("rsshub")}
             >
               <span>RSSHUB</span>
+            </button>
+            <button
+              type="button"
+              className={selectedSection === "ai" ? "category-item is-active" : "category-item"}
+              onClick={() => setSelectedSection("ai")}
+            >
+              <span>连接AI</span>
+            </button>
+            <button
+              type="button"
+              className={selectedSection === "api" ? "category-item is-active" : "category-item"}
+              onClick={() => setSelectedSection("api")}
+            >
+              <span>API开放文档</span>
             </button>
             <button
               type="button"
@@ -2251,6 +2447,10 @@ function SettingsPanel({ initialSection = "fetch", onLogout }: { initialSection?
             <div className="settings-rsshub-panel">
               <RsshubPanel />
             </div>
+          ) : selectedSection === "ai" ? (
+            <SettingsAiConnectionSection />
+          ) : selectedSection === "api" ? (
+            <SettingsApiDocsSection />
           ) : selectedSection === "account" ? (
             <section className="editor-sheet settings-sheet settings-page-sheet">
               <div className="sheet-head">
