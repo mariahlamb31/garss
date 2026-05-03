@@ -150,6 +150,9 @@ function getInputCategories(input: SubscriptionInput): string[] {
 const AUTO_REFRESH_OPTION_VALUES = [5, 10, 15, 30, 60, 120, 180, 360, 720, 1440];
 const PARALLEL_FETCH_OPTION_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const SOURCE_DRAFT_STORAGE_KEY = "garss-studio.source-draft";
+const ARTICLE_IMAGE_ENHANCEMENT_STORAGE_KEY = "garss-studio.article-image-enhancement";
+const INLINE_URL_PATTERN = /https?:\/\/[^\s<>"']+/g;
+const IMAGE_URL_PATTERN = /https?:\/\/[^\s<>"']+?\.(?:jpe?g|png|gif|webp|avif)(?:\?[^\s<>"']*)?(?:#[^\s<>"']*)?/gi;
 
 function buildSortedOptions(defaultValues: number[], currentValue: number): number[] {
   return Array.from(new Set([...defaultValues, currentValue])).sort((left, right) => left - right);
@@ -202,8 +205,212 @@ function splitIntoParagraphs(value: string): string[] {
     .filter(Boolean);
 }
 
-function ReaderArticleContent({ html }: { html: string }) {
+function readStoredArticleImageEnhancementEnabled(): boolean {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  return window.localStorage.getItem(ARTICLE_IMAGE_ENHANCEMENT_STORAGE_KEY) !== "off";
+}
+
+function writeStoredArticleImageEnhancementEnabled(value: boolean): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(ARTICLE_IMAGE_ENHANCEMENT_STORAGE_KEY, value ? "on" : "off");
+}
+
+function buildImageProxyUrl(value: string): string {
+  if (!value || typeof window === "undefined") {
+    return value;
+  }
+
+  try {
+    const imageUrl = new URL(value, window.location.href);
+
+    if (imageUrl.protocol !== "http:" && imageUrl.protocol !== "https:") {
+      return value;
+    }
+
+    if (imageUrl.origin === window.location.origin && imageUrl.pathname === "/api/image-proxy") {
+      return imageUrl.toString();
+    }
+
+    return `/api/image-proxy?url=${encodeURIComponent(imageUrl.toString())}`;
+  } catch {
+    return value;
+  }
+}
+
+function normalizeArticleUrlCandidate(value: string): string {
+  return value.trim().replace(/[),.;\]}，。；）】]+$/u, "");
+}
+
+function isImageUrl(value: string): boolean {
+  IMAGE_URL_PATTERN.lastIndex = 0;
+  return IMAGE_URL_PATTERN.test(value);
+}
+
+function extractImageUrls(value: string): string[] {
+  IMAGE_URL_PATTERN.lastIndex = 0;
+  const matches = value.match(IMAGE_URL_PATTERN) || [];
+  return matches.map(normalizeArticleUrlCandidate);
+}
+
+function createArticleImagePreview(documentRef: Document, value: string): HTMLElement {
+  const normalizedUrl = normalizeArticleUrlCandidate(value);
+  const linkElement = documentRef.createElement("a");
+  linkElement.className = "reader-article-image-preview";
+  linkElement.href = normalizedUrl;
+  linkElement.target = "_blank";
+  linkElement.rel = "noreferrer";
+
+  const imageElement = documentRef.createElement("img");
+  imageElement.src = buildImageProxyUrl(normalizedUrl);
+  imageElement.alt = "文章图片";
+  imageElement.loading = "lazy";
+  imageElement.decoding = "async";
+  imageElement.referrerPolicy = "no-referrer";
+
+  linkElement.appendChild(imageElement);
+  return linkElement;
+}
+
+function insertImagePreviewsIntoUrlBlocks(template: HTMLTemplateElement): void {
+  for (const preElement of Array.from(template.content.querySelectorAll("pre"))) {
+    if (preElement.closest("td.gutter")) {
+      continue;
+    }
+
+    const rawLines = (preElement.textContent || "").split(/\n/);
+    const nonEmptyLines = rawLines
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const imageUrls = nonEmptyLines.flatMap(extractImageUrls);
+
+    if (!imageUrls.length || imageUrls.length / nonEmptyLines.length < 0.6) {
+      continue;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    rawLines.forEach((rawLine, index) => {
+      const lineImageUrls = extractImageUrls(rawLine);
+
+      fragment.appendChild(document.createTextNode(rawLine));
+
+      for (const imageUrl of lineImageUrls) {
+        fragment.appendChild(document.createTextNode("\n"));
+        fragment.appendChild(createArticleImagePreview(document, imageUrl));
+      }
+
+      if (index < rawLines.length - 1) {
+        fragment.appendChild(document.createTextNode("\n"));
+      }
+    });
+
+    while (preElement.firstChild) {
+      preElement.firstChild.remove();
+    }
+
+    preElement.appendChild(fragment);
+  }
+}
+
+function enhanceInlineImageUrls(template: HTMLTemplateElement): void {
+  const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_TEXT);
+  const textNodes: Text[] = [];
+
+  while (walker.nextNode()) {
+    const textNode = walker.currentNode as Text;
+    const parentElement = textNode.parentElement;
+
+    if (
+      !parentElement ||
+      parentElement.closest("a, code, pre, script, style, textarea, .reader-article-image-list")
+    ) {
+      continue;
+    }
+
+    if (INLINE_URL_PATTERN.test(textNode.nodeValue || "")) {
+      textNodes.push(textNode);
+    }
+
+    INLINE_URL_PATTERN.lastIndex = 0;
+  }
+
+  for (const textNode of textNodes) {
+    const textValue = textNode.nodeValue || "";
+    const fragment = document.createDocumentFragment();
+    let cursor = 0;
+
+    for (const match of textValue.matchAll(INLINE_URL_PATTERN)) {
+      const rawUrl = match[0];
+      const matchIndex = match.index || 0;
+
+      if (matchIndex > cursor) {
+        fragment.appendChild(document.createTextNode(textValue.slice(cursor, matchIndex)));
+      }
+
+      const normalizedUrl = normalizeArticleUrlCandidate(rawUrl);
+
+      const linkElement = document.createElement("a");
+      linkElement.href = normalizedUrl;
+      linkElement.target = "_blank";
+      linkElement.rel = "noreferrer";
+      linkElement.textContent = normalizedUrl;
+      fragment.appendChild(linkElement);
+
+      if (isImageUrl(normalizedUrl)) {
+        fragment.appendChild(createArticleImagePreview(document, normalizedUrl));
+      }
+
+      cursor = matchIndex + rawUrl.length;
+
+      if (normalizedUrl.length < rawUrl.length) {
+        fragment.appendChild(document.createTextNode(rawUrl.slice(normalizedUrl.length)));
+      }
+    }
+
+    if (cursor < textValue.length) {
+      fragment.appendChild(document.createTextNode(textValue.slice(cursor)));
+    }
+
+    textNode.replaceWith(fragment);
+  }
+}
+
+function enhanceArticleHtml(html: string, shouldEnhanceImageUrls: boolean): string {
+  if (!html || typeof window === "undefined") {
+    return html;
+  }
+
+  const template = document.createElement("template");
+  template.innerHTML = html;
+
+  for (const imageElement of Array.from(template.content.querySelectorAll("img"))) {
+    const source = imageElement.getAttribute("src") || "";
+    const proxiedSource = buildImageProxyUrl(source);
+
+    if (proxiedSource) {
+      imageElement.setAttribute("src", proxiedSource);
+    }
+
+    imageElement.setAttribute("referrerpolicy", "no-referrer");
+  }
+
+  if (shouldEnhanceImageUrls) {
+    insertImagePreviewsIntoUrlBlocks(template);
+    enhanceInlineImageUrls(template);
+  }
+
+  return template.innerHTML;
+}
+
+function ReaderArticleContent({ html, shouldEnhanceImageUrls }: { html: string; shouldEnhanceImageUrls: boolean }) {
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const enhancedHtml = useMemo(() => enhanceArticleHtml(html, shouldEnhanceImageUrls), [html, shouldEnhanceImageUrls]);
 
   useEffect(() => {
     const contentElement = contentRef.current;
@@ -284,13 +491,13 @@ function ReaderArticleContent({ html }: { html: string }) {
         cleanup();
       }
     };
-  }, [html]);
+  }, [enhancedHtml]);
 
   return (
     <div
       ref={contentRef}
       className="reader-article-content"
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: enhancedHtml }}
     />
   );
 }
@@ -440,10 +647,12 @@ function ReaderArticleCard({
   item,
   isActive,
   articleRef,
+  shouldEnhanceImageUrls,
 }: {
   item: FeedItem;
   isActive: boolean;
   articleRef?: (node: HTMLElement | null) => void;
+  shouldEnhanceImageUrls: boolean;
 }) {
   const paragraphs = splitIntoParagraphs(item.contentText || item.excerpt);
 
@@ -470,7 +679,7 @@ function ReaderArticleCard({
             <section className="reader-article-section">
               <h2>{item.title || "未命名条目"}</h2>
               {item.contentHtml ? (
-                <ReaderArticleContent html={item.contentHtml} />
+                <ReaderArticleContent html={item.contentHtml} shouldEnhanceImageUrls={shouldEnhanceImageUrls} />
               ) : (
                 <div className="reader-article-content is-plain">
                   {paragraphs.length ? (
@@ -548,6 +757,7 @@ function ReaderPanel() {
   const [sourceFilterQuery, setSourceFilterQuery] = useState("");
   const [readerNavigationMode, setReaderNavigationMode] = useState<ReaderNavigationMode>("pure");
   const [expandedReaderDate, setExpandedReaderDate] = useState("");
+  const [shouldEnhanceImageUrls, setShouldEnhanceImageUrls] = useState(readStoredArticleImageEnhancementEnabled);
   const articleScrollRef = useRef<HTMLDivElement | null>(null);
 
   const baseSourceStateList = useMemo(
@@ -838,6 +1048,14 @@ function ReaderPanel() {
     }
   }
 
+  function handleToggleImageEnhancement() {
+    setShouldEnhanceImageUrls((currentValue) => {
+      const nextValue = !currentValue;
+      writeStoredArticleImageEnhancementEnabled(nextValue);
+      return nextValue;
+    });
+  }
+
   return (
     <section className="content-panel reader-panel">
       <div className="reader-layout">
@@ -1027,6 +1245,14 @@ function ReaderPanel() {
                   ? `重新拉取 ${selectedSourceState.subscriptionName} 中...`
                   : `重新拉取 ${selectedSourceState.subscriptionName}`}
               </button>
+              <button
+                type="button"
+                className={`secondary-button reader-image-enhancement-toggle${shouldEnhanceImageUrls ? " is-active" : ""}`}
+                aria-pressed={shouldEnhanceImageUrls}
+                onClick={handleToggleImageEnhancement}
+              >
+                图片增强{shouldEnhanceImageUrls ? "开" : "关"}
+              </button>
             </div>
           ) : null}
 
@@ -1042,7 +1268,7 @@ function ReaderPanel() {
           {selectedItem ? (
             <div className="reader-detail-layout">
               <div ref={articleScrollRef} className="reader-article-stream">
-                <ReaderArticleCard item={selectedItem} isActive />
+                <ReaderArticleCard item={selectedItem} isActive shouldEnhanceImageUrls={shouldEnhanceImageUrls} />
                 <nav className="reader-article-pagination" aria-label="文章翻页">
                   <button
                     type="button"
