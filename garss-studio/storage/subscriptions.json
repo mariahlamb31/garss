@@ -5,9 +5,9 @@
     "name": "不死鸟",
     "routePath": "https://iao.su/feed",
     "description": "不死鸟:专注分享优质资源",
-    "enabled": true,
+    "enabled": false,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-04-03T01:48:30.810Z"
+    "updatedAt": "2026-05-03T08:29:34.621Z"
   },
   {
     "id": "editreadme-s002",
@@ -77,7 +77,7 @@
     "description": "极具人气和特色的软件网站！专注于推荐优秀软件、APP应用和互联网资源，每篇图文评测都极其用心，并提供大量软件资源下载。",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh028",
@@ -86,8 +86,8 @@
     "routePath": "http://rsshub:1200/amazon/kindle/software-updates",
     "description": "Kindle E-Reader Software Updates",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh029",
@@ -96,8 +96,8 @@
     "routePath": "http://rsshub:1200/appstore/xianmian",
     "description": "每日精品限免和促销应用",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh030",
@@ -106,8 +106,8 @@
     "routePath": "http://rsshub:1200/android/security-bulletin",
     "description": "Android Security Bulletins",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh031",
@@ -116,8 +116,8 @@
     "routePath": "http://rsshub:1200/openai/chatgpt/release-notes",
     "description": "ChatGPT Release Notes",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-b001",
@@ -1536,8 +1536,8 @@
     "routePath": "http://rsshub:1200/augmentcode/blog",
     "description": "AI Development Blog",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh002",
@@ -1546,8 +1546,8 @@
     "routePath": "http://rsshub:1200/anthropic/engineering",
     "description": "Anthropic Engineering",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh003",
@@ -1556,8 +1556,8 @@
     "routePath": "http://rsshub:1200/apache/apisix/blog",
     "description": "Blog",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh004",
@@ -1566,8 +1566,8 @@
     "routePath": "http://rsshub:1200/30secondsofcode/latest",
     "description": "New and popular code snippets",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-c001",
@@ -1626,8 +1626,8 @@
     "routePath": "http://rsshub:1200/baijing/article",
     "description": "白鲸出海资讯",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-f001",
@@ -1646,8 +1646,8 @@
     "routePath": "http://rsshub:1200/baidu/gushitong/index",
     "description": "百度股市通",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh007",
@@ -1656,8 +1656,8 @@
     "routePath": "http://rsshub:1200/ainvest/article",
     "description": "AInvest latest articles",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh008",
@@ -1666,8 +1666,8 @@
     "routePath": "http://rsshub:1200/ainvest/news",
     "description": "AInvest latest news",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh009",
@@ -1676,8 +1676,8 @@
     "routePath": "http://rsshub:1200/caixin/database",
     "description": "财新数据通专享资讯",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh010",
@@ -1686,8 +1686,8 @@
     "routePath": "http://rsshub:1200/caixin/weekly",
     "description": "财新周刊",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh011",
@@ -1696,8 +1696,8 @@
     "routePath": "http://rsshub:1200/caixin/article",
     "description": "财新网首页",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh012",
@@ -1706,8 +1706,8 @@
     "routePath": "http://rsshub:1200/abmedia/index",
     "description": "ABMedia 最新消息",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-t001",
@@ -1747,7 +1747,7 @@
     "description": "MIT 科技评论 本周热榜",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-t005",
@@ -1806,8 +1806,8 @@
     "routePath": "http://rsshub:1200/infoq/recommend",
     "description": "InfoQ 推荐",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh014",
@@ -1816,8 +1816,8 @@
     "routePath": "http://rsshub:1200/anthropic/news",
     "description": "Anthropic News",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh015",
@@ -1826,8 +1826,8 @@
     "routePath": "http://rsshub:1200/openai/research",
     "description": "OpenAI Research",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh016",
@@ -1836,8 +1836,8 @@
     "routePath": "http://rsshub:1200/openai/news",
     "description": "OpenAI News",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh017",
@@ -1846,8 +1846,8 @@
     "routePath": "http://rsshub:1200/ai-bot/daily-ai-news",
     "description": "每日 AI 资讯",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh018",
@@ -1856,8 +1856,8 @@
     "routePath": "http://rsshub:1200/aibase/news",
     "description": "AI 新闻资讯",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh019",
@@ -1866,8 +1866,8 @@
     "routePath": "http://rsshub:1200/aibase/daily",
     "description": "AI 日报",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh020",
@@ -1876,8 +1876,8 @@
     "routePath": "http://rsshub:1200/sspai/matrix",
     "description": "少数派 Matrix",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh021",
@@ -1886,8 +1886,8 @@
     "routePath": "http://rsshub:1200/sspai/index",
     "description": "少数派首页",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh022",
@@ -1896,8 +1896,8 @@
     "routePath": "http://rsshub:1200/baai/hub/events",
     "description": "智源社区活动",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-l001",
@@ -1937,7 +1937,7 @@
     "description": "李子柒的微博",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-l002",
@@ -1947,7 +1947,7 @@
     "description": "为更理想的生活",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-l003",
@@ -1957,7 +1957,7 @@
     "description": "家的主理人社区",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh023",
@@ -1966,8 +1966,8 @@
     "routePath": "http://rsshub:1200/bandcamp/weekly",
     "description": "Bandcamp Weekly",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh024",
@@ -1976,8 +1976,8 @@
     "routePath": "http://rsshub:1200/121/weatherLive",
     "description": "深圳天气直播",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-d001",
@@ -1987,7 +1987,7 @@
     "description": "Adobe旗下设计网站Behance",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-d002",
@@ -1997,7 +1997,7 @@
     "description": "Behance官方博客",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-d003",
@@ -2007,7 +2007,7 @@
     "description": "图片设计社交",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-d004",
@@ -2076,8 +2076,8 @@
     "routePath": "http://rsshub:1200/apple/design",
     "description": "Apple design updates",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-c001",
@@ -2087,7 +2087,7 @@
     "description": "知乎每日精选",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-c002",
@@ -2287,7 +2287,7 @@
     "description": "吾爱破解精品软件区",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-c022",
@@ -2377,7 +2377,7 @@
     "description": "妹子热门图",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-c031",
@@ -2387,7 +2387,7 @@
     "description": "每日精选",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-c032",
@@ -2397,7 +2397,7 @@
     "description": "最新香水评论-发现香水圈的新鲜事",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-c033",
@@ -2486,8 +2486,8 @@
     "routePath": "http://rsshub:1200/6v123/latestMovies",
     "description": "6v电影最新电影",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-g001",
@@ -2517,7 +2517,7 @@
     "description": "深度解读游戏",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-rh027",
@@ -2526,8 +2526,8 @@
     "routePath": "http://rsshub:1200/5eplay/article",
     "description": "5EPLAY 新闻",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-r001",
@@ -2567,7 +2567,7 @@
     "description": "限时免费清单",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-n002",
@@ -2576,8 +2576,8 @@
     "routePath": "http://rsshub:1200/douban/movie/classification",
     "description": "排序方式可选值如下 近期热门 标记最多 评分最高 最近上映 U T S R &#124; 示例：/douban/movie/classification/R/7.5/Netflix,2020 &#124; 参数：sort: 排序方式，默认为U；score: 最低评分，默认不限制；tags: 分类标签，多个标签之间用英文逗号分隔，常见的标签到豆瓣电影的分类页面查看，支持自定义标签 &#124; 源码：other/classification.ts",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-tg001",
@@ -2647,7 +2647,7 @@
     "description": "资源共享-软件-电影-纪录片-科学上网",
     "enabled": true,
     "createdAt": "2026-04-03T01:48:30.810Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "editreadme-tg008",
@@ -2696,8 +2696,8 @@
     "routePath": "http://rsshub:1200/12371/zxfb",
     "description": "最新发布 : : zxfb &#124; 示例：/12371/zxfb &#124; 参数：category: 新闻分类名，预设 zxfb &#124; 来源：www.12371.cn &#124; 源码：zxfb.ts",
     "enabled": true,
-    "createdAt": "2026-05-03T14:40:20.535Z",
-    "updatedAt": "2026-05-03T14:40:20.535Z"
+    "createdAt": "2026-05-03T14:17:57.433Z",
+    "updatedAt": "2026-05-03T14:17:57.433Z"
   },
   {
     "id": "d2ca4a33-6005-4efe-b549-9737d2d76d6d",
@@ -2711,7 +2711,7 @@
     "description": "排序方式可选值如下 近期热门 标记最多 评分最高 最近上映 U T S R | 示例：/douban/movie/classification/R/7.5/Netflix,2020 | 参数：sort: 排序方式，默认为U；score: 最低评分，默认不限制；tags: 分类标签，多个标签之间用英文逗号分隔，常见的标签到豆瓣电影的分类页面查看，支持自定义标签 | 源码：other/classification.ts",
     "enabled": true,
     "createdAt": "2026-05-03T07:28:33.654Z",
-    "updatedAt": "2026-05-03T07:28:33.654Z"
+    "updatedAt": "2026-05-03T08:29:32.359Z"
   },
   {
     "id": "844ee06d-82fd-4098-87ac-56bc116748f5",
