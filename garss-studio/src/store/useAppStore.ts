@@ -3,6 +3,7 @@ import { parseAppLocation, readAccessCodeFromCurrentUrl } from "../lib/navigatio
 import { bootstrapAuthSession } from "./bootstrap-auth";
 import {
   createCategory,
+  deleteCategory,
   getAppSettings,
   getErrorMessage,
   getReaderItems,
@@ -12,6 +13,7 @@ import {
   testSubscription,
   login,
   removeSubscription,
+  renameCategory,
   saveSubscription,
   updateAppSettings,
 } from "../lib/api";
@@ -133,6 +135,8 @@ interface AppStoreState {
   saveSource: (input: SubscriptionInput, subscriptionId?: string) => Promise<boolean>;
   testSource: (input: SubscriptionInput) => Promise<SubscriptionTestResponse>;
   createSourceCategory: (name: string) => Promise<string | null>;
+  renameSourceCategory: (currentName: string, nextName: string) => Promise<boolean>;
+  deleteSourceCategory: (name: string) => Promise<boolean>;
   toggleSourceEnabled: (subscriptionId: string, enabled: boolean) => Promise<boolean>;
   removeSource: (subscriptionId: string) => Promise<boolean>;
   clearDataError: () => void;
@@ -946,6 +950,66 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
         dataError: getErrorMessage(error),
       });
       return null;
+    }
+  },
+  async renameSourceCategory(currentName, nextName) {
+    const token = get().authToken;
+
+    if (!token) {
+      return false;
+    }
+
+    set({ creatingCategory: true, dataError: "" });
+
+    try {
+      const response = await renameCategory(token, currentName, nextName.trim());
+      set({
+        subscriptions: response.subscriptions,
+        categories: response.categories,
+        items: [],
+        readerErrors: [],
+        readerSourceStates: buildInitialReaderSourceStates(response.subscriptions),
+        creatingCategory: false,
+        reloadingSourceId: "",
+      });
+      void get().refreshReader(false);
+      return true;
+    } catch (error) {
+      set({
+        creatingCategory: false,
+        dataError: getErrorMessage(error),
+      });
+      return false;
+    }
+  },
+  async deleteSourceCategory(name) {
+    const token = get().authToken;
+
+    if (!token) {
+      return false;
+    }
+
+    set({ creatingCategory: true, dataError: "" });
+
+    try {
+      const response = await deleteCategory(token, name);
+      set({
+        subscriptions: response.subscriptions,
+        categories: response.categories,
+        items: [],
+        readerErrors: [],
+        readerSourceStates: buildInitialReaderSourceStates(response.subscriptions),
+        creatingCategory: false,
+        reloadingSourceId: "",
+      });
+      void get().refreshReader(false);
+      return true;
+    } catch (error) {
+      set({
+        creatingCategory: false,
+        dataError: getErrorMessage(error),
+      });
+      return false;
     }
   },
   async toggleSourceEnabled(subscriptionId, enabled) {

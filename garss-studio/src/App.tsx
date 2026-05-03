@@ -13,7 +13,8 @@ import {
 import { useAppStore } from "./store/useAppStore";
 import type { AppTab, FeedItem, ReaderSourceState, Subscription, SubscriptionInput } from "./types";
 
-type SettingsSection = "fetch" | "account" | "about";
+type SettingsSection = "fetch" | "rsshub" | "account" | "about";
+type ReaderNavigationMode = "traditional" | "pure";
 type SpeedTestResult = {
   status: "testing" | "success" | "error";
   ms?: number;
@@ -36,6 +37,42 @@ function formatDateLabel(value: string): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function formatReaderDateGroupLabel(value: string): string {
+  if (!value) {
+    return "未标注时间";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+}
+
+function buildReaderDateGroupKey(value: string): string {
+  if (!value) {
+    return "unknown";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 function formatRemainingDuration(targetTimestamp: number, nowTimestamp: number): string {
@@ -62,6 +99,14 @@ function formatIntervalLabel(value: number): string {
   }
 
   return `${Math.floor(value / 60)} 小时 ${value % 60} 分钟`;
+}
+
+function normalizeSearchText(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function matchesSearchText(value: string, query: string): boolean {
+  return normalizeSearchText(value).includes(query);
 }
 
 function buildEmptyForm(): SubscriptionInput {
@@ -155,6 +200,99 @@ function splitIntoParagraphs(value: string): string[] {
     .split(/\n{2,}/)
     .map((entry) => entry.trim())
     .filter(Boolean);
+}
+
+function ReaderArticleContent({ html }: { html: string }) {
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const contentElement = contentRef.current;
+
+    if (!contentElement) {
+      return;
+    }
+
+    const cleanupCallbacks: Array<() => void> = [];
+
+    for (const preElement of Array.from(contentElement.querySelectorAll("pre"))) {
+      if (preElement.closest("td.gutter")) {
+        continue;
+      }
+
+      let copyHost = preElement.closest("td.code") as HTMLElement | null;
+
+      if (!copyHost) {
+        const existingHost = preElement.parentElement?.classList.contains("reader-code-copy-host")
+          ? preElement.parentElement
+          : null;
+
+        if (existingHost) {
+          copyHost = existingHost;
+        } else {
+          const wrapper = document.createElement("div");
+          wrapper.className = "reader-code-copy-host";
+          preElement.parentElement?.insertBefore(wrapper, preElement);
+          wrapper.appendChild(preElement);
+          copyHost = wrapper;
+        }
+      }
+
+      copyHost.classList.add("reader-code-copy-host");
+
+      let copyButton = copyHost.querySelector(":scope > .reader-code-copy-button") as HTMLButtonElement | null;
+
+      if (!copyButton) {
+        copyButton = document.createElement("button");
+        copyButton.type = "button";
+        copyButton.className = "reader-code-copy-button";
+        copyButton.textContent = "复制";
+        copyHost.prepend(copyButton);
+      }
+
+      const handleCopy = async () => {
+        const codeText = preElement.innerText.trimEnd();
+        const markCopyResult = (isSuccess: boolean) => {
+          copyButton.textContent = isSuccess ? "已复制" : "复制失败";
+          window.setTimeout(() => {
+            copyButton.textContent = "复制";
+          }, 1200);
+        };
+
+        try {
+          await navigator.clipboard.writeText(codeText);
+          markCopyResult(true);
+        } catch {
+          const fallbackInput = document.createElement("textarea");
+          fallbackInput.value = codeText;
+          fallbackInput.setAttribute("readonly", "true");
+          fallbackInput.style.position = "fixed";
+          fallbackInput.style.top = "-9999px";
+          document.body.appendChild(fallbackInput);
+          fallbackInput.select();
+          const didCopy = document.execCommand("copy");
+          fallbackInput.remove();
+          markCopyResult(didCopy);
+        }
+      };
+
+      copyButton.addEventListener("click", handleCopy);
+      cleanupCallbacks.push(() => copyButton.removeEventListener("click", handleCopy));
+    }
+
+    return () => {
+      for (const cleanup of cleanupCallbacks) {
+        cleanup();
+      }
+    };
+  }, [html]);
+
+  return (
+    <div
+      ref={contentRef}
+      className="reader-article-content"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
 function resolveAvailableSourcesCategory(selectedCategory: string, categories: string[]): string {
@@ -268,6 +406,36 @@ function ReaderListCard({
   );
 }
 
+function ReaderPureListCard({
+  item,
+  isActive,
+  onSelect,
+}: {
+  item: FeedItem;
+  isActive: boolean;
+  onSelect: (item: FeedItem) => void;
+}) {
+  return (
+    <article
+      className={`reader-pure-note-card${isActive ? " is-active" : ""}`}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isActive}
+      onClick={() => onSelect(item)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect(item);
+        }
+      }}
+    >
+      <span className="reader-pure-source-name">{item.subscriptionName || "未知订阅源"}</span>
+      <h3>{item.title || "未命名条目"}</h3>
+      <time>{formatDateLabel(item.publishedAt)}</time>
+    </article>
+  );
+}
+
 function ReaderArticleCard({
   item,
   isActive,
@@ -302,10 +470,7 @@ function ReaderArticleCard({
             <section className="reader-article-section">
               <h2>{item.title || "未命名条目"}</h2>
               {item.contentHtml ? (
-                <div
-                  className="reader-article-content"
-                  dangerouslySetInnerHTML={{ __html: item.contentHtml }}
-                />
+                <ReaderArticleContent html={item.contentHtml} />
               ) : (
                 <div className="reader-article-content is-plain">
                   {paragraphs.length ? (
@@ -318,7 +483,7 @@ function ReaderArticleCard({
             </section>
 
             <footer className="reader-article-footer">
-              <span className="reader-article-footer-brand">由 GARSS Studio 阅读</span>
+              <span className="reader-article-footer-brand">由 GARSS阅读</span>
               <span className="reader-article-footer-via">inspired by Smartisan Notes</span>
             </footer>
           </div>
@@ -331,10 +496,12 @@ function ReaderArticleCard({
 function ReaderSourceCard({
   sourceState,
   isActive,
+  isExpanded,
   onSelect,
 }: {
   sourceState: ReaderSourceState;
   isActive: boolean;
+  isExpanded: boolean;
   onSelect: (subscriptionId: string) => void;
 }) {
   const shouldShowError = sourceState.status === "error" && sourceState.message.trim();
@@ -343,8 +510,11 @@ function ReaderSourceCard({
   return (
     <button
       type="button"
-      className={`source-status-card source-index-card is-${sourceState.status}${isActive ? " is-active" : ""}`}
+      className={`source-status-card source-index-card is-${sourceState.status}${isActive ? " is-active" : ""}${
+        isExpanded ? " is-expanded" : ""
+      }`}
       aria-pressed={isActive}
+      aria-expanded={isExpanded}
       onClick={() => onSelect(sourceState.subscriptionId)}
     >
       <div className="source-index-meta">
@@ -375,6 +545,9 @@ function ReaderPanel() {
   const [selectedItemId, setSelectedItemId] = useState("");
   const [completedSourceOrder, setCompletedSourceOrder] = useState<string[]>([]);
   const [isSourceDrawerOpen, setIsSourceDrawerOpen] = useState(false);
+  const [sourceFilterQuery, setSourceFilterQuery] = useState("");
+  const [readerNavigationMode, setReaderNavigationMode] = useState<ReaderNavigationMode>("pure");
+  const [expandedReaderDate, setExpandedReaderDate] = useState("");
   const articleScrollRef = useRef<HTMLDivElement | null>(null);
 
   const baseSourceStateList = useMemo(
@@ -472,30 +645,130 @@ function ReaderPanel() {
     () => items.filter((item) => item.subscriptionId === selectedSubscriptionId),
     [items, selectedSubscriptionId],
   );
+  const sortedReaderItems = useMemo(
+    () =>
+      [...items].sort((left, right) => {
+        const leftTime = new Date(left.publishedAt).getTime();
+        const rightTime = new Date(right.publishedAt).getTime();
+        const normalizedLeftTime = Number.isNaN(leftTime) ? 0 : leftTime;
+        const normalizedRightTime = Number.isNaN(rightTime) ? 0 : rightTime;
+
+        return normalizedRightTime - normalizedLeftTime;
+      }),
+    [items],
+  );
+  const sourceItemsBySubscriptionId = useMemo(() => {
+    const groupedItems = new Map<string, FeedItem[]>();
+
+    for (const item of items) {
+      const currentItems = groupedItems.get(item.subscriptionId) || [];
+      currentItems.push(item);
+      groupedItems.set(item.subscriptionId, currentItems);
+    }
+
+    return groupedItems;
+  }, [items]);
+  const normalizedSourceFilterQuery = normalizeSearchText(sourceFilterQuery);
+  const visibleSourceStateList = useMemo(() => {
+    if (!normalizedSourceFilterQuery) {
+      return sourceStateList.map((sourceState) => ({
+        sourceState,
+        matchingItems: [] as FeedItem[],
+        sourceMatched: false,
+      }));
+    }
+
+    return sourceStateList
+      .map((sourceState) => {
+        const sourceMatched =
+          matchesSearchText(sourceState.subscriptionName, normalizedSourceFilterQuery) ||
+          matchesSearchText(sourceState.routePath, normalizedSourceFilterQuery);
+        const matchingItems = (sourceItemsBySubscriptionId.get(sourceState.subscriptionId) || []).filter((item) =>
+          matchesSearchText(item.title, normalizedSourceFilterQuery),
+        );
+
+        return {
+          sourceState,
+          matchingItems,
+          sourceMatched,
+        };
+      })
+      .filter((entry) => entry.sourceMatched || entry.matchingItems.length);
+  }, [normalizedSourceFilterQuery, sourceItemsBySubscriptionId, sourceStateList]);
+  const visibleReaderDateGroups = useMemo(() => {
+    const groupedItems = new Map<string, { dateKey: string; dateLabel: string; items: FeedItem[] }>();
+
+    for (const item of sortedReaderItems) {
+      if (
+        normalizedSourceFilterQuery &&
+        !matchesSearchText(item.title, normalizedSourceFilterQuery) &&
+        !matchesSearchText(item.subscriptionName, normalizedSourceFilterQuery)
+      ) {
+        continue;
+      }
+
+      const dateKey = buildReaderDateGroupKey(item.publishedAt);
+      const existingGroup = groupedItems.get(dateKey);
+
+      if (existingGroup) {
+        existingGroup.items.push(item);
+        continue;
+      }
+
+      groupedItems.set(dateKey, {
+        dateKey,
+        dateLabel: formatReaderDateGroupLabel(item.publishedAt),
+        items: [item],
+      });
+    }
+
+    return Array.from(groupedItems.values());
+  }, [normalizedSourceFilterQuery, sortedReaderItems]);
+  const activeNavigationItems = readerNavigationMode === "pure" ? sortedReaderItems : filteredItems;
   const selectedItem = useMemo(
-    () => filteredItems.find((item) => item.id === selectedItemId) || null,
-    [filteredItems, selectedItemId],
+    () => activeNavigationItems.find((item) => item.id === selectedItemId) || null,
+    [activeNavigationItems, selectedItemId],
   );
   const selectedItemIndex = useMemo(
-    () => filteredItems.findIndex((item) => item.id === selectedItemId),
-    [filteredItems, selectedItemId],
+    () => activeNavigationItems.findIndex((item) => item.id === selectedItemId),
+    [activeNavigationItems, selectedItemId],
   );
-  const previousItem = selectedItemIndex > 0 ? filteredItems[selectedItemIndex - 1] : null;
+  const previousItem = selectedItemIndex > 0 ? activeNavigationItems[selectedItemIndex - 1] : null;
   const nextItem =
-    selectedItemIndex >= 0 && selectedItemIndex < filteredItems.length - 1
-      ? filteredItems[selectedItemIndex + 1]
+    selectedItemIndex >= 0 && selectedItemIndex < activeNavigationItems.length - 1
+      ? activeNavigationItems[selectedItemIndex + 1]
       : null;
 
   useEffect(() => {
-    if (!filteredItems.length) {
+    if (!activeNavigationItems.length) {
       setSelectedItemId("");
       return;
     }
 
-    if (!filteredItems.some((item) => item.id === selectedItemId)) {
-      setSelectedItemId(filteredItems[0]?.id || "");
+    if (!activeNavigationItems.some((item) => item.id === selectedItemId)) {
+      const fallbackItem = activeNavigationItems[0];
+      setSelectedItemId(fallbackItem?.id || "");
+
+      if (readerNavigationMode === "pure" && fallbackItem) {
+        setSelectedSubscriptionId(fallbackItem.subscriptionId);
+      }
     }
-  }, [filteredItems, selectedItemId]);
+  }, [activeNavigationItems, readerNavigationMode, selectedItemId]);
+
+  useEffect(() => {
+    if (readerNavigationMode !== "pure") {
+      return;
+    }
+
+    if (!visibleReaderDateGroups.length) {
+      setExpandedReaderDate("");
+      return;
+    }
+
+    if (expandedReaderDate && !visibleReaderDateGroups.some((group) => group.dateKey === expandedReaderDate)) {
+      setExpandedReaderDate(visibleReaderDateGroups[0]?.dateKey || "");
+    }
+  }, [expandedReaderDate, readerNavigationMode, visibleReaderDateGroups]);
 
   useEffect(() => {
     setIsSourceDrawerOpen(false);
@@ -517,6 +790,14 @@ function ReaderPanel() {
     scrollArticleViewportToTop();
   }
 
+  function handleSelectPureItem(item: FeedItem) {
+    setSelectedSubscriptionId(item.subscriptionId);
+    setSelectedItemId(item.id);
+    setExpandedReaderDate(buildReaderDateGroupKey(item.publishedAt));
+    setIsSourceDrawerOpen(false);
+    scrollArticleViewportToTop();
+  }
+
   function handleSelectSource(subscriptionId: string) {
     if (expandedSubscriptionId === subscriptionId) {
       setExpandedSubscriptionId("");
@@ -534,7 +815,27 @@ function ReaderPanel() {
     }
 
     setSelectedItemId(item.id);
+    setSelectedSubscriptionId(item.subscriptionId);
+
+    if (readerNavigationMode === "pure") {
+      setExpandedReaderDate(buildReaderDateGroupKey(item.publishedAt));
+    }
+
     scrollArticleViewportToTop();
+  }
+
+  function handleSelectReaderNavigationMode(nextMode: ReaderNavigationMode) {
+    setReaderNavigationMode(nextMode);
+
+    if (nextMode === "pure") {
+      const selectedGroupKey = selectedItem ? buildReaderDateGroupKey(selectedItem.publishedAt) : "";
+      const fallbackGroupKey = visibleReaderDateGroups[0]?.dateKey || "";
+      setExpandedReaderDate(
+        selectedGroupKey && visibleReaderDateGroups.some((group) => group.dateKey === selectedGroupKey)
+          ? selectedGroupKey
+          : fallbackGroupKey,
+      );
+    }
   }
 
   return (
@@ -542,24 +843,47 @@ function ReaderPanel() {
       <div className="reader-layout">
         <aside className={`reader-sidebar${isSourceDrawerOpen ? " is-open" : ""}`} aria-label="订阅源导航">
           {enabledSubscriptions.length ? (
+            <div className="reader-sidebar-filter">
+              <div className="reader-filter-field">
+                <span className="reader-filter-icon" aria-hidden="true" />
+                <input
+                  type="search"
+                  value={sourceFilterQuery}
+                  onChange={(event) => setSourceFilterQuery(event.target.value)}
+                  placeholder="快速搜索关键字"
+                  aria-label="过滤订阅源和文章标题"
+                />
+                {sourceFilterQuery ? (
+                  <button type="button" className="reader-filter-clear" onClick={() => setSourceFilterQuery("")} aria-label="清空过滤">
+                    ×
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
+          {enabledSubscriptions.length && readerNavigationMode === "traditional" ? (
             <div className="source-status-grid">
-              {sourceStateList.map((sourceState) => {
+              {visibleSourceStateList.map(({ sourceState, matchingItems }) => {
                 const isSourceActive = sourceState.subscriptionId === selectedSubscriptionId;
                 const isSourceExpanded = sourceState.subscriptionId === expandedSubscriptionId;
+                const shouldShowFilteredSublist = Boolean(normalizedSourceFilterQuery && matchingItems.length);
+                const visibleItems = shouldShowFilteredSublist ? matchingItems : isSourceActive ? filteredItems : [];
 
                 return (
                   <div className="reader-source-entry" key={sourceState.subscriptionId}>
                     <ReaderSourceCard
                       sourceState={sourceState}
                       isActive={isSourceActive}
+                      isExpanded={isSourceExpanded || shouldShowFilteredSublist}
                       onSelect={handleSelectSource}
                     />
-                    {isSourceActive && filteredItems.length ? (
+                    {visibleItems.length ? (
                       <div
-                        className={`reader-source-article-sublist${isSourceExpanded ? " is-expanded" : ""}`}
+                        className={`reader-source-article-sublist${isSourceExpanded || shouldShowFilteredSublist ? " is-expanded" : ""}`}
                         aria-label={`${sourceState.subscriptionName} 文章列表`}
                       >
-                        {filteredItems.map((item) => (
+                        {visibleItems.map((item) => (
                           <ReaderListCard
                             key={item.id}
                             item={item}
@@ -572,6 +896,60 @@ function ReaderPanel() {
                   </div>
                 );
               })}
+              {normalizedSourceFilterQuery && !visibleSourceStateList.length ? (
+                <div className="reader-filter-empty">
+                  <span>没有匹配的订阅源或文章</span>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {enabledSubscriptions.length && readerNavigationMode === "pure" ? (
+            <div className="source-status-grid reader-pure-grid">
+              {visibleReaderDateGroups.map((dateGroup) => {
+                const isDateExpanded = dateGroup.dateKey === expandedReaderDate;
+
+                return (
+                  <div className="reader-source-entry reader-pure-date-entry" key={dateGroup.dateKey}>
+                    <button
+                      type="button"
+                      className={`source-status-card source-index-card reader-pure-date-card${
+                        isDateExpanded ? " is-active is-expanded" : ""
+                      }`}
+                      aria-expanded={isDateExpanded}
+                      onClick={() => setExpandedReaderDate(isDateExpanded ? "" : dateGroup.dateKey)}
+                    >
+                      <div className="source-index-meta">
+                        <span>按更新时间排序</span>
+                      </div>
+                      <div className="source-index-main">
+                        <h3>{dateGroup.dateLabel}</h3>
+                        <span className="source-index-count">{dateGroup.items.length}</span>
+                      </div>
+                    </button>
+                    {isDateExpanded && dateGroup.items.length ? (
+                      <div
+                        className="reader-source-article-sublist reader-pure-article-sublist is-expanded"
+                        aria-label={`${dateGroup.dateLabel} 文章列表`}
+                      >
+                        {dateGroup.items.map((item) => (
+                          <ReaderPureListCard
+                            key={item.id}
+                            item={item}
+                            isActive={item.id === selectedItemId}
+                            onSelect={handleSelectPureItem}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+              {normalizedSourceFilterQuery && !visibleReaderDateGroups.length ? (
+                <div className="reader-filter-empty">
+                  <span>没有匹配的文章</span>
+                </div>
+              ) : null}
             </div>
           ) : null}
 
@@ -592,6 +970,28 @@ function ReaderPanel() {
               </div>
             </div>
           ) : null}
+
+          {enabledSubscriptions.length ? (
+	            <div className="reader-sidebar-mode-switch" role="group" aria-label="导航模式">
+	              <button
+	                type="button"
+	                className={readerNavigationMode === "pure" ? "is-active" : ""}
+	                aria-pressed={readerNavigationMode === "pure"}
+	                onClick={() => handleSelectReaderNavigationMode("pure")}
+	              >
+	                纯享模式
+	              </button>
+	              <button
+	                type="button"
+	                className={readerNavigationMode === "traditional" ? "is-active" : ""}
+	                aria-pressed={readerNavigationMode === "traditional"}
+	                onClick={() => handleSelectReaderNavigationMode("traditional")}
+	              >
+	                传统模式
+	              </button>
+	            </div>
+          ) : null}
+
         </aside>
         <button
           type="button"
@@ -762,13 +1162,19 @@ function SubscriptionManagementPanel({
   const removingSourceId = useAppStore((state) => state.removingSourceId);
   const saveSource = useAppStore((state) => state.saveSource);
   const createSourceCategory = useAppStore((state) => state.createSourceCategory);
+  const renameSourceCategory = useAppStore((state) => state.renameSourceCategory);
+  const deleteSourceCategory = useAppStore((state) => state.deleteSourceCategory);
   const testSource = useAppStore((state) => state.testSource);
   const setCurrentTab = useAppStore((state) => state.setCurrentTab);
   const toggleSourceEnabled = useAppStore((state) => state.toggleSourceEnabled);
   const removeSource = useAppStore((state) => state.removeSource);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [managedCategoryName, setManagedCategoryName] = useState("");
+  const [managedCategoryDraft, setManagedCategoryDraft] = useState("");
+  const [managedNewCategoryName, setManagedNewCategoryName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(() =>
     typeof window === "undefined" ? "" : parseAppLocation(window.location.href).category,
   );
@@ -947,6 +1353,31 @@ function SubscriptionManagementPanel({
     return categoryItems;
   }, [isRsshubMode, panelCategories, panelSubscriptions, usesCategorySidebar]);
 
+  const managedCategoryOptions = useMemo(() => {
+    const counts = new Map<string, { totalCount: number; enabledCount: number }>();
+
+    for (const subscription of panelSubscriptions) {
+      for (const category of getSubscriptionCategories(subscription)) {
+        const currentCounts = counts.get(category) || { totalCount: 0, enabledCount: 0 };
+        counts.set(category, {
+          totalCount: currentCounts.totalCount + 1,
+          enabledCount: currentCounts.enabledCount + (subscription.enabled ? 1 : 0),
+        });
+      }
+    }
+
+    return panelCategories.map((category) => {
+      const categoryCounts = counts.get(category) || { totalCount: 0, enabledCount: 0 };
+
+      return {
+        id: category,
+        label: category,
+        countLabel: `${categoryCounts.enabledCount}/${categoryCounts.totalCount}`,
+        totalCount: categoryCounts.totalCount,
+      };
+    });
+  }, [panelCategories, panelSubscriptions]);
+
   const activeCategory = useMemo(
     () => {
       if (!usesCategorySidebar) {
@@ -1104,6 +1535,73 @@ function SubscriptionManagementPanel({
     setIsSpeedTesting(false);
   }
 
+  async function handleCreateManagedCategory(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const normalizedName = managedNewCategoryName.trim();
+
+    if (!normalizedName) {
+      return;
+    }
+
+    const createdCategory = await createSourceCategory(normalizedName);
+
+    if (createdCategory) {
+      setManagedNewCategoryName("");
+      if (typeof window !== "undefined") {
+        window.history.pushState({}, "", buildCategoryUrl(window.location.href, createdCategory));
+      }
+      setSelectedCategory(createdCategory);
+    }
+  }
+
+  function handleStartManagedCategoryEdit(categoryName: string) {
+    setManagedCategoryName(categoryName);
+    setManagedCategoryDraft(categoryName);
+  }
+
+  function handleCancelManagedCategoryEdit() {
+    setManagedCategoryName("");
+    setManagedCategoryDraft("");
+  }
+
+  async function handleSaveManagedCategory(currentName: string) {
+    const nextName = managedCategoryDraft.trim();
+
+    if (!nextName || nextName === currentName) {
+      handleCancelManagedCategoryEdit();
+      return;
+    }
+
+    const succeeded = await renameSourceCategory(currentName, nextName);
+
+    if (succeeded) {
+      if (activeCategory === currentName) {
+        if (typeof window !== "undefined") {
+          window.history.pushState({}, "", buildCategoryUrl(window.location.href, nextName));
+        }
+        setSelectedCategory(nextName);
+      }
+      handleCancelManagedCategoryEdit();
+    }
+  }
+
+  async function handleDeleteManagedCategory(categoryName: string) {
+    const confirmed = window.confirm(`删除类型「${categoryName}」？仅属于该类型的订阅源会移动到「未分类」。`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    const succeeded = await deleteSourceCategory(categoryName);
+
+    if (succeeded && activeCategory === categoryName) {
+      if (typeof window !== "undefined") {
+        window.history.pushState({}, "", buildCategoryUrl(window.location.href, ALL_SOURCES_CATEGORY));
+      }
+      setSelectedCategory(ALL_SOURCES_CATEGORY);
+    }
+  }
+
   return (
     <section className="content-panel sources-panel">
       <div className={`sources-layout${usesCategorySidebar ? "" : " is-flat"}`}>
@@ -1168,6 +1666,9 @@ function SubscriptionManagementPanel({
         <div className="source-list">
           {allowSourceCreate ? (
             <div className="source-list-toolbar">
+              <button type="button" className="manage-category-button" onClick={() => setIsCategoryManagerOpen(true)}>
+                管理类型
+              </button>
               <label className="source-filter-control">
                 <span>类型</span>
                 <select value={activeCategory} onChange={(event) => handleSelectCategory(event.target.value)}>
@@ -1232,6 +1733,98 @@ function SubscriptionManagementPanel({
           onCreateSubscriptionDraft={isRsshubMode ? handleCreateFromRsshubDraft : undefined}
         />
       ) : null}
+
+      {isCategoryManagerOpen ? (
+        <div className="modal-backdrop" role="presentation" onMouseDown={() => setIsCategoryManagerOpen(false)}>
+          <section className="modal-panel category-manager-panel" role="dialog" aria-modal="true" aria-label="管理类型" onMouseDown={(event) => event.stopPropagation()}>
+            <div className="modal-form-sheet category-manager-sheet">
+              <div className="sheet-head">
+                <div className="sheet-head-row">
+                  <div>
+                    <h2>管理类型</h2>
+                    <p>新增、重命名或删除订阅源类型。</p>
+                  </div>
+                  <button type="button" className="ghost-button" onClick={() => setIsCategoryManagerOpen(false)}>
+                    关闭
+                  </button>
+                </div>
+              </div>
+
+              <form className="category-manager-create" onSubmit={handleCreateManagedCategory}>
+                <input
+                  type="text"
+                  value={managedNewCategoryName}
+                  onChange={(event) => setManagedNewCategoryName(event.target.value)}
+                  placeholder="输入新类型名称"
+                />
+                <button type="submit" className="primary-button" disabled={creatingCategory || !managedNewCategoryName.trim()}>
+                  新增
+                </button>
+              </form>
+
+              <div className="category-manager-list">
+                {managedCategoryOptions.map((category) => {
+                  const isEditingCategory = managedCategoryName === category.id;
+
+                  return (
+                    <div className="category-manager-item" key={category.id}>
+                      {isEditingCategory ? (
+                        <input
+                          type="text"
+                          autoFocus
+                          value={managedCategoryDraft}
+                          onChange={(event) => setManagedCategoryDraft(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              void handleSaveManagedCategory(category.id);
+                            }
+
+                            if (event.key === "Escape") {
+                              handleCancelManagedCategoryEdit();
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div className="category-manager-item-main">
+                          <strong>{category.label}</strong>
+                          <span>{category.countLabel} 个启用/全部订阅源</span>
+                        </div>
+                      )}
+
+                      <div className="category-manager-actions">
+                        {isEditingCategory ? (
+                          <>
+                            <button
+                              type="button"
+                              className="ghost-button"
+                              onClick={() => void handleSaveManagedCategory(category.id)}
+                              disabled={creatingCategory || !managedCategoryDraft.trim()}
+                            >
+                              保存
+                            </button>
+                            <button type="button" className="ghost-button" onClick={handleCancelManagedCategoryEdit}>
+                              取消
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button type="button" className="ghost-button" onClick={() => handleStartManagedCategoryEdit(category.id)}>
+                              编辑
+                            </button>
+                            <button type="button" className="ghost-button danger" onClick={() => void handleDeleteManagedCategory(category.id)} disabled={creatingCategory}>
+                              删除
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -1264,7 +1857,7 @@ function RsshubPanel() {
   );
 }
 
-function SettingsPanel({ onLogout }: { onLogout: () => void }) {
+function SettingsPanel({ initialSection = "fetch", onLogout }: { initialSection?: SettingsSection; onLogout: () => void }) {
   const subscriptions = useAppStore((state) => state.subscriptions);
   const autoRefreshIntervalMinutes = useAppStore((state) => state.autoRefreshIntervalMinutes);
   const parallelFetchCount = useAppStore((state) => state.parallelFetchCount);
@@ -1277,7 +1870,7 @@ function SettingsPanel({ onLogout }: { onLogout: () => void }) {
   const setAutoRefreshIntervalMinutes = useAppStore((state) => state.setAutoRefreshIntervalMinutes);
   const setParallelFetchCount = useAppStore((state) => state.setParallelFetchCount);
   const [nowTimestamp, setNowTimestamp] = useState(() => Date.now());
-  const [selectedSection, setSelectedSection] = useState<SettingsSection>("fetch");
+  const [selectedSection, setSelectedSection] = useState<SettingsSection>(initialSection);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -1286,6 +1879,10 @@ function SettingsPanel({ onLogout }: { onLogout: () => void }) {
 
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    setSelectedSection(initialSection);
+  }, [initialSection]);
 
   const enabledSubscriptionCount = useMemo(
     () => subscriptions.filter((subscription) => subscription.enabled && !isRsshubDocSubscription(subscription)).length,
@@ -1321,6 +1918,13 @@ function SettingsPanel({ onLogout }: { onLogout: () => void }) {
               onClick={() => setSelectedSection("fetch")}
             >
               <span>拉取设置</span>
+            </button>
+            <button
+              type="button"
+              className={selectedSection === "rsshub" ? "category-item is-active" : "category-item"}
+              onClick={() => setSelectedSection("rsshub")}
+            >
+              <span>RSSHUB</span>
             </button>
             <button
               type="button"
@@ -1417,6 +2021,10 @@ function SettingsPanel({ onLogout }: { onLogout: () => void }) {
                 </div>
               </div>
             </section>
+          ) : selectedSection === "rsshub" ? (
+            <div className="settings-rsshub-panel">
+              <RsshubPanel />
+            </div>
           ) : selectedSection === "account" ? (
             <section className="editor-sheet settings-sheet settings-page-sheet">
               <div className="sheet-head">
@@ -1598,13 +2206,6 @@ export default function App() {
               >
                 订阅源
               </button>
-              <button
-                type="button"
-                className={currentTab === "rsshub" ? "tab-button active" : "tab-button"}
-                onClick={() => handleTabChange("rsshub")}
-              >
-                RSSHUB
-              </button>
             </nav>
           </div>
 
@@ -1612,10 +2213,10 @@ export default function App() {
             <nav className="tab-switcher tab-switcher-settings" aria-label="设置导航">
               <button
                 type="button"
-                className={currentTab === "settings" ? "tab-button active" : "tab-button"}
+                className={currentTab === "settings" || currentTab === "rsshub" ? "tab-button active" : "tab-button"}
                 onClick={() => handleTabChange("settings")}
               >
-                ⚙️ 设置
+                设置
               </button>
             </nav>
           </div>
@@ -1635,7 +2236,7 @@ export default function App() {
         className={
           currentTab === "reader"
             ? "workspace reader-workspace"
-            : currentTab === "sources" || currentTab === "rsshub"
+            : currentTab === "sources"
               ? "workspace sources-workspace"
               : "workspace settings-workspace"
         }
@@ -1645,7 +2246,7 @@ export default function App() {
         ) : currentTab === "sources" ? (
           <SourcesPanel />
         ) : currentTab === "rsshub" ? (
-          <RsshubPanel />
+          <SettingsPanel initialSection="rsshub" onLogout={handleLogout} />
         ) : (
           <SettingsPanel onLogout={handleLogout} />
         )}

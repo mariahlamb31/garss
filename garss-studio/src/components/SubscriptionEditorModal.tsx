@@ -80,7 +80,6 @@ export function SubscriptionEditorModal({
   const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
   const [testFeedback, setTestFeedback] = useState<TestFeedback>(buildIdleFeedback);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
   const backdropPointerStartedRef = useRef(false);
   const templateCandidate = normalizeTemplateCandidate(form);
   const templateMeta = useMemo(
@@ -152,17 +151,6 @@ export function SubscriptionEditorModal({
     }
 
     updateCategories([...selectedCategories, category]);
-  }
-
-  function handleAddCategory() {
-    const normalizedName = newCategoryName.trim();
-
-    if (!normalizedName) {
-      return;
-    }
-
-    updateCategories([...selectedCategories, normalizedName]);
-    setNewCategoryName("");
   }
 
   function handleRoutePathChange(value: string) {
@@ -320,14 +308,16 @@ export function SubscriptionEditorModal({
                   {parameter.description ? <small className="field-help">{parameter.description}</small> : null}
                 </label>
               ))}
-              <div className="template-preview-card">
-                <small>模板：{templateMeta.template}</small>
-                <strong>结果：{generatedRoutePath || "等待填写参数"}</strong>
-                {templateMeta.exampleRoutePath ? <small>示例：{templateMeta.exampleRoutePath}</small> : null}
-                {!routeMatch.matched && form.routePath.trim() && form.routePath.trim() !== templateMeta.template ? (
-                  <small className="field-help is-warning">当前完整地址与模板参数未完全对应，已保留你的手动输入。</small>
-                ) : null}
-              </div>
+              {!viewOnly ? (
+                <div className="template-preview-card">
+                  <small>模板：{templateMeta.template}</small>
+                  <strong>结果：{generatedRoutePath || "等待填写参数"}</strong>
+                  {templateMeta.exampleRoutePath ? <small>示例：{templateMeta.exampleRoutePath}</small> : null}
+                  {!routeMatch.matched && form.routePath.trim() && form.routePath.trim() !== templateMeta.template ? (
+                    <small className="field-help is-warning">当前完整地址与模板参数未完全对应，已保留你的手动输入。</small>
+                  ) : null}
+                </div>
+              ) : null}
             </section>
           ) : null}
 
@@ -381,7 +371,7 @@ export function SubscriptionEditorModal({
                           </button>
                         ))
                       ) : (
-                        <small className="field-help">还没有类型，可以从预制类型选择或直接新增。</small>
+                        <small className="field-help">还没有类型，可以从预制类型中选择。</small>
                       )}
                     </div>
                     {categoryOptions.length ? (
@@ -402,23 +392,6 @@ export function SubscriptionEditorModal({
                         })}
                       </div>
                     ) : null}
-                    <div className="category-create-row">
-                      <input
-                        type="text"
-                        value={newCategoryName}
-                        onChange={(event) => setNewCategoryName(event.target.value)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") {
-                            event.preventDefault();
-                            handleAddCategory();
-                          }
-                        }}
-                        placeholder="新增类型"
-                      />
-                      <button type="button" className="secondary-button" onClick={handleAddCategory} disabled={!newCategoryName.trim()}>
-                        添加
-                      </button>
-                    </div>
                   </div>
                 </label>
 

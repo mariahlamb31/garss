@@ -158,6 +158,18 @@ npm run sync:editreadme
 - `scripts/sync-editreadme.mjs`
 - `scripts/lib/subscription-import.mjs`
 
+如果需要把管理页当前的 `storage/subscriptions.json` 反向写回根目录 `EditREADME.md`，可以运行：
+
+```bash
+npm run sync:editreadme:from-subscriptions
+```
+
+这个脚本会跳过 `rsshub-doc-*` 模板路由，只把普通订阅源写回 `EditREADME.md` 的 RSS 表格。已有表格行会尽量保持不动，脚本只补齐缺失的普通订阅源，并会把 `https://rsshub.v2fy.com` 写成 Docker 内部可用的 `http://rsshub:1200`。先预览将写入的数量可以使用：
+
+```bash
+npm run sync:editreadme:from-subscriptions -- --dry-run
+```
+
 ## 从 RSSHub 官方文档同步模板路由
 
 RSSHUB 模块支持把 RSSHub 官方文档中的可用路由直接导入为“模板订阅源”。这些项会进入独立的 `RSSHUB` 顶级页面，不再混入“管理订阅源”；它们默认 `enabled: false`，但仍然可以在弹窗里继续编辑参数化路径。

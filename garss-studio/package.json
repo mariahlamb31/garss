@@ -12,6 +12,7 @@
     "build:static": "npm run typecheck:app && vite build",
     "build:server": "tsc -p tsconfig.server.json",
     "sync:editreadme": "node scripts/sync-editreadme.mjs",
+    "sync:editreadme:from-subscriptions": "node scripts/sync-subscriptions-to-editreadme.mjs",
     "sync:garss-info": "node scripts/sync-garss-info.mjs",
     "typecheck": "npm run typecheck:app && npm run typecheck:server",
     "test:url-routing": "node --test src/lib/navigation.test.ts",

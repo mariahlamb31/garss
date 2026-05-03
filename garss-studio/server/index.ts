@@ -1622,6 +1622,22 @@ app.get("/api/health", async (_request, response) => {
   });
 });
 
+app.get("/api/rsshub/fetch", ensureAuthenticated, async (request, response) => {
+  const routePath = normalizeText(request.query.routePath);
+
+  if (!routePath || !routePath.startsWith("/")) {
+    response.status(400).json({ error: "routePath 必须是以 / 开头的 RSSHub 路径。" });
+    return;
+  }
+
+  try {
+    const xml = await fetchFeedXml(buildRsshubUrl(routePath));
+    response.type("application/xml").send(xml);
+  } catch (error) {
+    response.status(502).json({ error: getErrorMessage(error), routePath });
+  }
+});
+
 io.use((socket, next) => {
   const token = typeof socket.handshake.auth?.token === "string" ? socket.handshake.auth.token.trim() : "";
   const payload = verifyToken(token);
@@ -1927,6 +1943,119 @@ app.post("/api/categories", ensureAuthenticated, async (request, response) => {
   const nextCategories = [...categories, name];
   await writeCategories(nextCategories);
   response.status(201).json({ category: name, categories: nextCategories });
+});
+
+app.put("/api/categories/:name", ensureAuthenticated, async (request, response) => {
+  const currentName = normalizeCategory(request.params.name);
+  const nextName = normalizeCategory(request.body?.name);
+
+  if (!currentName) {
+    response.status(400).json({ error: "原类型名称不能为空。" });
+    return;
+  }
+
+  if (!nextName) {
+    response.status(400).json({ error: "新类型名称不能为空。" });
+    return;
+  }
+
+  const subscriptions = await readSubscriptions();
+  const explicitCategories = await readCategories();
+  const categoryExists =
+    explicitCategories.includes(currentName) ||
+    subscriptions.some((subscription) => normalizeSubscriptionCategories(subscription.categories, subscription.category).includes(currentName));
+
+  if (!categoryExists) {
+    response.status(404).json({ error: "类型不存在。" });
+    return;
+  }
+
+  if (currentName !== nextName) {
+    const nextExists =
+      explicitCategories.includes(nextName) ||
+      subscriptions.some((subscription) => normalizeSubscriptionCategories(subscription.categories, subscription.category).includes(nextName));
+
+    if (nextExists) {
+      response.status(409).json({ error: "目标类型已经存在。" });
+      return;
+    }
+  }
+
+  const now = new Date().toISOString();
+  const nextSubscriptions = subscriptions.map((subscription) => {
+    const categories = normalizeSubscriptionCategories(subscription.categories, subscription.category).map((category) =>
+      category === currentName ? nextName : category,
+    );
+    const normalizedCategories = dedupeCategories(categories);
+    const changed = normalizedCategories.join("\n") !== normalizeSubscriptionCategories(subscription.categories, subscription.category).join("\n");
+
+    return {
+      ...subscription,
+      category: normalizedCategories[0] || nextName,
+      categories: normalizedCategories,
+      updatedAt: changed ? now : subscription.updatedAt,
+    };
+  });
+  const nextExplicitCategories = explicitCategories.map((category) => (category === currentName ? nextName : category));
+
+  await writeSubscriptions(nextSubscriptions);
+  await writeCategories(nextExplicitCategories);
+
+  const categories = buildCategoryList(nextSubscriptions, await readCategories());
+  response.json({ category: nextName, subscriptions: nextSubscriptions, categories });
+});
+
+app.delete("/api/categories/:name", ensureAuthenticated, async (request, response) => {
+  const name = normalizeCategory(request.params.name);
+  const fallbackCategory = "未分类";
+
+  if (!name) {
+    response.status(400).json({ error: "类型名称不能为空。" });
+    return;
+  }
+
+  const subscriptions = await readSubscriptions();
+  const explicitCategories = await readCategories();
+  const categoryExists =
+    explicitCategories.includes(name) ||
+    subscriptions.some((subscription) => normalizeSubscriptionCategories(subscription.categories, subscription.category).includes(name));
+
+  if (!categoryExists) {
+    response.status(404).json({ error: "类型不存在。" });
+    return;
+  }
+
+  const now = new Date().toISOString();
+  let movedSubscriptionCount = 0;
+  const nextSubscriptions = subscriptions.map((subscription) => {
+    const currentCategories = normalizeSubscriptionCategories(subscription.categories, subscription.category);
+
+    if (!currentCategories.includes(name)) {
+      return subscription;
+    }
+
+    movedSubscriptionCount += 1;
+    const nextCategories = currentCategories.filter((category) => category !== name);
+    const normalizedCategories = nextCategories.length ? nextCategories : [fallbackCategory];
+
+    return {
+      ...subscription,
+      category: normalizedCategories[0],
+      categories: normalizedCategories,
+      updatedAt: now,
+    };
+  });
+  const nextExplicitCategories = explicitCategories.filter((category) => category !== name);
+
+  if (movedSubscriptionCount > 0 && !nextExplicitCategories.includes(fallbackCategory)) {
+    nextExplicitCategories.push(fallbackCategory);
+  }
+
+  await writeSubscriptions(nextSubscriptions);
+  await writeCategories(nextExplicitCategories);
+
+  const categories = buildCategoryList(nextSubscriptions, await readCategories());
+  response.json({ deleted: true, subscriptions: nextSubscriptions, categories });
 });
 
 /**

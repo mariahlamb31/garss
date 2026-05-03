@@ -5,6 +5,7 @@ on:
   push:
     branches:    
       - main
+      - dev
 jobs:
   push:
       runs-on: ${{ matrix.operating-system }}
@@ -24,12 +25,32 @@ jobs:
         run: pip3 install --user pipenv
       - name: Install dependecies
         run:  pipenv --python python3 && pipenv install
+      - name: Start GARSS Studio RSSHub proxy
+        env:
+          ACCESS_CODE: banana
+          SCHEDULER_ENABLED: "false"
+        run: docker compose -f garss-studio/docker-compose.yml up --build -d
+      - name: Wait for GARSS Studio
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:25173/api/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f garss-studio/docker-compose.yml logs
+          exit 1
       - name: Build
         env:
             USER: ${{ secrets.USER }}
             PASSWORD: ${{ secrets.PASSWORD }}
             HOST: ${{ secrets.HOST }}
+            GARSS_STUDIO_BASE_URL: http://127.0.0.1:25173
+            GARSS_STUDIO_ACCESS_CODE: banana
         run: pipenv run build
+      - name: Stop GARSS Studio RSSHub proxy
+        if: always()
+        run: docker compose -f garss-studio/docker-compose.yml down
       - name: Commit and push if changed   # 更新README.md
         run: |
           git diff

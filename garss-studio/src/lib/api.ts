@@ -104,6 +104,21 @@ export async function createCategory(token: string, name: string): Promise<Categ
   });
 }
 
+export async function renameCategory(token: string, currentName: string, nextName: string): Promise<SubscriptionsResponse> {
+  return requestJson<SubscriptionsResponse>(`/api/categories/${encodeURIComponent(currentName)}`, {
+    method: "PUT",
+    body: { name: nextName },
+    token,
+  });
+}
+
+export async function deleteCategory(token: string, name: string): Promise<SubscriptionsResponse> {
+  return requestJson<SubscriptionsResponse>(`/api/categories/${encodeURIComponent(name)}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
 export async function saveSubscription(
   token: string,
   input: SubscriptionInput,
