@@ -1,8 +1,20 @@
 ---
 name: garss-studio-rss-api
 description: Use when an AI agent needs to read, refresh, summarize, or inspect RSS news from this GARSS Studio project through its backend API. Covers login with access code, Bearer token usage, reader item endpoints, subscription lookup, and the single-port API constraint.
+version: 1.0.0
 metadata:
   short-description: Read GARSS Studio RSS news through the backend API
+  openclaw:
+    requires:
+      bins:
+        - curl
+    envVars:
+      - name: GARSS_BASE_URL
+        required: false
+        description: Optional GARSS Studio base URL. Defaults to http://127.0.0.1:25173.
+      - name: GARSS_ACCESS_CODE
+        required: false
+        description: Optional GARSS Studio access code. Defaults to banana for the local dev setup.
 ---
 
 # GARSS Studio RSS API
@@ -15,9 +27,46 @@ Use this skill when the user asks an AI agent to get RSS news from this project,
 
 - Use the single public entrypoint only: `http://127.0.0.1:25173` in local dev unless the user gives another base URL.
 - Do not access the backend container port or RSSHub container directly.
+- If the local service is not running and the user wants live data, start GARSS Studio from the repository before calling APIs.
 - Authenticate before calling protected endpoints.
 - Prefer cached reads unless the user explicitly asks to refresh.
 - Preserve source names and original article links in user-facing summaries.
+
+## Local Startup
+
+Use these steps when the user asks for live GARSS data and `http://127.0.0.1:25173/api/health` is not reachable.
+
+1. Go to the project:
+
+```bash
+cd path/to/garss/garss-studio
+```
+
+If the repository is not present, clone `https://github.com/zhaoolee/garss` first, then enter `garss-studio`.
+
+2. Ensure env file exists:
+
+```bash
+cp .env.example .env
+```
+
+Skip this if `.env` already exists.
+
+3. Start the local development stack:
+
+```bash
+docker compose -f docker-compose.dev.yml up --build -d
+```
+
+Development mode exposes only one public port: `http://127.0.0.1:25173`. The backend and RSSHub services stay behind the frontend gateway. The dev compose defaults `SCHEDULER_ENABLED=false`, so startup should not trigger a full automatic RSS refresh.
+
+4. Verify service health:
+
+```bash
+curl -sS http://127.0.0.1:25173/api/health
+```
+
+The browser entry is `http://127.0.0.1:25173/reader?pw=banana`.
 
 ## Auth Flow
 
