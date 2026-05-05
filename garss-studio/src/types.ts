@@ -49,6 +49,19 @@ export interface SubscriptionsResponse {
   categories: string[];
 }
 
+export interface SubscriptionsBackup {
+  version: 1;
+  exportedAt: string;
+  subscriptions: Subscription[];
+  categories: string[];
+}
+
+export type SubscriptionsBackupImportInput = SubscriptionsBackup | { sourceUrl: string };
+
+export interface SubscriptionsBackupImportResponse extends SubscriptionsResponse {
+  importedCount: number;
+}
+
 export interface ReaderItemsResponse {
   generatedAt: string;
   items: FeedItem[];

@@ -267,7 +267,6 @@
 | C017 | 博客园 | 博客园精华区 | {{latest_content}}  |  [订阅地址](http://feed.cnblogs.com/blog/picked/rss) |  
 | C018 | 博客园 | 博客园首页 | {{latest_content}}  |  [订阅地址](http://feed.cnblogs.com/blog/sitehome/rss) |  
 | C019 | PTT(台湾论坛) | PTT电影专题 | {{latest_content}}  |  [订阅地址](https://www.ptt.cc/atom/movie.xml) |  
-| C020 | PTT(台湾论坛) | PTT正妹专题 | {{latest_content}}  |  [订阅地址](https://www.ptt.cc/atom/beauty.xml) |  
 | <div id="C021" style="text-align: center;"><img src="./_media/favicon/C021.png" width="30px" style="width:30px;height: auto;"/><br><span>C021</span></div> | 吾爱破解 | 吾爱破解精品软件区 | {{latest_content}}  |  [订阅地址](http://rsshub:1200/discuz/x/https%3a%2f%2fwww.52pojie.cn%2fforum-16-1.html) |  
 | <div id="C022" style="text-align: center;"><img src="./_media/favicon/C022.png" width="30px" style="width:30px;height: auto;"/><br><span>C022</span></div> | cnBeta.COM 精彩优秀评论 | 从cnBeta每天数千评论中精选出来的优秀评论 | {{latest_content}}  |  [订阅地址](https://www.cnbeta.com/commentrss.php) |  
 | <div id="C023" style="text-align: center;"><img src="./_media/favicon/C023.png" width="30px" style="width:30px;height: auto;"/><br><span>C023</span></div> | 比特客栈的文艺复兴 | We do not choose who we are, but we do choose who we become. | {{latest_content}}  |  [订阅地址](https://bitinn.net/feed/) |  
@@ -283,6 +282,7 @@
 | C033 | 恩山无线论坛  | 无线路由器爱好者的乐园 | {{latest_content}}  |  [订阅地址](http://rsshub:1200/right/forum/31) |  
 | C034 | xLog | An open-source creative community written on the blockchain. | {{latest_content}}  |  [订阅地址](https://xlog.app/feed/hottest?interval=1) |  
 | C035 | NodeSeek | 一个面向Web开发、主机托管、VPS/服务器等技术话题的极客社区 | {{latest_content}}  |  [订阅地址](https://rss.nodeseek.com/) |  
+| N013 | 一亩三分地 - 分区-世界公民 | 分区 分区 id 留学申请 257 世界公民 379 投资理财 400 生活干货 31 职场达人 345 人际关系 391 海外求职 38 签证移民 265 分类 热门帖子 最新帖子 hot new 排序方式 最新回复 最新发布 post &#124; 示例：/1point3acres/section/345 &#124; 参数：id: 分区 id，见下表，默认为全部；type: 帖子分类, 见下表，默认为 hot，即热门帖子；order: 排序方式，见下表，默认为空，即最新回复 &#124; 源码：section.ts | {{latest_content}} | [订阅地址](http://rsshub:1200/1point3acres/section/379/hot) |
 | <h2 id="影视资源">影视资源</h2> |  |   |  |
 | <div id="M001" style="text-align: center;"><img src="./_media/favicon/M001.png" width="30px" style="width:30px;height: auto;"/><br><span>M001</span></div> | VIP影院 |  666影院 - 全网VIP电影免费看！ | {{latest_content}}  |  [订阅地址](https://bukaivip.com/rss) |  
 | M002 | LimeTorrents |  Latest Torrents RSS | {{latest_content}}  |  [订阅地址](https://www.limetorrents.pro/rss/) |
@@ -313,6 +313,18 @@
 | TG009 | 树莓派家用云服务器 | 树莓派家用云服务器交流  | {{latest_content}}  |  [订阅地址](http://rsshub:1200/telegram/channel/zhaoolee_pi) |
 | TG010 | 快乐星球 | 美女图片  | {{latest_content}}  |  [订阅地址](http://rsshub:1200/telegram/channel/botmzt) |
 | TG011 | Newlearnerの自留地 | 不定期推送 IT 相关资讯 | {{latest_content}}  |  [订阅地址](http://rsshub:1200/telegram/channel/NewlearnerChannel) |
+| N008 | 小破不入渠 |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/forwardlikehell) |
+| N009 | 小声读书 |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/weekly_books) |
+| N010 | 小道消息 |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/WebNoteslah) |
+| N011 | 每日消费电子观察 |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/CE_Observe) |
+| N012 | Alan的小纸箱 |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/alansbox) |
+| <h2 id="摄影">摄影</h2> |  |   |  |
+| C020 | PTT(台湾论坛) | PTT正妹专题 | {{latest_content}}  |  [订阅地址](https://www.ptt.cc/atom/beauty.xml) |  
+| N003 | 热点影像模特约拍频道 |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/hotspotimage88) |
+| N004 | R21JP |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/m81plus) |
+| N005 | Analog Photography |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/anallog) |
+| N006 | photography |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/photography) |
+| N007 | Photography Poses |  | {{latest_content}} | [订阅地址](http://rsshub:1200/telegram/channel/photography_poses) |
 | <h2 id="未分类">未分类</h2> |  |   |  |
 | N001 | 共产党员网 - 最新发布 | 最新发布 : : zxfb &#124; 示例：/12371/zxfb &#124; 参数：category: 新闻分类名，预设 zxfb &#124; 来源：www.12371.cn &#124; 源码：zxfb.ts | {{latest_content}} | [订阅地址](http://rsshub:1200/12371/zxfb) |
 

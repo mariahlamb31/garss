@@ -4,12 +4,14 @@ import { bootstrapAuthSession } from "./bootstrap-auth";
 import {
   createCategory,
   deleteCategory,
+  exportSubscriptionsBackup,
   getAppSettings,
   getErrorMessage,
   getReaderItems,
   getReaderSubscriptionItems,
   getSession,
   getSubscriptions,
+  importSubscriptionsBackup,
   testSubscription,
   login,
   removeSubscription,
@@ -24,6 +26,8 @@ import type {
   ReaderError,
   ReaderSourceState,
   Subscription,
+  SubscriptionsBackup,
+  SubscriptionsBackupImportInput,
   SubscriptionInput,
   SubscriptionTestResponse,
 } from "../types";
@@ -105,6 +109,7 @@ interface AppStoreState {
   nextAutoRefreshAt: number;
   socketConnected: boolean;
   socketConnectionLabel: string;
+  schedulerEnabled: boolean;
   activeFetchCount: number;
   completedFetchCount: number;
   categories: string[];
@@ -116,6 +121,8 @@ interface AppStoreState {
   loadingReader: boolean;
   reloadingSourceId: string;
   savingSource: boolean;
+  importingSources: boolean;
+  exportingSources: boolean;
   savingSettings: boolean;
   creatingCategory: boolean;
   removingSourceId: string;
@@ -127,12 +134,14 @@ interface AppStoreState {
   setAutoRefreshIntervalMinutes: (minutes: number) => Promise<boolean>;
   setParallelFetchCount: (count: number) => Promise<boolean>;
   setNextAutoRefreshAt: (timestamp: number) => void;
-  setSocketConnectionState: (connected: boolean, label: string) => void;
+  setSocketConnectionState: (connected: boolean, label: string, schedulerEnabled?: boolean) => void;
   setBackendTaskSnapshot: (activeFetchCount: number, completedFetchCount: number) => void;
   loadSubscriptions: () => Promise<void>;
   refreshReader: (forceRefresh?: boolean) => Promise<void>;
   refreshReaderSubscription: (subscriptionId: string) => Promise<boolean>;
   saveSource: (input: SubscriptionInput, subscriptionId?: string) => Promise<boolean>;
+  exportSourcesBackup: () => Promise<SubscriptionsBackup | null>;
+  importSourcesBackup: (backup: SubscriptionsBackupImportInput) => Promise<boolean>;
   testSource: (input: SubscriptionInput) => Promise<SubscriptionTestResponse>;
   createSourceCategory: (name: string) => Promise<string | null>;
   renameSourceCategory: (currentName: string, nextName: string) => Promise<boolean>;
@@ -199,7 +208,7 @@ function countActiveReaderTasks(readerSourceStates: Record<string, ReaderSourceS
 
 function countCompletedReaderTasks(readerSourceStates: Record<string, ReaderSourceState>): number {
   return Object.values(readerSourceStates).filter(
-    (state) => state.status === "success" || state.status === "error" || state.status === "disabled",
+    (state) => state.status === "success" || state.status === "error",
   ).length;
 }
 
@@ -369,6 +378,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   nextAutoRefreshAt: 0,
   socketConnected: false,
   socketConnectionLabel: "未连接",
+  schedulerEnabled: false,
   activeFetchCount: 0,
   completedFetchCount: 0,
   categories: [],
@@ -380,6 +390,8 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   loadingReader: false,
   reloadingSourceId: "",
   savingSource: false,
+  importingSources: false,
+  exportingSources: false,
   savingSettings: false,
   creatingCategory: false,
   removingSourceId: "",
@@ -516,6 +528,8 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
       loadingReader: false,
       reloadingSourceId: "",
       savingSource: false,
+      importingSources: false,
+      exportingSources: false,
       savingSettings: false,
       creatingCategory: false,
       removingSourceId: "",
@@ -584,11 +598,12 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   setNextAutoRefreshAt(timestamp) {
     set({ nextAutoRefreshAt: Math.max(0, Math.floor(timestamp)) });
   },
-  setSocketConnectionState(connected, label) {
-    set({
+  setSocketConnectionState(connected, label, schedulerEnabled) {
+    set((state) => ({
       socketConnected: connected,
       socketConnectionLabel: label,
-    });
+      schedulerEnabled: typeof schedulerEnabled === "boolean" ? schedulerEnabled : connected ? state.schedulerEnabled : false,
+    }));
   },
   setBackendTaskSnapshot(activeFetchCount, completedFetchCount) {
     set({
@@ -642,7 +657,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
       readerErrors: [],
       readerSourceStates: nextStates,
       activeFetchCount: 0,
-      completedFetchCount: subscriptions.filter((subscription) => !isReaderSubscription(subscription)).length,
+      completedFetchCount: 0,
       dataError: "",
     });
 
@@ -914,6 +929,57 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
     } catch (error) {
       set({
         savingSource: false,
+        dataError: getErrorMessage(error),
+      });
+      return false;
+    }
+  },
+  async exportSourcesBackup() {
+    const token = get().authToken;
+
+    if (!token) {
+      return null;
+    }
+
+    set({ exportingSources: true, dataError: "" });
+
+    try {
+      const backup = await exportSubscriptionsBackup(token);
+      set({ exportingSources: false });
+      return backup;
+    } catch (error) {
+      set({
+        exportingSources: false,
+        dataError: getErrorMessage(error),
+      });
+      return null;
+    }
+  },
+  async importSourcesBackup(backup) {
+    const token = get().authToken;
+
+    if (!token) {
+      return false;
+    }
+
+    set({ importingSources: true, dataError: "" });
+
+    try {
+      const response = await importSubscriptionsBackup(token, backup);
+      set({
+        subscriptions: response.subscriptions,
+        categories: response.categories,
+        items: [],
+        readerErrors: [],
+        readerSourceStates: buildInitialReaderSourceStates(response.subscriptions),
+        importingSources: false,
+        reloadingSourceId: "",
+      });
+      void get().refreshReader(false);
+      return true;
+    } catch (error) {
+      set({
+        importingSources: false,
         dataError: getErrorMessage(error),
       });
       return false;

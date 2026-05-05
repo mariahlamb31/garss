@@ -6,6 +6,9 @@ export interface ParsedAppLocation {
   tab: AppTab;
   category: string;
   accessCode: string;
+  readerMode: "" | "pure" | "traditional";
+  readerCategory: string;
+  readerItemId: string;
 }
 
 const DEFAULT_BASE_URL = "http://localhost";
@@ -44,6 +47,29 @@ function normalizeCategory(hash: string): string {
   return decodedHash;
 }
 
+function normalizeReaderMode(value: string | null): "" | "pure" | "traditional" {
+  return value === "pure" || value === "traditional" ? value : "";
+}
+
+function parseReaderHash(hash: string): {
+  readerMode: "" | "pure" | "traditional";
+  readerCategory: string;
+  readerItemId: string;
+} {
+  const decodedHash = decodeURIComponent(hash.replace(/^#/, "")).trim();
+
+  if (!decodedHash) {
+    return { readerMode: "", readerCategory: "", readerItemId: "" };
+  }
+
+  const searchParams = new URLSearchParams(decodedHash);
+  return {
+    readerMode: normalizeReaderMode(searchParams.get("mode")),
+    readerCategory: searchParams.get("category")?.trim() || "",
+    readerItemId: searchParams.get("item")?.trim() || "",
+  };
+}
+
 function buildPathname(tab: AppTab): string {
   switch (tab) {
     case "sources":
@@ -61,11 +87,16 @@ function buildPathname(tab: AppTab): string {
 export function parseAppLocation(input: string): ParsedAppLocation {
   const url = toUrl(input);
   const tab = parseTabFromPathname(url.pathname);
+  const readerHash =
+    tab === "reader" ? parseReaderHash(url.hash) : { readerMode: "" as const, readerCategory: "", readerItemId: "" };
 
   return {
     tab,
     category: tab === "sources" || tab === "rsshub" ? normalizeCategory(url.hash) : ALL_SOURCES_CATEGORY,
     accessCode: url.searchParams.get("pw")?.trim() || "",
+    readerMode: readerHash.readerMode,
+    readerCategory: readerHash.readerCategory,
+    readerItemId: readerHash.readerItemId,
   };
 }
 
@@ -101,6 +132,28 @@ export function buildUrlForTab(input: string, tab: AppTab): string {
   const url = toUrl(input);
   url.pathname = buildPathname(tab);
   url.hash = "";
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
+export function buildUrlForReaderState(
+  input: string,
+  state: { mode: "pure" | "traditional"; category?: string; itemId?: string },
+): string {
+  const url = toUrl(input);
+  const searchParams = new URLSearchParams();
+
+  url.pathname = buildPathname("reader");
+  searchParams.set("mode", state.mode);
+
+  if (state.category?.trim()) {
+    searchParams.set("category", state.category.trim());
+  }
+
+  if (state.itemId?.trim()) {
+    searchParams.set("item", state.itemId.trim());
+  }
+
+  url.hash = searchParams.toString();
   return `${url.pathname}${url.search}${url.hash}`;
 }
 

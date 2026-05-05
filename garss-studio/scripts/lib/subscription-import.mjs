@@ -46,25 +46,96 @@ export function mergeGeneratedSubscriptions({
   defaultEnabled = false,
 }) {
   const now = new Date().toISOString();
-  const existingById = new Map(existingSubscriptions.map((subscription) => [subscription.id, subscription]));
+  const existingById = new Map();
+
+  for (const subscription of existingSubscriptions) {
+    const currentList = existingById.get(subscription.id) || [];
+    currentList.push(subscription);
+    existingById.set(subscription.id, currentList);
+  }
+
+  const existingByRoutePath = new Map();
+
+  for (const subscription of existingSubscriptions) {
+    if (!subscription.routePath) {
+      continue;
+    }
+
+    const currentList = existingByRoutePath.get(subscription.routePath) || [];
+    currentList.push(subscription);
+    existingByRoutePath.set(subscription.routePath, currentList);
+  }
+
+  const generatedRoutePaths = new Set(
+    generatedSubscriptions.map((subscription) => normalizeText(subscription.routePath)).filter(Boolean),
+  );
   const manualSubscriptions = existingSubscriptions.filter(
-    (subscription) => !subscription.id.startsWith(`${generatedIdPrefix}-`),
+    (subscription) =>
+      !subscription.id.startsWith(`${generatedIdPrefix}-`) &&
+      !generatedRoutePaths.has(normalizeText(subscription.routePath)),
   );
 
+  function findExistingSubscription(subscription) {
+    const candidateIds = [subscription.id, ...(subscription.previousIds || [])];
+
+    for (const candidateId of candidateIds) {
+      const candidates = existingById.get(candidateId) || [];
+      const matchedByRoute = candidates.find((candidate) => candidate.routePath === subscription.routePath);
+
+      if (matchedByRoute) {
+        return matchedByRoute;
+      }
+    }
+
+    for (const candidateId of candidateIds) {
+      const candidates = existingById.get(candidateId) || [];
+      const matchedByName = candidates.find((candidate) => candidate.name === subscription.name);
+
+      if (matchedByName) {
+        return matchedByName;
+      }
+    }
+
+    for (const candidateId of candidateIds) {
+      const candidates = existingById.get(candidateId) || [];
+
+      if (candidates[0]) {
+        return candidates[0];
+      }
+    }
+
+    const routeCandidates = existingByRoutePath.get(subscription.routePath) || [];
+    const matchedByRouteAndName = routeCandidates.find((candidate) => candidate.name === subscription.name);
+
+    if (matchedByRouteAndName) {
+      return matchedByRouteAndName;
+    }
+
+    if (routeCandidates[0]) {
+      return routeCandidates[0];
+    }
+
+    return null;
+  }
+
   const mergedGeneratedSubscriptions = generatedSubscriptions.map((subscription) => {
-    const current = existingById.get(subscription.id);
+    const current = findExistingSubscription(subscription);
     const nextCore = {
       category: subscription.category,
+      categories: subscription.categories?.length ? subscription.categories : current?.categories,
       name: subscription.name,
       routePath: subscription.routePath,
+      routeTemplate: subscription.routeTemplate ?? current?.routeTemplate,
       description: subscription.description,
     };
 
     const isUnchanged =
       current &&
       current.category === nextCore.category &&
+      JSON.stringify(current.categories || []) === JSON.stringify(nextCore.categories || []) &&
       current.name === nextCore.name &&
       current.routePath === nextCore.routePath &&
+      current.routeTemplate === nextCore.routeTemplate &&
       current.description === nextCore.description;
 
     return {

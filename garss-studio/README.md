@@ -38,7 +38,6 @@ cp .env.example .env
 - `ACCESS_CODE`：前端登录使用的提取码
 - `ACCESS_TOKEN_SECRET`：后端签名密钥
 - `SESSION_TTL_HOURS`：登录有效期
-- `SCHEDULER_ENABLED`：是否启用后端自动调度，生产默认 `true`，开发 compose 默认 `false`
 
 内部端口和服务地址由 Docker Compose 注入，不需要写进 `.env`。例如后端容器内部监听 `3001`，前端代理到 `backend:3001`，RSSHub 指向 `rsshub:1200`；这些都不需要客户直接配置或访问。
 
@@ -64,17 +63,11 @@ docker compose -f docker-compose.dev.yml up --build
 
 开发环境下，浏览器只访问 `25173`。前端通过 Vite 代理 `/api` 和 `/socket.io` 到后端；后端和 RSSHub 不再暴露宿主机端口。Vite HMR WebSocket 也复用这个入口端口，因此修改 `src/` 后应直接热更新，不需要重建镜像。
 
-`docker-compose.dev.yml` 默认会注入 `SCHEDULER_ENABLED=false`，避免开发容器启动时立刻触发后端全量自动拉取导致内存暴涨。这个默认值只影响自动调度：
+后端默认会按设置页里的时间间隔自动调度拉取任务：
 
 - 阅读页和非强制读取仍然只读取 `storage/reader-cache.json`
 - 手动刷新当前订阅源仍然会真实抓取并更新缓存
 - 浏览器访问方式不变，仍然只通过 `25173` 和 Vite 代理访问 `/api`、`/socket.io`
-
-如果要在开发环境验证自动调度，再显式打开：
-
-```bash
-SCHEDULER_ENABLED=true docker compose -f docker-compose.dev.yml up --build
-```
 
 如果不走 Docker，而是在宿主机上单独运行 Vite/后端，也仍然应该只通过前端入口访问接口；需要为 Vite 显式设置代理目标，例如：
 

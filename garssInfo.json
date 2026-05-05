@@ -1590,13 +1590,6 @@
       "xmlUrl": "https://www.ptt.cc/atom/movie.xml"
     },
     {
-      "sourceId": "C020",
-      "category": "内容平台",
-      "title": "PTT(台湾论坛)",
-      "description": "PTT正妹专题",
-      "xmlUrl": "https://www.ptt.cc/atom/beauty.xml"
-    },
-    {
       "sourceId": "C021",
       "category": "内容平台",
       "title": "吾爱破解",
@@ -1700,6 +1693,13 @@
       "title": "NodeSeek",
       "description": "一个面向Web开发、主机托管、VPS/服务器等技术话题的极客社区",
       "xmlUrl": "https://rss.nodeseek.com/"
+    },
+    {
+      "sourceId": "N013",
+      "category": "内容平台",
+      "title": "一亩三分地 - 分区-世界公民",
+      "description": "分区 分区 id 留学申请 257 世界公民 379 投资理财 400 生活干货 31 职场达人 345 人际关系 391 海外求职 38 签证移民 265 分类 热门帖子 最新帖子 hot new 排序方式 最新回复 最新发布 post &#124; 示例：/1point3acres/section/345 &#124; 参数：id: 分区 id，见下表，默认为全部；type: 帖子分类, 见下表，默认为 hot，即热门帖子；order: 排序方式，见下表，默认为空，即最新回复 &#124; 源码：section.ts",
+      "xmlUrl": "http://rsshub:1200/1point3acres/section/379/hot"
     },
     {
       "sourceId": "M001",
@@ -1882,6 +1882,83 @@
       "title": "Newlearnerの自留地",
       "description": "不定期推送 IT 相关资讯",
       "xmlUrl": "http://rsshub:1200/telegram/channel/NewlearnerChannel"
+    },
+    {
+      "sourceId": "N008",
+      "category": "Telegram优质频道RSS订阅",
+      "title": "小破不入渠",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/forwardlikehell"
+    },
+    {
+      "sourceId": "N009",
+      "category": "Telegram优质频道RSS订阅",
+      "title": "小声读书",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/weekly_books"
+    },
+    {
+      "sourceId": "N010",
+      "category": "Telegram优质频道RSS订阅",
+      "title": "小道消息",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/WebNoteslah"
+    },
+    {
+      "sourceId": "N011",
+      "category": "Telegram优质频道RSS订阅",
+      "title": "每日消费电子观察",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/CE_Observe"
+    },
+    {
+      "sourceId": "N012",
+      "category": "Telegram优质频道RSS订阅",
+      "title": "Alan的小纸箱",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/alansbox"
+    },
+    {
+      "sourceId": "C020",
+      "category": "摄影",
+      "title": "PTT(台湾论坛)",
+      "description": "PTT正妹专题",
+      "xmlUrl": "https://www.ptt.cc/atom/beauty.xml"
+    },
+    {
+      "sourceId": "N003",
+      "category": "摄影",
+      "title": "热点影像模特约拍频道",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/hotspotimage88"
+    },
+    {
+      "sourceId": "N004",
+      "category": "摄影",
+      "title": "R21JP",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/m81plus"
+    },
+    {
+      "sourceId": "N005",
+      "category": "摄影",
+      "title": "Analog Photography",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/anallog"
+    },
+    {
+      "sourceId": "N006",
+      "category": "摄影",
+      "title": "photography",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/photography"
+    },
+    {
+      "sourceId": "N007",
+      "category": "摄影",
+      "title": "Photography Poses",
+      "description": "",
+      "xmlUrl": "http://rsshub:1200/telegram/channel/photography_poses"
     },
     {
       "sourceId": "N001",
