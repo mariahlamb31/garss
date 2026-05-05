@@ -7,3 +7,4 @@ garss-studio/.playwright-cli
 __pycache__/
 *.pyc
 garss-studio/.tmp-chrome-mcp-client.mjs
+docs/
