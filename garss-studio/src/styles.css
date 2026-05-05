@@ -611,12 +611,28 @@ a {
   gap: 8px;
   margin-top: 8px;
   overflow-x: auto;
-  padding: 0 0 2px;
-  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  padding: 0 0 8px;
+  scrollbar-color: rgba(139, 112, 91, 0.44) rgba(229, 219, 205, 0.58);
+  scrollbar-width: thin;
 }
 
 .reader-filter-category-list::-webkit-scrollbar {
-  display: none;
+  height: 7px;
+}
+
+.reader-filter-category-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(229, 219, 205, 0.58);
+}
+
+.reader-filter-category-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(139, 112, 91, 0.44);
+}
+
+.reader-filter-category-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(111, 66, 25, 0.54);
 }
 
 .reader-filter-category-chip {

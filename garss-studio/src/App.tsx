@@ -2715,7 +2715,7 @@ function RsshubPanel() {
 
 function SettingsAiConnectionSection() {
   const aiPromptText =
-    "请安装Skill https://clawhub.ai/zhaoolee/garss-studio-rss-api 按照skill要求，在本地启动项目，获取今天的摄影类型的信息更新，把前十张图片放到我桌面的 RSS摄影图 文件夹里，并使用markdown给出图片来源";
+    "请安装Skill https://clawhub.ai/zhaoolee/garss-studio-rss-api 按照skill要求，在本地启动项目，获取今天的摄影类型的信息更新，把前20张图片放到我桌面的 RSS摄影图 文件夹里，并使用markdown给出图片来源，最后给出一个 http://127.0.0.1:25173/reader?pw=banana 的链接支持我通过html人工操作项目";
   const [copiedPrompt, setCopiedPrompt] = useState(false);
 
   async function handleCopyAiPrompt() {
