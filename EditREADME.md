@@ -9,6 +9,30 @@
 这个名为**嘎!RSS**的项目会利用免费的Github Actions服务, 提供一个内容全面的信息流, 让现代人的知识体系更广泛, 减弱信息茧房对现代人的影响, 让**非茧房信息流**造福人类~
 [《嘎!RSS》永久开源页面: https://github.com/zhaoolee/garss](https://github.com/zhaoolee/garss)
 
+
+## 锤子便签风格的GARSS阅读器
+
+- 启动
+
+```
+cd garss-studio
+cp .env.example .env
+docker compose -f docker-compose.dev.yml up --build
+```
+
+![](./EditREADME.assets/3296e8bba846baf1a9237db41dabc98d34c275f4739e81ff95c4bbf1cf46ebc4.png)
+
+- 常用页面
+
+```
+阅读页：http://127.0.0.1:25173/reader?pw=banana
+订阅源：http://127.0.0.1:25173/sources?pw=banana
+设置页：http://127.0.0.1:25173/settings?pw=banana
+API 文档：http://127.0.0.1:25173/api/docs
+```
+
+
+
 ## 推荐使用什么软件订阅RSS？
 我推荐一款免费的浏览器扩展程序Feedbro ，使用教程[Chrome插件英雄榜第96期《Feedbro》在Chrome中订阅RSS信息流](https://www.v2fy.com/p/096-feedbro-2021-02-27/)
 
