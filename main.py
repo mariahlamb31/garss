@@ -500,8 +500,6 @@ def main():
     create_opml()
     readme_md = replace_readme()
     content = markdown.markdown(readme_md[0], extensions=['tables', 'fenced_code']) if markdown else readme_md[0]
-    cp_readme_md_to_docs()
-    cp_media_to_docs()
     email_list = get_email_list()
 
     mail_re = r'邮件内容区开始>([.\S\s]*)<邮件内容区结束'

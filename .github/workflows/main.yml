@@ -57,6 +57,5 @@ jobs:
           git config --global user.email "zhaoolee@gmail.com"
           git config --global user.name "zhaoolee"
           git add README.md
-          git add docs
           git commit -m "Github Action auto Updated"
           git push
