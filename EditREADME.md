@@ -31,7 +31,7 @@ docker compose -f docker-compose.dev.yml up --build
 API 文档：http://127.0.0.1:25173/api/docs
 ```
 
-
+CLAWHUB的SKILL调用GARSS后端：https://clawhub.ai/zhaoolee/garss-studio-rss-api
 
 ## 推荐使用什么软件订阅RSS？
 我推荐一款免费的浏览器扩展程序Feedbro ，使用教程[Chrome插件英雄榜第96期《Feedbro》在Chrome中订阅RSS信息流](https://www.v2fy.com/p/096-feedbro-2021-02-27/)
