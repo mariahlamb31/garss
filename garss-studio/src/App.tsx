@@ -2714,20 +2714,32 @@ function RsshubPanel() {
 }
 
 function SettingsAiConnectionSection() {
+  const aiPromptText =
+    "请安装Skill https://clawhub.ai/zhaoolee/garss-studio-rss-api 按照skill要求，在本地启动项目，获取今天的摄影类型的信息更新，把前十张图片放到我桌面的 RSS摄影图 文件夹里，并使用markdown给出图片来源";
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
+
+  async function handleCopyAiPrompt() {
+    try {
+      await navigator.clipboard.writeText(aiPromptText);
+      setCopiedPrompt(true);
+      window.setTimeout(() => setCopiedPrompt(false), 1400);
+    } catch {
+      setCopiedPrompt(false);
+      window.alert("复制失败，请手动选中文字复制。");
+    }
+  }
+
   return (
     <section className="editor-sheet settings-sheet settings-page-sheet">
       <div className="sheet-head">
-        <h3>连接AI</h3>
-        <p>把下面这段提示词交给 AI，让它优先读取项目内置 skill，再使用后端接口读取订阅 RSS 新闻。</p>
+        <p>把下面这段提示词交给AI</p>
       </div>
 
       <div className="settings-doc-card settings-ai-guide">
-        <p>
-          这是 GARSS 项目，仓库地址是 <code>https://github.com/zhaoolee/garss</code>。如果你需要读取这个项目订阅的
-          RSS 新闻，请先查看仓库中的 <code>skills/garss-studio-rss-api</code> skill，并按该 skill 的说明连接
-          GARSS Studio 后端。它会告诉你如何启动本地服务、通过提取码换取 Bearer Token、读取聚合新闻、读取单个订阅源，
-          以及在用户明确要求时执行强制刷新。
-        </p>
+        <button type="button" className="settings-ai-copy-button" onClick={() => void handleCopyAiPrompt()}>
+          {copiedPrompt ? "已复制" : "复制"}
+        </button>
+        <p>{aiPromptText}</p>
       </div>
     </section>
   );

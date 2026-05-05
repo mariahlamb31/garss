@@ -1295,14 +1295,44 @@ a {
 }
 
 .settings-ai-guide {
+  position: relative;
   display: grid;
   gap: 14px;
+  padding-right: 86px;
   color: #5e4e40;
   line-height: 1.9;
 }
 
 .settings-ai-guide p {
   margin: 0;
+}
+
+.settings-ai-copy-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(82, 63, 47, 0.55);
+  border-radius: 7px;
+  background: linear-gradient(180deg, rgb(129, 111, 97) 0%, rgb(115, 99, 87) 100%);
+  color: #fbf6ef;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 1px 0 rgba(58, 42, 29, 0.22);
+}
+
+.settings-ai-copy-button:hover,
+.settings-ai-copy-button:focus-visible {
+  background: linear-gradient(180deg, rgb(138, 119, 105) 0%, rgb(121, 104, 91) 100%);
+  outline: 0;
 }
 
 .settings-ai-guide code,
@@ -1656,11 +1686,31 @@ a {
 }
 
 .source-backup-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 40px;
   min-height: 40px;
-  padding: 0 16px;
+  padding: 0 18px;
+  border: 1px solid rgba(82, 63, 47, 0.6);
   border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
   white-space: nowrap;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 1px 0 rgba(58, 42, 29, 0.22);
+}
+
+.source-backup-button.secondary-button {
+  background: rgba(255, 249, 241, 0.9);
+  color: var(--accent-strong);
+}
+
+.source-backup-button.primary-button {
+  background: linear-gradient(180deg, rgb(129, 111, 97) 0%, rgb(115, 99, 87) 100%);
+  color: #fbf6ef;
 }
 
 .source-card {
