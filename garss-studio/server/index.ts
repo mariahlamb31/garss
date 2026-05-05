@@ -32,6 +32,17 @@ interface SubscriptionRecord {
   updatedAt: string;
 }
 
+interface SubscriptionsBackupRecord {
+  version: 1;
+  exportedAt: string;
+  subscriptions: SubscriptionRecord[];
+  categories: string[];
+}
+
+type SubscriptionsBackupInput = Partial<SubscriptionsBackupRecord> & {
+  sourceUrl?: string;
+};
+
 interface FeedItemRecord {
   id: string;
   subscriptionId: string;
@@ -76,6 +87,7 @@ interface SocketTaskSnapshot {
 interface ServerStatusPayload {
   connected: boolean;
   label: string;
+  schedulerEnabled: boolean;
   timestamp: string;
   nextScheduledAt: string;
   settingsUserId: string;
@@ -133,6 +145,10 @@ function isRsshubDocSubscription(subscription: Pick<SubscriptionRecord, "id">): 
 
 function isReaderSubscription(subscription: Pick<SubscriptionRecord, "id" | "enabled">): boolean {
   return subscription.enabled && !isRsshubDocSubscription(subscription);
+}
+
+function isRsshubDocCategory(category: string): boolean {
+  return normalizeCategory(category).startsWith("RSSHub 文档 /");
 }
 
 function getSessionTtlMs(): number {
@@ -1139,6 +1155,7 @@ async function buildServerStatusPayload(userId: string): Promise<ServerStatusPay
   return {
     connected: true,
     label: schedulerEnabled ? "已连接" : "已连接（自动调度已禁用）",
+    schedulerEnabled,
     timestamp: new Date().toISOString(),
     nextScheduledAt: computeNextScheduledAt(settings.autoRefreshIntervalMinutes).toISOString(),
     settingsUserId: normalizedUserId,
@@ -1193,6 +1210,119 @@ function buildCategoryList(subscriptions: SubscriptionRecord[], explicitCategori
     ...explicitCategories,
     ...subscriptions.flatMap((subscription) => (subscription.categories?.length ? subscription.categories : [subscription.category])),
   ]);
+}
+
+function buildUserCategoryList(subscriptions: SubscriptionRecord[], explicitCategories: string[]): string[] {
+  return buildCategoryList(subscriptions, explicitCategories).filter((category) => !isRsshubDocCategory(category));
+}
+
+function normalizeBackupSubscriptions(value: unknown): SubscriptionRecord[] {
+  if (!Array.isArray(value)) {
+    throw new Error("备份文件缺少 subscriptions 数组。");
+  }
+
+  const now = new Date().toISOString();
+  const usedIds = new Set<string>();
+  const usedRoutePaths = new Set<string>();
+
+  return value.map((entry, index) => {
+    const raw = entry as Partial<SubscriptionRecord>;
+    const category = normalizeCategory(raw?.category);
+    const categories = normalizeSubscriptionCategories(raw?.categories, category).filter((item) => !isRsshubDocCategory(item));
+    const normalizedCategories = categories.length ? categories : [category].filter((item) => !isRsshubDocCategory(item));
+    const name = normalizeText(raw?.name);
+    const routePath = normalizeRoutePath(raw?.routePath);
+    const routeTemplate = normalizeRouteTemplate(raw?.routeTemplate);
+    const idCandidate = normalizeText(raw?.id) || crypto.randomUUID();
+    const id = usedIds.has(idCandidate) || idCandidate.startsWith("rsshub-doc-") ? crypto.randomUUID() : idCandidate;
+
+    if (!name) {
+      throw new Error(`第 ${index + 1} 个订阅源缺少名称。`);
+    }
+
+    if (!routePath || routePath === "/") {
+      throw new Error(`第 ${index + 1} 个订阅源缺少订阅地址。`);
+    }
+
+    if (usedRoutePaths.has(routePath)) {
+      throw new Error(`备份文件中存在重复订阅地址：${routePath}`);
+    }
+
+    usedIds.add(id);
+    usedRoutePaths.add(routePath);
+
+    return {
+      id,
+      category: normalizedCategories[0] || "未分类",
+      categories: normalizedCategories.length ? normalizedCategories : ["未分类"],
+      name,
+      routePath,
+      routeTemplate,
+      description: normalizeText(raw?.description),
+      enabled: normalizeBoolean(raw?.enabled, true),
+      createdAt: normalizeText(raw?.createdAt) || now,
+      updatedAt: normalizeText(raw?.updatedAt) || now,
+    };
+  });
+}
+
+function normalizeBackupCategories(value: unknown, subscriptions: SubscriptionRecord[]): string[] {
+  const explicitCategories = Array.isArray(value)
+    ? dedupeCategories(value.map((entry) => normalizeCategory(entry))).filter((category) => !isRsshubDocCategory(category))
+    : [];
+
+  return buildUserCategoryList(subscriptions, explicitCategories);
+}
+
+function normalizeBackupSourceUrl(value: unknown): string {
+  const rawValue = normalizeText(value);
+
+  if (!rawValue) {
+    return "";
+  }
+
+  try {
+    const url = new URL(rawValue);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return "";
+    }
+
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+async function readSubscriptionsBackupInput(body: SubscriptionsBackupInput): Promise<SubscriptionsBackupInput> {
+  const sourceUrl = normalizeBackupSourceUrl(body?.sourceUrl);
+
+  if (!sourceUrl) {
+    return body;
+  }
+
+  const response = await fetch(sourceUrl, {
+    headers: {
+      accept: "application/json,text/plain;q=0.9,*/*;q=0.5",
+      "user-agent": "GARSS Studio backup importer",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`备份 URL 无法访问：HTTP ${response.status}`);
+  }
+
+  const text = await response.text();
+
+  if (text.length > 5 * 1024 * 1024) {
+    throw new Error("备份 URL 内容超过 5MB。");
+  }
+
+  try {
+    return JSON.parse(text) as SubscriptionsBackupInput;
+  } catch {
+    throw new Error("备份 URL 返回的内容不是有效 JSON。");
+  }
 }
 
 async function writeSubscriptions(subscriptions: SubscriptionRecord[]): Promise<void> {
@@ -1656,7 +1786,7 @@ async function scheduleAllUserRefreshJobs(): Promise<void> {
 }
 
 app.disable("x-powered-by");
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "5mb" }));
 app.get(/^\/api\/docs$/, (_request, response) => {
   response.redirect("/api/docs/");
 });
@@ -1954,6 +2084,65 @@ app.get("/api/subscriptions", ensureAuthenticated, async (_request, response) =>
   const subscriptions = await readSubscriptions();
   const categories = buildCategoryList(subscriptions, await readCategories());
   response.json({ subscriptions, categories });
+});
+
+app.get("/api/subscriptions/backup", ensureAuthenticated, async (_request, response) => {
+  const subscriptions = await readSubscriptions();
+  const userSubscriptions = subscriptions.filter((subscription) => !isRsshubDocSubscription(subscription));
+  const categories = buildUserCategoryList(userSubscriptions, await readCategories());
+
+  const backup: SubscriptionsBackupRecord = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    subscriptions: userSubscriptions,
+    categories,
+  };
+
+  response.json(backup);
+});
+
+app.post("/api/subscriptions/backup", ensureAuthenticated, async (request, response) => {
+  let importedSubscriptions: SubscriptionRecord[];
+  let importedCategories: string[];
+
+  try {
+    const backupInput = await readSubscriptionsBackupInput(request.body || {});
+    importedSubscriptions = normalizeBackupSubscriptions(backupInput?.subscriptions);
+    importedCategories = normalizeBackupCategories(backupInput?.categories, importedSubscriptions);
+  } catch (error) {
+    response.status(400).json({ error: getErrorMessage(error) });
+    return;
+  }
+
+  const currentSubscriptions = await readSubscriptions();
+  const currentReaderSubscriptions = currentSubscriptions.filter((subscription) => !isRsshubDocSubscription(subscription));
+  const rsshubDocSubscriptions = currentSubscriptions.filter(isRsshubDocSubscription);
+  const rsshubDocCategories = (await readCategories()).filter(isRsshubDocCategory);
+  const nextSubscriptions = [...importedSubscriptions, ...rsshubDocSubscriptions];
+  const nextCategories = dedupeCategories([...importedCategories, ...rsshubDocCategories]);
+  const importedById = new Map(importedSubscriptions.map((subscription) => [subscription.id, subscription]));
+
+  await writeSubscriptions(nextSubscriptions);
+  await writeCategories(nextCategories);
+
+  await Promise.all(
+    currentReaderSubscriptions.map(async (subscription) => {
+      const importedSubscription = importedById.get(subscription.id);
+
+      if (!importedSubscription || importedSubscription.routePath !== subscription.routePath) {
+        await deleteReaderCache(subscription.id);
+      } else if (importedSubscription.name !== subscription.name) {
+        await updateReaderCacheSubscriptionMetadata(importedSubscription);
+      }
+    }),
+  );
+
+  const categories = buildCategoryList(nextSubscriptions, await readCategories());
+  response.json({
+    importedCount: importedSubscriptions.length,
+    subscriptions: nextSubscriptions,
+    categories,
+  });
 });
 
 /**

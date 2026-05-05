@@ -6,6 +6,9 @@ import type {
   ReaderSubscriptionResponse,
   SessionResponse,
   SubscriptionInput,
+  SubscriptionsBackup,
+  SubscriptionsBackupImportInput,
+  SubscriptionsBackupImportResponse,
   SubscriptionTestResponse,
   SubscriptionsResponse,
 } from "../types";
@@ -75,6 +78,23 @@ export async function getSession(token: string): Promise<SessionResponse> {
 
 export async function getSubscriptions(token: string): Promise<SubscriptionsResponse> {
   return requestJson<SubscriptionsResponse>("/api/subscriptions", {
+    token,
+  });
+}
+
+export async function exportSubscriptionsBackup(token: string): Promise<SubscriptionsBackup> {
+  return requestJson<SubscriptionsBackup>("/api/subscriptions/backup", {
+    token,
+  });
+}
+
+export async function importSubscriptionsBackup(
+  token: string,
+  backup: SubscriptionsBackupImportInput,
+): Promise<SubscriptionsBackupImportResponse> {
+  return requestJson<SubscriptionsBackupImportResponse>("/api/subscriptions/backup", {
+    method: "POST",
+    body: backup,
     token,
   });
 }

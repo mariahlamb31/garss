@@ -20,7 +20,6 @@ services:
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-garss-studio-prod-secret}
       SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-168}
       RSSHUB_BASE_URL: http://rsshub:1200
-      SCHEDULER_ENABLED: ${SCHEDULER_ENABLED:-true}
     volumes:
       - ./storage:/app/storage
     depends_on:

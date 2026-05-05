@@ -32,11 +32,7 @@ docker compose -f docker-compose.dev.yml up --build
 http://127.0.0.1:25173/reader?pw=banana
 ```
 
-开发 compose 默认 `SCHEDULER_ENABLED=false`，避免启动时自动全量拉取；如需验证自动调度：
-
-```bash
-SCHEDULER_ENABLED=true docker compose -f docker-compose.dev.yml up --build
-```
+开发 compose 默认会按设置页时间间隔自动触发拉取。
 
 生产环境：
 

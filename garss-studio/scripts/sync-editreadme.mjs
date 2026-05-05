@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  buildStableId,
   mergeGeneratedSubscriptions,
   normalizeText,
   readStudioSubscriptions,
@@ -74,11 +75,40 @@ function parseEditReadme(markdown) {
 }
 
 function buildStudioSubscriptions(parsedSources, existingSubscriptions) {
-  const generatedSubscriptions = parsedSources.map((source) => ({
-    id: `editreadme-${source.sourceId.toLowerCase()}`,
+  const sourceByUrl = new Map();
+
+  for (const source of parsedSources) {
+    const current = sourceByUrl.get(source.xmlUrl);
+
+    if (!current) {
+      sourceByUrl.set(source.xmlUrl, {
+        ...source,
+        categories: [source.category],
+        sourceIds: [source.sourceId],
+      });
+      continue;
+    }
+
+    if (!current.categories.includes(source.category)) {
+      current.categories.push(source.category);
+    }
+
+    if (!current.sourceIds.includes(source.sourceId)) {
+      current.sourceIds.push(source.sourceId);
+    }
+  }
+
+  const generatedSubscriptions = Array.from(sourceByUrl.values()).map((source) => ({
+    id: buildStableId("editreadme", source.xmlUrl),
+    previousIds: [
+      buildStableId("editreadme", source.category, source.sourceId, source.xmlUrl),
+      ...source.sourceIds.map((sourceId) => `editreadme-${sourceId.toLowerCase()}`),
+    ],
     category: source.category,
+    categories: source.categories,
     name: source.title,
     routePath: source.xmlUrl,
+    routeTemplate: source.xmlUrl,
     description: source.description,
     enabled: true,
   }));

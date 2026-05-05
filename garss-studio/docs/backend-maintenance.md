@@ -21,8 +21,7 @@
 ## Scheduler And Cache Safety
 
 - 调度入口是 `refreshAllSubscriptionsIntoCache()`.
-- 调度总开关是环境变量 `SCHEDULER_ENABLED`，默认按后端环境取值；开发 compose 默认注入 `false`。
-- 当 `SCHEDULER_ENABLED=false` 时，只能禁用自动调度，不要影响手动刷新接口和缓存读取路径。
+- 自动调度默认开启，按设置页里的时间间隔触发。
 - 调度刷新必须按订阅源逐个持久化，不能先把整批抓取结果累计到内存里再统一写盘。
 - 调度写缓存必须走 `writeReaderCache()` -> `updateReaderCacheCollection()` -> `runWithReaderCacheWriteLock()` 这条串行写路径。
 - 不要绕开 `readerCacheWriteChain` 直接并发写 `storage/reader-cache.json`。
@@ -31,9 +30,8 @@
 
 开发环境约定：
 
-- `docker-compose.dev.yml` 默认关闭自动调度，避免后端启动时立即做全量抓取。
-- 需要验证调度时，用 `SCHEDULER_ENABLED=true docker compose -f docker-compose.dev.yml up --build` 显式开启。
-- 即使调度关闭，浏览器仍然只通过 `25173` 访问，前端继续经由 Vite 代理访问 `/api` 和 `/socket.io`。
+- `docker-compose.dev.yml` 默认开启自动调度，后端会按设置页里的时间间隔触发全量拉取。
+- 浏览器仍然只通过 `25173` 访问，前端继续经由 Vite 代理访问 `/api` 和 `/socket.io`。
 
 ## Dev Proxy Rules
 
