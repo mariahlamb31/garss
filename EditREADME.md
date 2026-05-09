@@ -22,6 +22,35 @@ docker compose -f docker-compose.dev.yml up --build
 
 ![](./EditREADME.assets/3296e8bba846baf1a9237db41dabc98d34c275f4739e81ff95c4bbf1cf46ebc4.png)
 
+- 简单快速的分类阅读交互
+
+![](./EditREADME.assets/81c848887aae715af60abf018a7162da2dd04a638be84cdc2d6caf278a5d225b.gif)
+
+- 锤子便签风格的阅读体验
+
+![](./EditREADME.assets/d343d47183e5514679102b11941468007747d8a82ddfaddf03841f176e497648.gif)
+
+- 简单的订阅管理
+
+![](./EditREADME.assets/917fe70142126e4fb1862b539b4b6da47ed52bc5a69fe3fe7549f920d8ddce28.png)
+
+- 集成RSSHUB
+
+![](./EditREADME.assets/df8266f29d5fb35e9ae8df54b216ca0d83bc48172b8ee755ca2cacf130a52cfc.png)
+
+
+- 完善的二开文档
+
+![](./EditREADME.assets/49e2a0713a83ae59b8ca5564aa55435d1eac47b898e9a3188a973a622fe85c10.png)
+
+- AI SKILL支持
+
+![](./EditREADME.assets/2294b9387de7a633dbbb3aca7dfc7aad09eae624dbf53e3014dbbb3d8f4de5d5.png)
+
+- 自动拉取，保证新闻时效
+
+![](./EditREADME.assets/7f7c8f96cc5406b61a981fe0f9b62a4c6f496fca0feaa0bb95c0d059a2d3a46c.png)
+
 - 常用页面
 
 ```
