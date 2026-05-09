@@ -45,6 +45,8 @@ docker compose -f docker-compose.dev.yml up --build
 
 - AI SKILL支持
 
+![](./EditREADME.assets/d6f2c60f6062dff2c4ea252c31b5547332ab69122aaf7788c37748ca24104b3d.gif)
+
 ![](./EditREADME.assets/2294b9387de7a633dbbb3aca7dfc7aad09eae624dbf53e3014dbbb3d8f4de5d5.png)
 
 - 自动拉取，保证新闻时效
