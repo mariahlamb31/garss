@@ -1,8 +1,6 @@
-# Github Actions Rss (garss, 嘎RSS! 已收集{{rss_num}}个RSS源, 生成时间: {{ga_rss_datetime}})
+# 《嘎!RSS》🐣为打破信息茧房而生, 让古老的RSS在AI时代再次伟大 Github Actions Rss (garss, 嘎RSS! 已收集{{rss_num}}个RSS源, 生成时间: {{ga_rss_datetime}})
 
 信息茧房是指人们关注的信息领域会习惯性地被自己的兴趣所引导，从而将自己的生活桎梏于像蚕茧一般的「茧房」中的现象。
-
-## 《嘎!RSS》🐣为打破信息茧房而生
 
 ![](./_media/ga-rss.png)
 
@@ -18,7 +16,7 @@
 
 | 项目  | garss |  新闻APP  |  商业化RSS工具 |
 | --- | --- | --- | --- |
-|  | <img src="./EditREADME.assets/81c848887aae715af60abf018a7162da2dd04a638be84cdc2d6caf278a5d225b.gif" width="100%" />  |  <img src="./EditREADME.assets/70583b524a17989de539b0abcb82acc8a852cf822c36af6fdb781b12f393cf2e.png" width="100%" />  | <img src="./EditREADME.assets/cd830e307ec2077063af97ca516ff18409c15c332689b008c6a146d4d71b48f1.png" width="100%" /> |
+|  | ![](./EditREADME.assets/81c848887aae715af60abf018a7162da2dd04a638be84cdc2d6caf278a5d225b.gif) |  ![](./EditREADME.assets/70583b524a17989de539b0abcb82acc8a852cf822c36af6fdb781b12f393cf2e.png)  | ![](./EditREADME.assets/cd830e307ec2077063af97ca516ff18409c15c332689b008c6a146d4d71b48f1.png) |
 | 不上传浏览记录  |   ✅  |  ❌  |  ✅  |
 | 信息茧房  |   ❌  |  ✅   |  ✅  |
 | 私有化部署  |   ✅  |  ❌  |  ❌   |
