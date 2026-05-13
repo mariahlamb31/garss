@@ -9,6 +9,27 @@
 这个名为**嘎!RSS**的项目会利用免费的Github Actions服务, 提供一个内容全面的信息流, 让现代人的知识体系更广泛, 减弱信息茧房对现代人的影响, 让**非茧房信息流**造福人类~
 [《嘎!RSS》永久开源页面: https://github.com/zhaoolee/garss](https://github.com/zhaoolee/garss)
 
+## 适合谁
+
+![](./EditREADME.assets/d1f1e682f729dd6ef337987999f0649e3b7272ca4ceae026ce524783cfdb92c3.png)
+
+## 项目优势
+
+| 项目  | garss |  新闻APP  |  商业化RSS工具 |
+| --- | --- | --- | --- |
+| 不上传浏览记录  |   ✅  |  ❌  |  ✅  |
+| 信息茧房  |   ❌  |  ✅   |  ✅  |
+| 私有化部署  |   ✅  |  ❌  |  ❌   |
+| 付费订阅  |   ❌ |  ✅   |  ✅    |
+| 开放API  |   ✅  |  ❌   |  ❌    |
+| 支持二次开发  |   ✅  |  ❌   |  ❌    |
+| 代码开源  |   ✅  |  ❌   |  ❌   |
+| 接入 AI Skill | ✅  |  ❌   |  ❌  |
+| RSSHub社区支持 | ✅  |  ❌   |  ❌  |
+| 广告插入  |   ❌ |  ✅   |  ✅    |
+| URL看图增强 | ✅  |  ✅（需安装插件）   |  ❌  |
+| 突破IP限制 | ✅  |  ❌  |  ❌  |
+| Github Action抓取 | ✅  |  ❌  |  ❌  |
 
 ## 锤子便签风格的GARSS阅读器
 
@@ -70,6 +91,8 @@ CLAWHUB的SKILL调用GARSS后端：https://clawhub.ai/zhaoolee/garss-studio-rss-
 ## 主要功能
 1. 收集RSS, 打造无广告内容优质的 **头版头条** 超赞新闻页
 2. 利用Github Actions, 搜集全部RSS的头版头条新闻标题和超链接, 并自动更新到首页,当天最新发布的文章会出现🌈 标志
+
+## 今日值得看 🕶️
 
 邮件内容区开始>
 <h2>新蒸熟{{new_num}}个小蛋糕🍰(文章) 生产时间 {{ga_rss_datetime}} 保质期24小时</h2>
