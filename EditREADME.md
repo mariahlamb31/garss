@@ -13,10 +13,12 @@
 
 ![](./EditREADME.assets/d1f1e682f729dd6ef337987999f0649e3b7272ca4ceae026ce524783cfdb92c3.png)
 
-## 项目优势
+
+## 项目优势（米氏对比法）
 
 | 项目  | garss |  新闻APP  |  商业化RSS工具 |
 | --- | --- | --- | --- |
+|  | <img src="./EditREADME.assets/81c848887aae715af60abf018a7162da2dd04a638be84cdc2d6caf278a5d225b.gif" width="100%" />  |  <img src="./EditREADME.assets/70583b524a17989de539b0abcb82acc8a852cf822c36af6fdb781b12f393cf2e.png" width="100%" />  | <img src="./EditREADME.assets/cd830e307ec2077063af97ca516ff18409c15c332689b008c6a146d4d71b48f1.png" width="100%" /> |
 | 不上传浏览记录  |   ✅  |  ❌  |  ✅  |
 | 信息茧房  |   ❌  |  ✅   |  ✅  |
 | 私有化部署  |   ✅  |  ❌  |  ❌   |
