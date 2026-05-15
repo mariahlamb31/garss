@@ -20,6 +20,26 @@
 - 开发环境通过 Vite 代理 `/api` 和 `/socket.io`
 - 生产环境通过 Nginx 代理 `/api` 和 `/socket.io`
 
+## 推荐启停命令
+
+仓库根目录有各平台统一入口，双击后选择启动、关闭、升级、查看状态或退出控制台；执行完一次操作后会返回菜单。退出控制台或关闭窗口不应停止服务，只有“关闭”动作会执行 `npm run quick:stop`：
+
+```text
+GARSS-MACOS.command
+GARSS-LINUX.sh
+GARSS-WINDOWS.bat
+```
+
+命令行入口：
+
+```bash
+npm run quick:start
+npm run quick:stop
+npm run quick:upgrade
+```
+
+默认使用 `docker-compose.dev.yml`。如果需要生产 compose，使用 `npm run quick:start -- prod` 和 `npm run quick:stop -- prod`。
+
 ## UI 约定
 
 - 顶部 `header` 高度固定为 `62px`
