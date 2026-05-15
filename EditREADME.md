@@ -31,9 +31,26 @@
 | 突破IP限制 | ✅  |  ❌  |  ❌  |
 | Github Action抓取 | ✅  |  ❌  |  ❌  |
 
+
+## 快速启动
+
+## 快速启动和关闭
+
+仓库根目录提供跨平台控制台入口：
+
+| 平台 | 统一入口 |
+| --- | --- |
+| macOS | `GARSS-MACOS.command` |
+| Linux | `GARSS-LINUX.sh` |
+| Windows | `GARSS-WINDOWS.bat` |
+
+双击后文件后，可选择启动、关闭、升级、查看状态或退出控制台。启动和升级会自动打开浏览器；关闭控制台窗口不会停止服务，只有选择“关闭”才会停止容器。
+
+![](./EditREADME.assets/4a32e72cf86a22133683a74fc5d43c0508e76fe7401e01a5d82ceac582c9587d.png)
+
 ## 锤子便签风格的GARSS阅读器
 
-- 启动
+- 首次启动
 
 ```
 cd garss-studio
