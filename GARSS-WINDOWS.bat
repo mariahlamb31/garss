@@ -1,9 +1,13 @@
 @echo off
 chcp 65001 >nul
-setlocal
+setlocal EnableExtensions
 
 set "ROOT_DIR=%~dp0"
-cd /d "%ROOT_DIR%garss-studio" || exit /b 1
+if "%ROOT_DIR:~-1%"=="\" set "ROOT_DIR=%ROOT_DIR:~0,-1%"
+set "PROJECT_DIR=%ROOT_DIR%\garss-studio"
+set "COMPOSE_FILE=docker-compose.dev.yml"
+
+cd /d "%PROJECT_DIR%" || exit /b 1
 
 if not "%~1"=="" (
   call :run_action "%~1"
@@ -69,28 +73,82 @@ echo 未知操作: %selected%
 echo 可用操作: start / stop / upgrade / status / exit
 exit /b 1
 
+:ensure_docker
+docker --version >nul 2>nul
+if errorlevel 1 (
+  echo 请先安装并启动 Docker Desktop。
+  exit /b 1
+)
+exit /b 0
+
+:ensure_env
+if not exist ".env" (
+  copy ".env.example" ".env" >nul
+  echo 已从 .env.example 创建 .env
+)
+exit /b 0
+
+:set_entry_url
+set "ACCESS_CODE=banana"
+if exist ".env" (
+  for /f "usebackq tokens=1,* delims==" %%A in (".env") do (
+    if "%%A"=="ACCESS_CODE" set "ACCESS_CODE=%%B"
+  )
+)
+set "ACCESS_CODE=%ACCESS_CODE:"=%"
+set "GARSS_URL=http://127.0.0.1:25173/reader?pw=%ACCESS_CODE%"
+exit /b 0
+
+:open_entry
+call :set_entry_url
+echo 入口: %GARSS_URL%
+start "" "%GARSS_URL%"
+exit /b 0
+
 :do_start
 echo 正在启动 GARSS...
 echo.
-call npm run quick:start -- --open
-exit /b %ERRORLEVEL%
+call :ensure_docker || exit /b 1
+call :ensure_env || exit /b 1
+docker compose -f "%COMPOSE_FILE%" up --build -d
+if errorlevel 1 exit /b %ERRORLEVEL%
+call :open_entry
+exit /b 0
 
 :do_stop
 echo 正在关闭 GARSS...
 echo.
-call npm run quick:stop
+call :ensure_docker || exit /b 1
+docker compose -f "%COMPOSE_FILE%" down
 exit /b %ERRORLEVEL%
 
 :do_upgrade
 echo 正在升级 GARSS...
 echo.
-call npm run quick:upgrade -- --open
-exit /b %ERRORLEVEL%
+call :ensure_docker || exit /b 1
+call :ensure_env || exit /b 1
+if exist "%ROOT_DIR%\.git" (
+  docker run --rm -v "%ROOT_DIR%:/repo" -w /repo alpine/git pull --ff-only
+  if errorlevel 1 exit /b %ERRORLEVEL%
+) else (
+  echo 未检测到 .git，跳过代码拉取。
+)
+docker compose -f "%COMPOSE_FILE%" pull rsshub
+if errorlevel 1 exit /b %ERRORLEVEL%
+docker compose -f "%COMPOSE_FILE%" up --build -d
+if errorlevel 1 exit /b %ERRORLEVEL%
+call :open_entry
+exit /b 0
 
 :do_status
 echo 正在查看 GARSS 状态...
 echo.
-call npm run quick:status
+call :ensure_docker || exit /b 1
+call :ensure_env || exit /b 1
+call :set_entry_url
+echo 入口: %GARSS_URL%
+echo.
+docker compose -f "%COMPOSE_FILE%" ps
 exit /b %ERRORLEVEL%
 
 :do_exit

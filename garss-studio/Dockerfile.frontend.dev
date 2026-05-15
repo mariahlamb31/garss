@@ -9,4 +9,4 @@ COPY scripts ./scripts
 
 EXPOSE 25173
 
-CMD ["sh", "scripts/dev-entrypoint.sh", "npm", "run", "dev:docker"]
+CMD ["node", "scripts/dev-entrypoint.mjs", "npm", "run", "dev:docker"]

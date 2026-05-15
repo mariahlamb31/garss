@@ -14,4 +14,4 @@ ENV RSSHUB_BASE_URL=http://rsshub:1200
 
 EXPOSE 3001
 
-CMD ["sh", "scripts/dev-entrypoint.sh", "node", "./node_modules/.bin/tsx", "server/index.ts"]
+CMD ["node", "scripts/dev-entrypoint.mjs", "node", "./node_modules/.bin/tsx", "server/index.ts"]
