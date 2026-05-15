@@ -29,6 +29,9 @@ type ApiDocumentItem = {
   description: string;
 };
 
+const READER_KEYBOARD_PAGE_SCROLL_RATIO = 0.88;
+const READER_KEYBOARD_MIN_SCROLL_DISTANCE = 320;
+
 function formatDateLabel(value: string): string {
   if (!value) {
     return "未标注时间";
@@ -1432,6 +1435,26 @@ function ReaderPanel() {
     scrollArticleViewportToTop();
   }
 
+  function scrollArticleViewportByPage(direction: 1 | -1) {
+    const scrollContainer = articleScrollRef.current;
+
+    if (!scrollContainer) {
+      return false;
+    }
+
+    const scrollDistance = Math.max(
+      READER_KEYBOARD_MIN_SCROLL_DISTANCE,
+      Math.floor(scrollContainer.clientHeight * READER_KEYBOARD_PAGE_SCROLL_RATIO),
+    );
+
+    scrollContainer.scrollBy({
+      top: direction * scrollDistance,
+      behavior: "smooth",
+    });
+
+    return true;
+  }
+
   function handleSelectReaderNavigationMode(nextMode: ReaderBaseNavigationMode) {
     setReaderBaseNavigationMode(nextMode);
 
@@ -1460,11 +1483,21 @@ function ReaderPanel() {
         return;
       }
 
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
         return;
       }
 
       if (isKeyboardEventFromEditableTarget(event) || document.querySelector(".reader-image-viewer")) {
+        return;
+      }
+
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        const didScroll = scrollArticleViewportByPage(event.key === "ArrowDown" ? 1 : -1);
+
+        if (didScroll) {
+          event.preventDefault();
+        }
+
         return;
       }
 
